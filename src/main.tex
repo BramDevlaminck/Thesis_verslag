@@ -1,0 +1,197 @@
+%\documentclass[12pt,a4paper,faculty=we,language=nl]{ugent-doc}
+%
+%% Optional: margins and spacing
+%%-------------------------------
+%% Uncomment and adjust to change the default values set by the template
+%% Note: the defaults are suggested values by Ghent University
+%\geometry{bottom=2.5cm,top=2.5cm,left=2.5cm,right=2.5cm}
+%%\renewcommand{\baselinestretch}{1.15} % line spacing
+%
+%
+%% Font
+%%------
+%\usepackage[T1]{fontenc}
+%\usepackage[utf8]{inputenc}
+%% Comment/remove the two lines below to use the default Computer Modern font
+%\usepackage{libertine}
+%\usepackage{libertinust1math}
+
+% Proper word splitting
+%-----------------------
+%\usepackage[dutch]{babel}
+
+% Mathematics
+%-------------
+
+\documentclass[11pt,dutch,faculty=we,layout=titlefont,underline=false,titleUppercase=true,titleUnderline=true]{ugent2016-report}
+\usepackage[dutch]{babel}
+\usepackage{fontspec,unicode-math}
+\usepackage{amsmath}
+
+% Figures
+%---------
+\usepackage{graphicx, ugent2016-assets}
+\usepackage{biblatex}
+\graphicspath{{./figures/}}
+\addbibresource{bibliography.bib}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks,
+    linkcolor={black},
+    citecolor={blue!50!black},
+    urlcolor={blue!80!black}
+}
+
+\author{Bram Devlaminck}
+\title{Unipept:\newline geavanceerde indexstructuren \newline voor identificatie en analyse\newline van arbitraire peptiden}
+%\subtitle{Hello}
+\academicyear{2023--2024}
+\programme{Informatica}
+\studentnumber{01902993}
+\email{bram.devlaminck@ugent.be}
+
+% Bibliography settings
+%-----------------------
+%\usepackage[backend=biber, style=apa, sorting=nyt, hyperref=true]{biblatex}
+%\addbibresource{./bibliography.bib}
+% \usepackage{csquotes} % Suggested when using babel+biblatex
+% local run procedure: (1) pdfLatex on main, (2) biber on main, (3) pdfLatex on main, (4) pdfLatex on main
+
+% Hyperreferences
+%-----------------
+%\usepackage[colorlinks=true, allcolors=ugentblue]{hyperref}
+
+% Whitespace between paragraphs and no indentation
+%--------------------------------------------------
+%\usepackage[parfill]{parskip}
+
+% Input for title page
+%----------------------
+
+%% The title
+%\thetitle{\color{ugentblue}Unipept:\newline geavanceerde indexstructuren \newline voor identificatie en analyse\newline van arbitraire peptiden}
+%\thesubtitle{\color{black}Bram Devlaminck} % Optional
+
+%% Note: a stricter UGent style could be achieved with, e.g.:
+%\usepackage{ulem}
+%\renewcommand{\ULthickness}{2pt}
+%\thetitle{\uline{\color{ugentblue}INCLASS KAGGLE COMPETITION:\newline LOAN-DEFAULT PREDICTION}}
+%% Note: do not forget to reset the \ULthickness to 1pt after invoking \maketitle
+%\renewcommand{\ULthickness}{1pt}
+
+%% The first (top) infobox at bottom of titlepage
+%\infoboxa{\bfseries\large Masterproef}
+%
+%
+%% The second infobox at bottom of titlepage
+%\infoboxb{Promotoren:
+%    \begin{tabular}[t]{l}
+%        Prof.\ Dr.\ Peter Dawyndt \\ % note syntax 'short space'
+%        Prof.\ Dr.\ Bart Mesuere
+%    \end{tabular}
+%}
+%
+%% The third infobox at bottom of titlepage
+%\infoboxc{Begeleiders:
+%    \begin{tabular}[t]{l}
+%        Pieter Verschaffelt \\ % note syntax 'short space'
+%        Tibo Vande Moortele
+%    \end{tabular}
+%}
+%
+%% The last (bottom) infobox at bottom of titlepage
+%\infoboxd{Academisch jaar: 2023--2024} % note dash, not hyphen
+
+
+\begin{document}
+
+    \maketitle
+
+
+    \setmonofont[Scale=MatchLowercase,Contextuals={Alternate}]{Jetbrains Mono}
+% =====================================================================
+% Cover
+% =====================================================================
+
+
+% =====================================================================
+% Front matter
+% =====================================================================
+
+% ------------ TABLE OF CONTENTS ---------
+    {\hypersetup{hidelinks}\tableofcontents} % hide link color in toc
+    \newpage
+
+
+% =====================================================================
+% Main matter
+% =====================================================================
+
+
+    \section{Introductie}\label{sec:introductie}
+
+
+    \section{Datasets}\label{sec:datasets}
+    Om te testen hoe goed een implementatie is en hoe deze vergelijkt met al bestaande implementaties is het belangrijk om enkele representatieve datasets te hebben.
+    De gebruikte datasets zijn allemaal eiwit databanken die een subset zijn van UniProt (meer specifiek UniProtKB 2023\_04) (TODO: cite uniprot).
+    UniprotKB is een eiwit databank die in 2 grote delen op te splitsen valt.
+    \begin{enumerate}
+        \item Swiss-Prot: Dit is een kleinere, manueel gecureerde, dataset die 570 157 eiwit sequenties bevat.
+        \item TrEMBL: Deze dataset bevat 251 600 768 sequenties en is dus veel groter dan Swiss-Prot.
+        Het grote verschil is dat deze dataset \textbf{niet} manueel gecureerd is.
+    \end{enumerate}
+
+    Om het benchmarken van implementaties praktisch te houden maak ik gebruik van 2 Subsets hiervan.
+    \paragraph{Swiss-Prot} Dit is de standaard Swiss-Prot databank die deel is van UniProt (zoals eerder uitgelegd).
+    Een kort overzicht van alle statistieken is terug te vinden in tabel
+
+    \begin{table}[h!]
+        \centering
+        \begin{tabular}{|c|c|}
+            \hline
+            Metriek & Waarde \\
+            \hline\hline
+            Totaal aantal sequenties & 569 619 \\ % TODO: waarom is dit anders dan wat op de site staat?
+            Totale lengte & 205 954 074 \\
+            Minimale proteïne lengte & 2 \\
+            Maximale proteïne lengte & 35 213 \\
+            Gemiddelde proteïne lengte & 361.56 \\
+            Mediaan proteïne lengte & 295 \\
+            \hline
+        \end{tabular}
+        \caption{Eigenschappen van de Swiss-Prot databank}
+        \label{table:1}
+    \end{table}
+
+    \paragraph{Human-Prot} Deze dataset is samengesteld aan de hand van 3 referentiedatabanken die deel uit maken van UniProt.
+    Deze werd geleverd aan me door mijn begeleider Pieter Verschaffelt
+    \begin{enumerate}
+        \item Human Genome~\cite{proteomes_homo_sapiens}
+        \item Influenza B~\cite{proteomes_infuenza_b}
+        \item Human Papillomavirus~\cite{proteomes_human_papillomavirus}
+    \end{enumerate}
+
+    Deze Human_
+
+% =====================================================================
+% End matter
+% =====================================================================
+
+% ------------ REFERENCES ------------
+    \printbibliography[heading=bibintoc,title={Referenties}] % check if bibliography is in table of contents
+
+
+% ------------ APPENDIX ------------
+    \appendix
+
+
+    \section{Appendix: Your first appendix}
+    Insert some figure or table here.
+
+    \newpage
+
+
+    \section{Appendix: Your second appendix}
+    The second appendix was forced to start on a new page.
+
+\end{document}
