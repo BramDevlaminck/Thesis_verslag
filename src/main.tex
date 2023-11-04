@@ -27,6 +27,9 @@
 \usepackage[dutch]{babel}
 \usepackage{fontspec,unicode-math}
 \usepackage{amsmath}
+\usepackage{subcaption}
+\usepackage{csquotes}
+
 
 % Figures
 %---------
@@ -41,6 +44,8 @@
     citecolor={blue!50!black},
     urlcolor={blue!80!black}
 }
+\usepackage{booktabs,makecell}
+
 
 \author{Bram Devlaminck}
 \title{Unipept:\newline geavanceerde indexstructuren \newline voor identificatie en analyse\newline van arbitraire peptiden}
@@ -49,6 +54,7 @@
 \programme{Informatica}
 \studentnumber{01902993}
 \email{bram.devlaminck@ugent.be}
+\promotors{Prof.\ Dr.\ Peter Dawyndt\newline Prof.\ Dr.\ Bart Mesuere}
 
 % Bibliography settings
 %-----------------------
@@ -128,10 +134,16 @@
 % =====================================================================
 
 
-    \section{Introductie}\label{sec:introductie}
+    \chapter{Introductie}\label{sec:introductie}
 
 
-    \section{Datasets}\label{sec:datasets}
+    \section{Probleemstelling}
+    Nood aan efficiente manier om niet-triptische peptiden te zoeken.
+
+
+    \section{Test Datasets}\label{sec:datasets}
+
+    \subsection{Proteïne databanken}
     Om te testen hoe goed een implementatie is en hoe deze vergelijkt met al bestaande implementaties is het belangrijk om enkele representatieve datasets te hebben.
     De gebruikte datasets zijn allemaal eiwit databanken die een subset zijn van UniProt (meer specifiek UniProtKB 2023\_04) (TODO: cite uniprot).
     UniprotKB is een eiwit databank die in 2 grote delen op te splitsen valt.
@@ -142,25 +154,25 @@
     \end{enumerate}
 
     Om het benchmarken van implementaties praktisch te houden maak ik gebruik van 2 Subsets hiervan.
+
     \paragraph{Swiss-Prot} Dit is de standaard Swiss-Prot databank die deel is van UniProt (zoals eerder uitgelegd).
-    Een kort overzicht van alle statistieken is terug te vinden in tabel
+    Een kort overzicht van alle statistieken is terug te vinden in tabel~\ref{tab:swissprot_eigenschappen}.
 
     \begin{table}[h!]
         \centering
-        \begin{tabular}{|c|c|}
-            \hline
-            Metriek & Waarde \\
+        \begin{tabular}{c c}
+            Metriek                    & Waarde      \\
             \hline\hline
-            Totaal aantal sequenties & 569 619 \\ % TODO: waarom is dit anders dan wat op de site staat?
-            Totale lengte & 205 954 074 \\
-            Minimale proteïne lengte & 2 \\
-            Maximale proteïne lengte & 35 213 \\
-            Gemiddelde proteïne lengte & 361.56 \\
-            Mediaan proteïne lengte & 295 \\
+            Totaal aantal sequenties   & 569 619     \\ % TODO: waarom is dit anders dan wat op de site staat?
+            Totale lengte              & 205 954 074 \\
+            Minimale proteïne lengte   & 2           \\
+            Maximale proteïne lengte   & 35 213      \\
+            Gemiddelde proteïne lengte & 361.56      \\
+            Mediaan proteïne lengte    & 295         \\
             \hline
         \end{tabular}
         \caption{Eigenschappen van de Swiss-Prot databank}
-        \label{table:1}
+        \label{tab:swissprot_eigenschappen}
     \end{table}
 
     \paragraph{Human-Prot} Deze dataset is samengesteld aan de hand van 3 referentiedatabanken die deel uit maken van UniProt.
@@ -171,7 +183,95 @@
         \item Human Papillomavirus~\cite{proteomes_human_papillomavirus}
     \end{enumerate}
 
-    Deze Human_
+    Deze Human-Prot databank is nog kleiner dan Swiss-Prot wat het testen tijdens ontwikkeling sneller maakt.
+    In tabel~\ref{tab:humanprot_eigenschappen} valt een korte samenvatting te zien van enkele kenmerken van deze dataset.
+
+    \begin{table}[h!]
+        \centering
+        \begin{tabular}{ c c }
+            Metriek                    & Waarde     \\
+            \hline\hline
+            Totaal aantal sequenties   & 82 695     \\
+            Totale lengte              & 30 293 046 \\
+            Minimale proteïne lengte   & 2          \\
+            Maximale proteïne lengte   & 35 991     \\
+            Gemiddelde proteïne lengte & 366.32     \\
+            Mediaan proteïne lengte    & 204        \\
+            \hline
+        \end{tabular}
+        \caption{Eigenschappen van de Human-Prot databank}
+        \label{tab:humanprot_eigenschappen}
+    \end{table}
+
+    \subsection{Peptide zoek bestanden}\label{subsec:peptide-zoek-bestanden}
+    Natuurlijk is een erg belangrijk deel van het opbouwen van een indexstructuur de zoekperformantie achteraf.
+    Hiervoor hebben we bij elke proteinen databank een lijst aan peptiden die we proberen te zoeken.
+    Voor onze beide databanken zijn enkele datasets opgesteld.
+
+    \paragraph{Swiss-prot} Voor deze databank hebben we 2 zoekbestanden voorzien.
+    1 bestand met enkel triptische peptiden (waar Unipept op dit moment mee kan werken!), en 1 bestand waarin ook niet-triptische peptiden zitten (TODO: vraag als dit allemaal niet triptische zijn, of deels? indien deels eens berekenen hoeveel van elk? van waar komen deze query peptiden?).
+    Een kort overzicht van enkele statistieken over deze bestanden valt te zien in respectievelijk tabel~\ref{tab:swiss_niet_triptisch} en tabel~\ref{tab:swiss_triptisch}.
+
+    \begin{table}[!h]
+        \begin{minipage}{.5\linewidth}
+            \centering
+            \begin{tabular}{c c}
+                Metriek                    & Waarde    \\
+                \hline\hline
+                Totaal aantal sequenties   & 100 000   \\
+                Totale lengte              & 1 605 909 \\
+                Minimale proteïne lengte   & 5         \\
+                Maximale proteïne lengte   & 50        \\
+                Gemiddelde proteïne lengte & 16.06     \\
+                Mediaan proteïne lengte    & 13        \\
+                \hline
+            \end{tabular}
+            \caption{Eigenschappen van \newline het Swiss-Prot zoekbestand \newline met triptische peptiden}
+            \label{tab:swiss_niet_triptisch}
+        \end{minipage}
+        \begin{minipage}{.5\linewidth}
+            \centering
+            \begin{tabular}{ c c }
+                Metriek                    & Waarde    \\
+                \hline\hline
+                Totaal aantal sequenties   & 100 000   \\
+                Totale lengte              & 2 544 356 \\
+                Minimale proteïne lengte   & 5         \\
+                Maximale proteïne lengte   & 93        \\
+                Gemiddelde proteïne lengte & 25.44     \\
+                Mediaan proteïne lengte    & 23        \\
+                \hline
+            \end{tabular}
+            \caption{Eigenschappen van \newline het Swiss-Prot zoekbestand \newline met niet-triptische peptiden}
+            \label{tab:swiss_triptisch}
+        \end{minipage}
+    \end{table}
+
+    % TODO: informatie geven over aantal sequenties dat terugevonden kan worden
+
+    \paragraph{Human-Prot} Voor deze databank hebben we 1 zoekbestand voorzien.
+    Dit bestand bevat niet-triptische peptiden.
+    Aangezien we deze dataset zelf samengesteld hebben, hebben we ook zelf willekeurige samples genomen om een zoekbestand op te stellen.
+    Hierdoor is elk van de peptiden die we zullen proberen te vinden effectief vindbaar in de dataset.
+    Een kort overzicht van enkele eigenschappen is terug te vinden in tabel~\ref{tab:humanprot_zoekbestand}
+
+    \begin{table}[h!]
+        \centering
+        \begin{tabular}{ c c }
+            Metriek                    & Waarde     \\
+            \hline\hline
+            Totaal aantal sequenties   & 250000     \\
+            Totale lengte              & 2458834 046 \\
+            Minimale proteïne lengte   & 1          \\
+            Maximale proteïne lengte   & 12
+            \\
+            Gemiddelde proteïne lengte & 9.84     \\
+            Mediaan proteïne lengte    & 10        \\
+            \hline
+        \end{tabular}
+        \caption{Eigenschappen van het Human-Prot zoekbestand}
+        \label{tab:humanprot_zoekbestand}
+    \end{table}
 
 % =====================================================================
 % End matter
