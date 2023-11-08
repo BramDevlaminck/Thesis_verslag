@@ -6,7 +6,7 @@ De reden om deze datastructuur als eerste te behandelen is dat hij vrij intuïti
 Bovendien kan een goede tijdscomplexiteit bereikt worden aangezien het zoeken in een suffixboom in O(n) kan (met n de lengte van de zoekstring, in ons geval dus een peptide).
 Het opbouwen kan ook lineair gebruik makende van het algoritme van Ukkonen \cite{Ukkonen1995}, met heeft een complexiteit van O(m), met m de som van de lengtes van alle proteïnes in de databank.
 
-\section{Implementatie}\label{sec:implementatie}
+\section{Ukkonen}\label{sec:Ukkonen}
 Het algoritme van Ukkonen staat gekend als vrij moeilijk.
 Zeker de originele paper zelf is niet makkelijk verstaanbaar en bevat weinig pseudocode.
 Om dit beter te verstaan ben ik op zoek gegaan naar meerdere papers en boeken die dit algoritme in detail beschrijven.
@@ -106,9 +106,11 @@ enum Option<T> {
 }
 \end{minted}
 
+Deze enum heeft 2 mogelijke waarden: \texttt{None} of \texttt{Some(T)}.
+\texttt{None} is het equivalent dat overeen komt met null, terwijl \texttt{Some(T)} wil zeggen dat de waarde niet-null is, en meer specifiek is de waarde \texttt{T}.
 Aangezien het grootste deel van wat bijgehouden wordt per top eigenlijk pointers zijn maakte ik veelvoudig gebruik van deze option enum.
-Zo goed als al deze pointers kunnen namelijk null zijn!
-de parent pointer moet nullable zijn aangezien de root geen parent heeft, de kind pointers moeten allemaal nullable zijn omdat bladeren geen kinderen hebben (en in de interne toppen zijn niet alle kinderen altijd nodig) en de suffix-links moeten nullable zijn aangezien niet elke top een suffix link heeft naar een andere top.
+Al deze pointers kunnen namelijk null zijn!
+de parent pointer moet nullable zijn aangezien de root geen parent heeft, de child pointers moeten allemaal nullable zijn omdat bladeren geen kinderen hebben (en in de interne toppen zijn niet alle kinderen altijd nodig) en de suffix-links moeten nullable zijn aangezien niet elke top een suffix link heeft naar een andere top.
 \\ \\
 Dit werkte perfect en kon proper afgehandeld worden op de propere idiomatische manier die overeenkomt met propere Rust code.
 Na de eerste benchmarks bleek het geheugengebruik echter problematisch.
@@ -152,5 +154,7 @@ impl Nullable<NodeIndex> for NodeIndex {
 \end{minted}
 
 \subsection{Performantie}\label{subsec:performantie}
+
+\section{Taxon ID aggregatie}\label{sec:taxon-id-aggregatie}
 
 
