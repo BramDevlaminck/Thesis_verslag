@@ -1,0 +1,156 @@
+\chapter{Suffix Bomen}\label{ch:suffix-bomen}
+Een eerste datastructuur die het mogelijk maakt om snel strings in een groot aantal andere strings te zoeken zijn suffix bomen.
+Meer precies eigenlijk een gegeneraliseerde suffix boom.
+
+De reden om deze datastructuur als eerste te behandelen is dat hij vrij intuïtief is en de makkelijkste van alle mogelijke opties.
+Bovendien kan een goede tijdscomplexiteit bereikt worden aangezien het zoeken in een suffixboom in O(n) kan (met n de lengte van de zoekstring, in ons geval dus een peptide).
+Het opbouwen kan ook lineair gebruik makende van het algoritme van Ukkonen \cite{Ukkonen1995}, met heeft een complexiteit van O(m), met m de som van de lengtes van alle proteïnes in de databank.
+
+\section{Implementatie}\label{sec:implementatie}
+Het algoritme van Ukkonen staat gekend als vrij moeilijk.
+Zeker de originele paper zelf is niet makkelijk verstaanbaar en bevat weinig pseudocode.
+Om dit beter te verstaan ben ik op zoek gegaan naar meerdere papers en boeken die dit algoritme in detail beschrijven.
+Uiteindelijk kwam het grootste deel van de informatie van 3 verschillende plaatsen:
+\begin{enumerate}
+    \item Het boek \textit{Algorithms on Strings, Trees and Sequences}~\cite{Gusfield1997}.
+    \item De cursus Algoritmen \& Datastucturen 3 aan UGent gegeven door prof. Gunnar Brinkmann \cite{AD3_ukkonen}.
+    \item De cursus Computational Challenges in Bioinformatics gegeven door prof. dr. Jan Fostier and prof. dr. Peter Dawyndt.
+    Naast een cursus met wat info over het algoritme van Ukkonen is er ook een implementatie van dit algoritme gemaakt door Jan Fostier in C++. % TODO: hoe moet ik dit citeren want dit staat up ugent github?
+\end{enumerate}
+
+\subsection{Kotlin}\label{subsec:kotlin}
+Een eerste implementatie heb ik gemaakt in Kotlin.
+Simpelweg omdat deze taal voor mij makkelijk is om in te ontwikkelen.
+Hierdoor moest ik niet focussen op de complexiteit van Rust in combinatie met het uitzoeken van het algoritme en het zoeken van bugs in mijn implementatie.
+Hier was gelukkig de referentie code van Jan Fostier een grote hulp omdat dit tijdens het mogelijk maakte om te zien wat de toestand van het programma zou moeten zijn na $x$ iteraties.
+
+1 van de verschillen is dat ik hier toen gekozen heb voor een representatie van de kinderen aan de hand van een HashMap ipv een array van pointers, simpelweg uit gemak zodat ik rechtstreeks de characters als key kon gebruiken, en die niet moest omzetten naar een index.
+De reden om Kotlin te kiezen en niet Python is simpelweg performantie aangezien het in kotlin nog doenbaar was om de test datasets op te bouwen in een redelijke tijd.
+
+Uiteindelijk bleek de grootste struikelblok in het implementeren van het Ukkonen enkele off-by-1 indices.
+Aangezien je tijdens het algoritme eigenlijk werkt met substrings, maar deze opgeslagen worden aan de hand van hun begin- en eind-index wordt het debuggen veel omslachtiger.
+Tijdens het debuggen zie je namelijk enkel ``ik ben nu in top $y$ die de substring van index $i$ tot index $j$ voorstelt, en de kinderen stellen de substring $k$ tot $l$, \ldots voor''.
+Tot slot had ik op het einde ook enkele bugs die niet voorkwamen in kleinere voorbeelden die nog met de hand uit te werken waren, wat daardoor relatief wat tijd vroeg om op te lossen.
+
+\subsection{Rust}\label{subsec:rust}
+\subsubsection{Eerste ervaring}
+Aangezien dit mijn eerste ervaring was met rust deel ik graag even mijn eerste ervaring mee.
+Zelf heb ik eerst \textit{the Rust book} gelezen~\cite{the_rust_book}.
+Wat op zich veel goede informatie heeft, maar naar mijn ervaring soms te veel.
+Een veelvoorkomend patroon in het boek is dat een deel van een concept geïntroduceerd wordt en dat je dan als lezer geïnformeerd wordt dat je er nu nog niet over moet denken, dat er meer informatie hierover komt in een later hoofdstuk.
+Dit kan soms voor wat information-overload zorgen.
+Zeker aangezien Rust vaak verschillende syntaxen heeft om hetzelfde te doen, waardoor je als lezer moeilijk je kunt focussen op de essentiële delen.
+\\ \\
+Om de meest essentiële basis componenten van Rust wat onder de knie te krijgen heb ik daarna de oefeningen van Rustlings~\cite{rustlings} gemaakt op aanraden van mede thesis student Stijn Declercq.
+Dit zijn een reeks aan erg kleine oefeningen die meestal in maximaal enkele minuten gemaakt zijn, maar er voor zorgen dat je toch al eens in contact komt met alle basisonderdelen van rust.
+Naar mijn mening is dit dus zeker een waardevolle toevoeging tijdens het leren van Rust.
+
+\subsubsection{Boomstructuren}
+\begin{quote}
+    \textit{Rust is known to be notorious difficult when it comes to certain data structures like linked lists, trees, etc. \cite{rust_difficulty_quote}}
+\end{quote}
+Deze quote komt rechtstreeks uit een Medium artikel en toont direct dat het maken van een suffixboom in Rust niet-triviaal ging zijn.
+De oorzaak hiervoor ligt bij het \textit{ownership} systeem van Rust.
+Dit systeem zorgt er voor dat slechts 1 variabele eigenaar kan zijn van een stukje data.
+In dit geval kan dus slechts 1 top een andere top opslaan, of er een \textit{mutable reference} naar hebben.
+Meer praktisch wil dit dus zeggen dat slechts 1 top een pointer kan hebben naar een andere top, met de toelating om die top aan te passen (wat nodig is tijdens het opbouwen van de boom, waarin kinderen nog toegevoegd worden, toppen moeten gesplitst worden enz.)
+Dit is een groot probleem aangezien ouders pointers naar kinderen moeten hebben, de kinderen een pointer naar hun ouder, en er dan ook nog eens pointers zijn voor de suffix links.
+Dit gaat duidelijk niet zomaar voldoen aan het ownership systeem!
+\\ \\
+Als oplossing hiervoor introduceert Rust het \texttt{Rc<T>} datatype.
+Hierbij gaat rust afstappen van zijn standaard ownership systeem en gebruik maken van Reference Counting.
+Pas wanneer alle references weg zijn zal het geheugen automatisch vrij gegeven worden.
+De beperking hierbij is echter dat deze referenties \textit{immutable} zijn, dit voldoet niet tijdens het opbouwen van de boom.
+\\ \\
+Als oplossing hiervoor heeft Rust dan weer het \textit{interior mutability} patroon~\cite{interior_mutability}.
+Dit laat toe om data toch aan te passen, ook al is een reference immutable.
+Aangezien dit de standaard Rust regels doorbreekt, is dit \texttt{unsafe} en kan Rust \textit{at compile-time} geen \textit{memory safety} meer garanderen.
+Refcell zal gelukkig wel de nodige code invoegen zodat runtime memory safety wel gegarandeerd kan worden.
+Mogelijke foutieve geheugen operaties zullen dus tijdens het uitvoeren van het programma gedetecteerd worden, \textbf{ten koste van performantie}.
+\\ \\
+Maar zelfs nu blijft er nog altijd een probleem.
+Geheugen aan de hand van reference counting zal enkel vrijgegeven kunnen worden indien de reference counter op 0 staat.
+Er zijn echter scenario's waar dit nooit zal gebeuren.
+Namelijk bij cyclische verwijzingen, een patroon dat jammer genoeg erg vaak voor komt (in ons geval bv een ouder die een pointer heeft naar een kind, en een kind een pointer naar de ouder).
+Als oplossing hiervoor introduceert Rust dan weer het \texttt{Weak<T>} datatype.
+\\ \\
+Dit is duidelijk er ingewikkeld, en introduceert ook nog eens performance overhead die niet nodig lijkt.
+Een optie zou natuurlijk zijn door expliciet het \texttt{unsafe} keyword te gebruiken wat toe laat de ownership regels van Rust volledig uit te schakelen (zowel compile-time als run-time).
+Het nadeel hiervan is natuurlijk dat we dan de garanties van memory safety kwijt zijn, wat net 1 van de hoofd redenen is om Rust te gebruiken.
+Dit was dus geen mogelijke optie.
+Gelukkig is er een alternatieve manier waar ik op gestoten ben, een arena-based implementatie~\cite{rust_arena_trees}.
+Het idee hierbij is dat er 1 arena gemaakt wordt waarbij ownership erg simpel is.
+In mijn implementatie is dit bijvoorbeeld een Vector.
+Alle toppen moeten dan simpelweg gewoon in deze vector toegevoegd worden, in plaats van pointers naar elkaar houden de toppen dan simpelweg een index bij.
+Deze index stelt de index van de top voor waarnaar anders een pointer wordt bijgehouden.
+\\ \\
+Na het maken van deze ontwerpaanpassingen bleef slechts 1 moeilijkheid over.
+Uitzoeken hoe de cursor (die bij houdt waar we zijn in de boom tijdens het bouwen), de input string en de boom zelf zich van elkaar moeten verhouden in het ownership systeem.
+Uiteindelijk viel dit vrij makkelijk uit te zoeken.
+Het omzetten van de resterende Kotlin code naar Rust was erg simpel en bijna een 1-1 vertaling.
+Het enige verschil is dat ik in de Rust implementatie gebruik heb gemaakt van een array om de kinder bij te houden in plaats van een HashMap.
+
+\subsubsection{Geheugen efficiëntie}
+\begin{quote}
+    \textit{And then I went and invented a null pointer.
+    And if you use a null pointer you either have to check every reference or you risk disaster. \cite{null_mistake}}
+\end{quote}
+Null-pointers worden ook wel \textit{the billion-dollar mistake} genoemd vanwege het grote aantal bugs dat veroorzaakt worden door null pointers.
+Daarom voorziet Rust een andere manier om de waarde ``null'' voor te stellen.
+Dit wordt gedaan aan de hand van de \texttt{Option<T>} enum.
+
+\begin{minted}{Rust}
+enum Option<T> {
+    None,
+    Some(T),
+}
+\end{minted}
+
+Aangezien het grootste deel van wat bijgehouden wordt per top eigenlijk pointers zijn maakte ik veelvoudig gebruik van deze option enum.
+Zo goed als al deze pointers kunnen namelijk null zijn!
+de parent pointer moet nullable zijn aangezien de root geen parent heeft, de kind pointers moeten allemaal nullable zijn omdat bladeren geen kinderen hebben (en in de interne toppen zijn niet alle kinderen altijd nodig) en de suffix-links moeten nullable zijn aangezien niet elke top een suffix link heeft naar een andere top.
+\\ \\
+Dit werkte perfect en kon proper afgehandeld worden op de propere idiomatische manier die overeenkomt met propere Rust code.
+Na de eerste benchmarks bleek het geheugengebruik echter problematisch.
+Bijna exact 2x zo hoog als de equivalente C++ implementatie.
+Om zo'n drastisch verschil in geheugenverbruik te kunnen verklaren moest er wel iets fundamenteel verschillen aan de manier dat toppen hun data bijhouden.
+Al snel bleek dat het gebruik van \texttt{Option<usize>} als datatype in plaats van \texttt{usize} 8 bytes aan overhead per waarde had!
+Dit is inderdaad exact het dubbele geheugenverbruik op een 64-bit machine aangezien een \texttt{usize} 8 bytes groot is.
+Dit valt makkelijk te controleren aan de hand van de \texttt{std::mem::size\_of} functie deel van de Rust standaard bibliotheek.
+Onderstaand voorbeeld toont dat dit inderdaad het geval is.
+\begin{minted}{Rust}
+assert_eq!(mem::size_of::<Option<usize>>(), 16);
+assert_eq!(mem::size_of::<usize>(), 8);
+\end{minted}
+
+Als oplossing heb ik uiteindelijk mijn eigen ``null'' value gedefinieerd gebruik makende van een Trait.
+Deze oplossing verslaat volledig het doel van de \texttt{Option<T>} enum, maar is jammergenoeg nodig omdat het gewoonweg niet acceptabel is het geheugenverbruik te verdubbelen hiervoor.
+Bovendien blijft memory safety gegarandeerd aangezien het foutief indexeren van de NULL-value (\texttt{usize::MAX} in dit geval) een index-out-of-bounds error.
+Wat tijdens runtime gedetecteerd wordt en dus geen verdere problemen geeft (buiten dat het programma zal crashen).
+
+\begin{minted}{Rust}
+/// Custom trait implemented by types that have a value that represents NULL
+pub trait Nullable<T> {
+    const NULL: T;
+
+    fn is_null(&self) -> bool;
+}
+
+/// Type that represents the index of a node in the arena part of the tree
+pub type NodeIndex = usize;
+
+impl Nullable<NodeIndex> for NodeIndex {
+    /// Use usize::MAX as NULL value since this will in practice never be reached.
+    /// It is not possible to create 2^64-1 nodes (on a 64-bit machine).
+    /// This would simply never fit in memory
+    const NULL: NodeIndex = usize::MAX;
+
+    fn is_null(&self) -> bool {
+        *self == Self::NULL
+    }
+}
+\end{minted}
+
+\subsection{Performantie}\label{subsec:performantie}
+
+

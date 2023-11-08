@@ -31,6 +31,7 @@
 \usepackage{csquotes}
 \usepackage{subfloat}
 \usepackage{float}
+\usepackage[outputdir=../out]{minted}
 
 % Figures
 %---------
@@ -47,15 +48,6 @@
 
 \setlength{\parindent}{0em}
 
-\author{Bram Devlaminck}
-\title{Unipept:\newline geavanceerde indexstructuren \newline voor identificatie en analyse\newline van arbitraire peptiden}
-%\subtitle{Hello}
-\academicyear{2023--2024}
-\programme{Informatica}
-\studentnumber{01902993}
-\email{bram.devlaminck@ugent.be}
-\promotors{Prof.\ Dr.\ Peter Dawyndt\newline Prof.\ Dr.\ Bart Mesuere}
-
 % Bibliography settings
 %-----------------------
 \usepackage[
@@ -65,54 +57,18 @@
 %    hyperref=true
 ]{biblatex}
 \addbibresource{bibliography.bib}
-%\addbibresource{./bibliography.bib}
-% \usepackage{csquotes} % Suggested when using babel+biblatex
-% local run procedure: (1) pdfLatex on main, (2) biber on main, (3) pdfLatex on main, (4) pdfLatex on main
 
-% Hyperreferences
-%-----------------
-%\usepackage[colorlinks=true, allcolors=ugentblue]{hyperref}
 
-% Whitespace between paragraphs and no indentation
-%--------------------------------------------------
-%\usepackage[parfill]{parskip}
+\author{Bram Devlaminck}
+\title{Unipept:\newline geavanceerde indexstructuren \newline voor identificatie en analyse\newline van arbitraire peptiden}
+%\subtitle{Hello}
+\academicyear{2023--2024}
+\programme{Informatica}
+\studentnumber{01902993}
+\email{bram.devlaminck@ugent.be}
+\promotors{Prof.\ Dr.\ Peter Dawyndt\newline Prof.\ Dr.\ Bart Mesuere}
 
-% Input for title page
-%----------------------
 
-%% The title
-%\thetitle{\color{ugentblue}Unipept:\newline geavanceerde indexstructuren \newline voor identificatie en analyse\newline van arbitraire peptiden}
-%\thesubtitle{\color{black}Bram Devlaminck} % Optional
-
-%% Note: a stricter UGent style could be achieved with, e.g.:
-%\usepackage{ulem}
-%\renewcommand{\ULthickness}{2pt}
-%\thetitle{\uline{\color{ugentblue}INCLASS KAGGLE COMPETITION:\newline LOAN-DEFAULT PREDICTION}}
-%% Note: do not forget to reset the \ULthickness to 1pt after invoking \maketitle
-%\renewcommand{\ULthickness}{1pt}
-
-%% The first (top) infobox at bottom of titlepage
-%\infoboxa{\bfseries\large Masterproef}
-%
-%
-%% The second infobox at bottom of titlepage
-%\infoboxb{Promotoren:
-%    \begin{tabular}[t]{l}
-%        Prof.\ Dr.\ Peter Dawyndt \\ % note syntax 'short space'
-%        Prof.\ Dr.\ Bart Mesuere
-%    \end{tabular}
-%}
-%
-%% The third infobox at bottom of titlepage
-%\infoboxc{Begeleiders:
-%    \begin{tabular}[t]{l}
-%        Pieter Verschaffelt \\ % note syntax 'short space'
-%        Tibo Vande Moortele
-%    \end{tabular}
-%}
-%
-%% The last (bottom) infobox at bottom of titlepage
-%\infoboxd{Academisch jaar: 2023--2024} % note dash, not hyphen
 
 
 \begin{document}
@@ -121,15 +77,10 @@
 
 
     \setmonofont[Scale=MatchLowercase,Contextuals={Alternate}]{Jetbrains Mono}
-% =====================================================================
-% Cover
-% =====================================================================
+
+% ------------- CONSENT OF USE -----------
 
     \include{gebruik}
-
-% =====================================================================
-% Front matter
-% =====================================================================
 
 % ------------ TABLE OF CONTENTS ---------
     \tableofcontents
@@ -144,7 +95,7 @@
     \chapter{Introductie}\label{sec:introductie}
 
 
-    \section{Probleemstelling}
+    \section{Inleiding}
     Unipept is een toolset die vooral gericht is op de analyse van stalen uit in het onderzoeksveld van de metaproteomica.
     Om uit te leggen wat metaproteomica is, is het nuttig eerst te weten wat de discipline van proteomica onderzoekt.
     In proteomica wordt een set van proteïnen komende uit 1 organism onderzocht om daaruit informatie te halen.
@@ -186,10 +137,21 @@
     Voor een gedetailleerdere beschrijving over Unipept en het onderzoeksveld van metaproteomica raad ik aan om de inleiding van het doctoraat van Dr. Pieter Verschaffelt (TODO: is pieter dokter?) te lezen.
     Deze inleiding is dan ook gebaseerd daarop~\cite{phdPieterUnipept}.
 
+    \section{Probleemstelling}\label{sec:probleemstelling}
+    Het exacte probleem dat opgelost moet worden is het snel zoeken van willekeurige peptiden in een databank met proteïnen.
+    Bij het vinden van een match moet het daarna mogelijk zijn de informatie op te halen die hoort bij alle proteïnen die matchen.
+    Als we dit vertalen naar informatica termen moeten we dus snel een kortere string kunnen zoeken in een grote hoeveelheid ander strings.
+    \\ \\
+    Belangrijk hierbij is dat dit niet alleen snel, maar ook geheugen efficiënt moet gebeuren.
+    Dit omdat de datasets waarmee gewerkt wordt extreem groot zijn.
+    Om dit te doen is het doel van deze thesis om meerdere datastructuren uit te werken en te implementeren in Rust, waarna ze getest kunnen worden.
+    Het gebruik van Rust laat ons toe om extreem hoge performantie te verkrijgen (vergelijkbaar met C en C++~\cite{rustPerformantie}) in combinatie met \textit{memory safety}.
+    Bovendien zijn sommige delen van Unipept al geschreven in Rust (zie UMGAP~\cite{UMGAP_paper, UMGAP_source}).
+    Dit laat toe om waar mogelijk bestaande code te hergebruiken.
 
     \section{Test Datasets}\label{sec:datasets}
 
-    \subsection{Proteïne databanken}
+    \subsection{Proteïne databanken}\label{subsec:proteine-databanken}
     Om te testen hoe goed een implementatie is en hoe deze vergelijkt met al bestaande implementaties is het belangrijk om enkele representatieve datasets te hebben.
     De gebruikte datasets zijn allemaal eiwit databanken die een subset zijn van UniProt (meer specifiek UniProtKB 2023\_04) (TODO: cite uniprot).
     UniprotKB is een eiwit databank die in 2 grote delen op te splitsen valt.
@@ -366,7 +328,8 @@
         \label{tab:sihumi_zoekbestanden}
     \end{table}
 
-    \paragraph{Human-Prot} Voor deze databank hebben we 1 zoekbestand voorzien.
+    \subsubsection{Human-Prot}
+    Voor deze databank hebben we 1 zoekbestand voorzien.
     Dit bestand bevat niet-tryptische peptiden, waardoor het dus op dit moment niet te zoeken valt in Unipept.
     Aangezien de dataset waarbij dit zoekbestand hoort zelf samengesteld is, hebben we ook zelf willekeurige samples genomen om een zoekbestand op te stellen.
     Hierdoor is elk van de peptiden die we zullen proberen te vinden effectief vindbaar in de dataset.
@@ -391,6 +354,7 @@
         \label{tab:humanprot_zoekbestand}
     \end{table}
 
+    \input{suffixtree}
 
 % =====================================================================
 % End matter
