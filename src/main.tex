@@ -125,17 +125,16 @@
     \end{enumerate}
     \leavevmode\newline
     Als voordeel heeft dat dit toelaat efficiënt tryptische peptiden te zoeken.
-    Er is echter een belangrijke keerzijde aan deze manier van werken:
-    \begin{enumerate}
-        \item Niet-tryptische peptiden (die bv gesplitst zijn aan de hand van een ander protease) kunnen niet gezocht worden.
-        \item Tryptische peptiden met \textit{missed cleavage} zijn inefficiënt om te zoeken omdat tijdens het opbouwen van de Unipept index-structuur de vuist regel gevolgd wordt, en er dus nooit gemiste knippen zijn.
-    \end{enumerate}
-    Op dit moment is er voor het 2e puntje wel een work-around die toe laat deze peptiden toch te zoeken (maar met een erg significante performantie overhead).
-    Dit verklaart dan ook de nood voor een nieuwe index-structuur die deze 2 tekortkomingen op lost.
+    Er is echter een belangrijke keerzijde aan deze manier van werken.
+    Tryptische peptiden met \textit{missed cleavage} (of niet-tryptische peptiden) zijn inefficiënt om te zoeken omdat tijdens het opbouwen van de Unipept index-structuur de vuist regel gevolgd wordt, en er dus nooit gemiste knippen zijn.
+    \\ \\
+    Op dit moment is er wel een work-around die toe laat deze peptiden toch te zoeken (maar met een erg significante performantie overhead).
+    Dit verklaart dan ook de nood voor een nieuwe index-structuur die deze tekortkoming op lost.
     Dit is exact waar deze thesis op focust.
     \newline
     Voor een gedetailleerdere beschrijving over Unipept en het onderzoeksveld van metaproteomica raad ik aan om de inleiding van het doctoraat van Dr. Pieter Verschaffelt (TODO: is pieter dokter?) te lezen.
     Deze inleiding is dan ook gebaseerd daarop~\cite{phdPieterUnipept}.
+
 
     \section{Probleemstelling}\label{sec:probleemstelling}
     Het exacte probleem dat opgelost moet worden is het snel zoeken van willekeurige peptiden in een databank met proteïnen.
@@ -148,6 +147,7 @@
     Het gebruik van Rust laat ons toe om extreem hoge performantie te verkrijgen (vergelijkbaar met C en C++~\cite{rustPerformantie}) in combinatie met \textit{memory safety}.
     Bovendien zijn sommige delen van Unipept al geschreven in Rust (zie UMGAP~\cite{UMGAP_paper, UMGAP_source}).
     Dit laat toe om waar mogelijk bestaande code te hergebruiken.
+
 
     \section{Benchmark Datasets}\label{sec:datasets}
 
@@ -198,7 +198,7 @@
         \caption{Lengtedistributie van de proteïnen in de Swiss-Prot databank}\label{fig:swissprot_length}
     \end{figure}
 
-    Een klein detail dat valt op te merken is dat in tabel \ref{tab:swissprot_eigenschappen} het totaal aantal sequenties iets kleiner is dan wat eerder aangegeven is.
+    Een klein detail dat valt op te merken is dat in tabel~\ref{tab:swissprot_eigenschappen} het totaal aantal sequenties iets kleiner is dan wat eerder aangegeven is.
     Dit is omdat het gebruikte input bestand een voorwerkt bestand is dat al door een deel van de Unipept pipeline verwerkt is.
     Hierbij worden sequenties met een taxon id dat niet in de Unipept databank zit verwijderd.
     Dit verklaart het kleine verschil.
@@ -279,6 +279,7 @@
                 Gemiddelde proteïne lengte & 16.06     \\
                 Mediaan proteïne lengte    & 13        \\
                 Aantal vindbare peptiden   & 67 375    \\
+                Aantal tryptische peptiden & 100 000    \\
                 \hline
             \end{tabular}
             \caption{Eigenschappen van \newline het Swiss-Prot zoekbestand \newline zonder \textit{missed cleavage}}
@@ -296,6 +297,7 @@
                 Gemiddelde proteïne lengte & 25.44     \\
                 Mediaan proteïne lengte    & 23        \\
                 Aantal vindbare peptiden   & 62 581    \\
+                Aantal tryptische peptiden & 4107      \\
                 \hline
             \end{tabular}
             \caption{Eigenschappen van \newline het Swiss-Prot zoekbestand \newline met \textit{missed cleavage}}
@@ -306,6 +308,7 @@
     \paragraph{Real-life stalen}
     Om een beter beeld te krijgen over de performantie worden ook enkele real-life stalen uit een kleine micro-organisme gemeenschap gebruikt.
     Namelijk uit SIHUMIx\footnote{SImplified HUMan Intestinal microbiota}\cite{SIHUMI_first_introduction, SIHUMI_frequently_used}.
+    Aangezien dit effectieve stalen zijn bevatten deze \textit{missed cleavages} die natuurlijk ontstaan zijn.
     Opnieuw wordt een overzicht van enkele eigenschappen gegeven in de volgende tabel.
     Elke \texttt{S<XX>} kolom stelt de waarden voor staal met bestandsnaam \texttt{S<XX>.txt} voor.
     Tijdens testen zullen deze zoekbestanden gebruikt worden in combinatie met de Swiss-Prot databank.
@@ -322,6 +325,7 @@
             Gemiddelde proteïne lengte & 16.82   & 16.82   & 15.30   & 12.64   & 14.68   & 17.23   \\
             Mediaan proteïne lengte    & 15      & 16      & 14      & 12      & 14      & 16      \\
             Aantal vindbare peptiden   & 2570    & 2698    & 3652    & 4135    & 3792    & 2761    \\
+            Aantal tryptische peptiden & 17 263  & 162     & 152     & 207     & 155     & 242     \\
             \hline
         \end{tabular}
         \caption{Eigenschappen van de SIHUMIx zoekbestanden}
@@ -343,11 +347,11 @@
             Totaal aantal sequenties   & 250000        \\
             Totale lengte              & 2 458 834 046 \\
             Minimale proteïne lengte   & 1             \\
-            Maximale proteïne lengte & 12
-            \\
+            Maximale proteïne lengte   & 12            \\
             Gemiddelde proteïne lengte & 9.84          \\
             Mediaan proteïne lengte    & 10            \\
-            Aantal vindbare peptiden   & 250000        \\
+            Aantal vindbare peptiden   & 250 000       \\
+            Aantal tryptische peptiden & 102 659       \\
             \hline
         \end{tabular}
         \caption{Eigenschappen van het Human-Prot zoekbestand}
