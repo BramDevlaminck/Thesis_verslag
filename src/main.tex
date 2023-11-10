@@ -56,6 +56,7 @@
 %    maxbibnames=2,
 %    hyperref=true
 ]{biblatex}
+\usepackage{tikz}
 \addbibresource{bibliography.bib}
 
 
@@ -92,10 +93,10 @@
 % =====================================================================
 
 
-    \chapter{Introductie}\label{sec:introductie}
+    \chapter{Introductie}\label{ch:introductie}
 
 
-    \section{Inleiding}
+    \section{Inleiding}\label{sec:inleiding}
     Unipept is een toolset die vooral gericht is op de analyse van stalen uit in het onderzoeksveld van de metaproteomica.
     Om uit te leggen wat metaproteomica is, is het nuttig eerst te weten wat de discipline van proteomica onderzoekt.
     In proteomica wordt een set van proteïnen komende uit 1 organism onderzocht om daaruit informatie te halen.
@@ -279,7 +280,7 @@
                 Gemiddelde proteïne lengte & 16.06     \\
                 Mediaan proteïne lengte    & 13        \\
                 Aantal vindbare peptiden   & 67 375    \\
-                Aantal tryptische peptiden & 100 000    \\
+                Aantal tryptische peptiden & 100 000   \\
                 \hline
             \end{tabular}
             \caption{Eigenschappen van \newline het Swiss-Prot zoekbestand \newline zonder \textit{missed cleavage}}
@@ -357,6 +358,30 @@
         \caption{Eigenschappen van het Human-Prot zoekbestand}
         \label{tab:humanprot_zoekbestand}
     \end{table}
+
+
+    \section{Benchmark hardware}\label{sec:benchmark-hardware}
+    Alle benchmarks zijn uitgevoerd op een virtuele machine op een server die beheerd wordt door Unipept.
+    De virtuele machine draait op een fysieke server met de naam \textit{Matt} met volgende specificaties:
+
+    \begin{table}[h!]
+        \centering
+        \begin{tabular}{p{0.35\linewidth} p{0.6\linewidth}}
+            Onderdeel         &                                                                           \\
+            \hline\hline
+            CPU               & 2x Intel Xeon 4410Y (12 cores / 24 threads, 2-3.9 GhZ, 30MiB cache)       \\
+            RAM               & 768 GiB                                                                   \\
+            Opslag            & 6x 16TiB HDD (3.5 inch, 7.2K RPM SATA), 4x 3.84TiB (2.5 inch SSD, SATA) \\
+            Besturingssysteem & Debian 12 (met Proxmox)                                                   \\
+            \hline
+        \end{tabular}
+        \caption{Hardware specificaties \textit{Matt}}
+        \label{tab:Matt_hardware}
+    \end{table}
+
+    De gebruikte virtuele machine (genaamd \textit{Snowball}) krijgt 12 threads, 128 GiB RAM en een combinatie van 1TiB SSD en 4TiB HDD als opslag.
+    De virtuele machine zelf gebruikt Ubuntu 22.04 LTS als OS\@.
+    Al deze informatie, en ook over de andere machines gebruik door Unipept, kan terug gevonden worden op de Unipept GitHub wiki~\cite{unipept_infrastructure}.
 
     \input{suffixtree}
 

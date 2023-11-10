@@ -3,7 +3,7 @@ Een eerste datastructuur die het mogelijk maakt om snel strings in een groot aan
 Meer precies eigenlijk een gegeneraliseerde suffix boom.
 
 De reden om deze datastructuur als eerste te behandelen is dat hij vrij intuïtief is en de makkelijkste van alle mogelijke opties.
-Bovendien kan een goede tijdscomplexiteit bereikt worden aangezien het zoeken in een suffixboom in O(n) kan (met n de lengte van de zoekstring, in ons geval dus een peptide).
+Bovendien kan een goede tijdscomplexiteit bereikt worden aangezien het zoeken in een suffix boom in O(n) kan (met n de lengte van de zoekstring, in ons geval dus een peptide).
 Het opbouwen kan ook lineair gebruik makende van het algoritme van Ukkonen \cite{Ukkonen1995}, met heeft een complexiteit van O(m), met m de som van de lengtes van alle proteïnes in de databank.
 
 \section{Ukkonen}\label{sec:Ukkonen}
@@ -15,7 +15,7 @@ Uiteindelijk kwam het grootste deel van de informatie van 3 verschillende plaats
     \item Het boek \textit{Algorithms on Strings, Trees and Sequences}~\cite{Gusfield1997}.
     \item De cursus Algoritmen \& Datastucturen 3 aan UGent gegeven door prof. Gunnar Brinkmann \cite{AD3_ukkonen}.
     \item De cursus Computational Challenges in Bioinformatics gegeven door prof. dr. Jan Fostier and prof. dr. Peter Dawyndt.
-    Naast een cursus met wat info over het algoritme van Ukkonen is er ook een implementatie van dit algoritme gemaakt door Jan Fostier in C++. % TODO: hoe moet ik dit citeren want dit staat up ugent github?
+    Naast een cursus met wat info over het algoritme van Ukkonen is er ook een implementatie van dit algoritme gemaakt door Jan Fostier in C++ \footnote{\url{https://github.ugent.be/jfostier/CCB/tree/master/suffixtree}}.
 \end{enumerate}
 
 \subsection{Kotlin}\label{subsec:kotlin}
@@ -49,7 +49,7 @@ Naar mijn mening is dit dus zeker een waardevolle toevoeging tijdens het leren v
 \begin{quote}
     \textit{Rust is known to be notorious difficult when it comes to certain data structures like linked lists, trees, etc. \cite{rust_difficulty_quote}}
 \end{quote}
-Deze quote komt rechtstreeks uit een Medium artikel en toont direct dat het maken van een suffixboom in Rust niet-triviaal ging zijn.
+Deze quote komt rechtstreeks uit een Medium artikel en toont direct dat het maken van een suffix boom in Rust niet-triviaal ging zijn.
 De oorzaak hiervoor ligt bij het \textit{ownership} systeem van Rust.
 Dit systeem zorgt er voor dat slechts 1 variabele eigenaar kan zijn van een stukje data.
 In dit geval kan dus slechts 1 top een andere top opslaan, of er een \textit{mutable reference} naar hebben.
@@ -76,7 +76,7 @@ Als oplossing hiervoor introduceert Rust dan weer het \texttt{Weak<T>} datatype.
 \\ \\
 Dit is duidelijk er ingewikkeld, en introduceert ook nog eens performance overhead die niet nodig lijkt.
 Een optie zou natuurlijk zijn door expliciet het \texttt{unsafe} keyword te gebruiken wat toe laat de ownership regels van Rust volledig uit te schakelen (zowel compile-time als run-time).
-Het nadeel hiervan is natuurlijk dat we dan de garanties van memory safety kwijt zijn, wat net 1 van de hoofd redenen is om Rust te gebruiken.
+Het nadeel hiervan is natuurlijk dat we dan de garanties van memory safety kwijt zijn, wat net 1 van de hoofdredenen is om Rust te gebruiken.
 Dit was dus geen mogelijke optie.
 Gelukkig is er een alternatieve manier waar ik op gestoten ben, een arena-based implementatie~\cite{rust_arena_trees}.
 Het idee hierbij is dat er 1 arena gemaakt wordt waarbij ownership erg simpel is.
@@ -154,7 +154,153 @@ impl Nullable<NodeIndex> for NodeIndex {
 \end{minted}
 
 \subsection{Performantie}\label{subsec:performantie}
+Natuurlijk is het belangrijk dat de implementatie performant (en correct) is.
+Aangezien er een bestaande C++ implementatie was van Ukkonen in C++ was dit een perfecte maatstaf om te performantie te testen.
+Ik heb slechts 1 belangrijke aanpassing in de C++ code gemaakt.
+Oorspronkelijk werd er in elke top plaats gehouden voor 256 mogelijke kinderen.
+Dit was veel te hoog voor deze usecase waardoor het geheugenverbruik dramatisch groot was (ongeveer een factor 10 hoger dan wat nodig was).
+Uiteindelijk ben ik gegaan voor een implementatie (zowel in Rust als C++) waarin plaats gehouden wordt voor 28 kinderen.
+Dit zijn de 26 letters van het alfabet + \texttt{`\#`} + \texttt{`\$`}.
+De reden om \texttt{`\#`} en \texttt{`\$`} ook te gebruiken is omdat er een scheidingsteken nodig is tussen de sequenties (in deze implementatie \texttt{`\#`}) en een uniek teken op het einde (de \texttt{`\$`}).
+De manier waarop deze scheidingstekens gebruikt worden verandert niet ten opzichte van de originele implementatie in C++ want dit is hoe die al gebruikt werden.
+
+Een andere aanpak zou kunnen zijn om HashMaps te gebruiken.
+Het totale geheugenvebruik zal hierdoor afnemen naar ongeveer 60\% van het huidige verbruik, maar ten koste van performantie tijdens het zoeken (iets wat we hier niet willen opgeven).
+Hoe dan ook blijft het geheugen verbruik extreem groot, welke implementatie ook gekozen wordt.
+\\ \\
+Het vergelijken van de implementaties heb ik opgesplitst in 2 stukken:
+\begin{enumerate}
+    \item het opbouwen van de index-structuur.
+    \item Zoeken in de index-structuur
+\end{enumerate}
+
+\subsubsection{Opbouwen}
+Alle resultaten hiervoor zijn door 10 de boom op te bouwen, de uitvoertijd en het geheugenverbruik zijn gemeten aan de hand van het \texttt{time} commando.
+De resultaten hiervan zijn terug te vinden in figuur~\ref{fig:tree_building}.
+\begin{figure}[H]
+    \centering
+    \subfloat[Tijd nodig om de boom op te bouwen]{\includegraphics[width=\linewidth]{building_tree_time}}\\[4ex] % [4ex] om wat extra vertical spacing in te voegen
+
+    \subfloat[Maximaal gebruikt geheugen tijdens het opbouwen van de boom]{\includegraphics[width=\linewidth]{building_tree_memory}}
+    \caption{Vergelijking van C++ en Rust voor het opbwouven van de suffix boom}\label{fig:tree_building}
+\end{figure}
+
+Uit deze grafieken vallen 2 duidelijke conclusies te trekken.
+\begin{enumerate}
+    \item De implementatie in Rust is $\pm$ 33\% sneller
+    \item Het geheugenverbruik is erg vergelijkbaar.
+    Dit valt te verwachten aangezien beide implementaties 8 bytes nodig hebben per \textit{pointer} en evenveel plaats voorzien voor de kinderen.
+    Het kleine verschil valt te verklaren vanwege 1 veld dat ik niet bij houdt tijdens het opbouwen, dat wel gebruikt wordt in de C++ implementatie.
+    Dit is de diepte van de top in de boom.
+    Op de enkele plaatsen waar dit nodig is kan ik gebruik maken van andere variabelen om tot een equivalent resultaat te komen.
+\end{enumerate}
+
+\subsubsection{Zoeken}
+Bij het zoeken zijn er 2 belangrijke manieren om te vergelijken.
+\begin{enumerate}
+    \item Zoek totdat we weten als er een match bestaat voor de peptide of niet, en stop dan.
+
+    \item Zoek totdat er een match is, en doorzoek daarna de volledige subboom om alle informatie van de kinderen op te halen.
+
+\end{enumerate}
+
+\paragraph{Zoek een match}
+De reden voor deze manier van zoeken is dat het mogelijk is om info te propageren van de bladeren tot bovenin de boom.
+In ons geval is dit bijvoorbeeld de LCA van de taxon IDs op voorhand te berekenen.
+Het zoeken van de LCA die overeenkomt met alle proteïnen waar de gevonden peptide mee matcht kan dus al stoppen vanaf we een match hebben.
+
+Onderstaande grafieken tonen de nodige tijd om alle peptiden van de gebruikte zoekbestanden 1x te zoeken totdat er een (mis)match was voor de peptide.
+% TODO: insert grafieken
+
+
+
+
+\paragraph{Zoek match en haal informatie over kinderen op}
+De reden dat dit belangrijk is, is dat alle bladeren in deze sub-boom de proteïnen voorstellen waar dat de gevonden peptide een deel van is.
+De relevante informatie over de huidige peptide is daarom de informatie dat verbonden is aan deze proteïnen. % TODO: voor wat konden we dit ook nog gebruiken?
 
 \section{Taxon ID aggregatie}\label{sec:taxon-id-aggregatie}
+Mogelijks het belangrijkste stukje info over een staal peptiden is weten van welke organismen dit komt.
+Aangezien peptiden kunnen matchen met proteïnen die uit verschillende organismen komen moet er een manier gekozen worden om deze informatie te aggregeren, of te beslissen van welk organisme dit komt met de grootste kans.
+Aangezien er geen manier is om met zekerheid te zeggen uit welke proteïne de peptide komt (als er meerdere opties zijn) gaat Unipept de info gaan veralgemenen.
+Anders gezegd: Unipept zal enkel info geven die geldt op alle gematchte proteïnen.
+1 van deze stukjes informatie is het Taxon ID\@.
+Ipv een lijst van alle mogelijke ID's te geven (wat een extreem grote lijst kan zijn), en wat zo vereisen de volledige subboom na het vinden van een match af te lopen, gaan we deze taxon IDs gaan aggregeren aan de hand van een strategie op basis van de NCBI taxonomy database~\cite{NCBI_original_article, NCBI_update}.
+Met andere woorden, we gaan dus op zoek naar de kleinste gemeenschappelijke voorouder van alle taxon ids die in de bladeren van de sub-boom zitten van een bepaalde top.
+Hiervoor bestaan verschillende strategieën die al uitgewerkt zijn in UMGAP, en die hier herbruikbaar waren.
 
+Origineel was het plan om LCA* te gebruiken als aggregatie strategie.
+Dit is een heuristiek van LCA (lowest common ancestor) die de meest specifieke taxon in de boom zoekt, die ofwel een ouder of kind is van elke taxon in de boom.
+Anders gezegd is dit de LCA van een lijst taxa, nadat we alle taxa verwijdert hebben die ouder zijn van minstens 1 taxon in die lijst~\cite{UMGAP_paper}.
+Het voordeel hiervan is dat we iets langer exactere info kunnen behouden.
+Want bij LCA zelf zal het resultaat altijd 1 zijn vanaf 1 top in de subtree dit als LCA heeft (1 is namelijk ouder van alle andere taxons!).
+\\ \\
+Het idee was dat we niet elke keer naar de bladeren gingen moeten gaan om het taxon id te berekenen van 1 top, maar dat dit ging kunnen op basis van de taxon ids van de directe kinderen van de top.
+Op deze manier gingen we met 1 bottom-up sweep van de boom alle taxon ids kunnen berekenen.
+Dit bleek echter niet mogelijk omdat kijken naar de directe kinderen een ander resultaat geeft van gebruik maken van de bladeren van de subboom.
+Figuur~\ref{fig:lca*_diff} toont een minimaal voorbeeld uitgewerkt voor beide strategieën.
+De licht grijze toppen zijn ingevuld zijn aan de hand van aggregatie, terwijl de zwarte toppen gegeven zijn.
 
+\begin{figure}[H]
+    \centering
+    \subfloat[LCA* op basis van de bladeren]{
+        \begin{tikzpicture}
+            \node [gray] {1}
+            child {node [gray] {1}
+            child {node {9606}}
+            child {node {10566}}}
+            child {node {9606}
+            };
+        \end{tikzpicture}
+    }\hspace{0.25\textwidth}%
+    \subfloat[LCA* op basis van de kinderen]{
+        \begin{tikzpicture}
+            \node [gray] {9606}
+            child {node [gray] {1}
+            child {node {9606}}
+            child {node {10566}}}
+            child {node {9606}
+            };
+        \end{tikzpicture}
+    }
+    \caption{Minimaal voorbeeld van de 2 aggregatie manieren gebruik makende van LCA*}\label{fig:lca*_diff}
+\end{figure}
+
+Onderstaande uitleg behandeld de werkwijze voor bovenstaande figuren.
+\begin{itemize}
+    \item Het toepassen van LCA* voor het berekenen van de top op basis van de bladeren van de boom (\{9606, 10566, 9606\}) heeft als resultaat 1 voor de root van de boom.
+    9606 en 10566 zijn geen ouder of kind van elkaar, dus zal LCA* hetzelfde doen als LCA\@.
+    De kleinste gemeenschappelijke ouder van deze 2 taxons is 1.
+    \item Het toepassen van LCA* op basis van de directe kinderen geeft als resultaat 9606.
+    Dit val simpel te verklaren aangezien de LCA* van de linker subboom 1 is.
+    Als we daarna dan de LCA* van \{1, 9606\} nemen wordt 1 verwijderd aangezien dit een ouder is van 9606.
+    De LCA van 9606 is natuurlijk gewoon zichzelf!
+\end{itemize}
+
+Het berekenen van de LCA* op de eerste manier is echter niet schaalbaar voor de volledige suffix boom.
+Om een idee van grootorde te geven: de suffix boom voor de Swiss-Prot dataset bevat 328922516 toppen in het totaal, waarvan 206523693 bladeren.
+\\ \\
+Daarom hebben we uiteindelijk toch voor de standaard LCA aggregatie manier gekozen.
+Deze laat wel toe de toppen op deze efficiëntere manier te aggregeren.
+UGAP biedt 2 manieren aan om LCA te doen.
+Gebruik makende van RMQ (Range Minimum Queries) en een boom-gebaseerde structuur.
+Hier maak ik gebruik van de RMQ implementatie aangezien deze significant sneller was (8 min 58 sec vs 20 min en 25 sec voor de Swiss-Prot databank).
+Tot slot heb ik ook eens vergeleken hoe groot de behaalde tijdswinst is bij het gebruik kunnen maken van de directe aggregatie op de kinderen, vergeleken met moeten aggregeren op de bladeren.
+Bij het aggregeren op basis van de bladeren met de RMQ implementatie was de uitvoeringstijd maar liefst 12 uur, 19 minuten en 16 seconden!
+Dit is dus een extreem groot verschil.
+
+\section{Conclusie Suffix Bomen}\label{sec:conclusie-suffix-bomen}
+Het is duidelijk dat suffix bomen erg performant zijn voor dit scenario.
+Het opbouwen gebeurt snel en het zoeken voor een match gaat vliegensvlug.
+\\ \\
+Door de eigen implementatie in Rust kunnen we ook wat tijd besparen ten op zichte van een equivalente C++ implementatie.
+Een deel van de winst zit tijdens het opbouwen van de boom, maar vooral tijdens het zoeken wanneer informatie uit de bladeren gehaald moet worden.
+Vermoedelijk ligt de andere geheugen structuur hiervoor aan de basis.
+\\ \\
+Ondanks de veelbelovende resultaten op vlak van snelheid is er een keerzijde aan de medaille.
+Het geheugengebruik is zo groot dat we op zoek moeten naar een andere datastructuur.
+Voor de Swiss-Prot databank gaat het geheugenverbruik al boven 80 GB, terwijl ons einddoel is om dit te gebruiken op de TrEMBL dataset.
+Dit wilt zeggen dat we alles \textit{slechts} $\pm$ 500 maal moeten opschalen en dan werkt het!
+De oplossing is dus simpelweg een server gebruiken met ongeveer 50 TB RAM geheugen!
+Of toch niet\ldots
+Tijd om naar een andere datastructuur te gaan!
