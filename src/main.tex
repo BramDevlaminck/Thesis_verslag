@@ -101,46 +101,48 @@
     Om uit te leggen wat metaproteomica is, is het nuttig eerst te weten wat de discipline van proteomica onderzoekt.
     In proteomica wordt een set van proteïnen komende uit 1 organism onderzocht om daaruit informatie te halen.
     Het prefix meta uit metaproteomica slaat op het feit dat in deze discipline stalen onderzocht worden waarin de proteïnen van meerdere organismen (meestal uit dezelfde biologische omgeving) voorkomen.
-    Dit maakt de analyse moeilijker aangezien proteïnen van verschillende organismen gelijkaardige amino zuur sequenties kunnen hebben (al dan niet puur door toeval).
+    Dit maakt de analyse moeilijker aangezien proteïnen van verschillende organismen gelijkaardige amino zuur sequenties kunnen hebben (al dan niet door toeval).
     \\ \\
     Op dit moment is Unipept gericht op de analyse van tryptische peptiden.
     Dit zijn peptiden die ontstaan na het knippen van proteïnen aan de hand van trypsine.
     Dit is een protease (eiwitafbrekend enzym) dat proteïnen opsplitst in meerdere peptiden.
     Er zijn nog andere proteases die gebruikt kunnen worden, maar trypsine is de meeste gebruikte aangezien het de proteïnen op vaste plaatsen knipt.
     \\ \\
-    Trypsine zal een eiwit knippen na elke voor komen van lysine (K) or arginine (R) indien het opeenvolgende aminozuur geen proline (P) is
+    Trypsine zal een eiwit knippen na elke voorkomen van lysine (K) of arginine (R) indien het opeenvolgende aminozuur geen proline (P) is.
     Deze vuistregel is echter niet perfect.
-    Soms zal trypsine echter een locatie waar normaal geknipt zou worden missen.
-    Dit wordt dan een \textit{missed cleavage} genoemd.
+    Soms zal trypsine een locatie waar normaal geknipt zou worden missen.
+    Dit noemen we een \textit{missed cleavage}.
     \\ \\
-    Deze peptiden worden dan daan de hand van een massa spectrometer gewogen (TODO: wat wordt hier mee gedaan?) en na een ingewikkeld zoekproces (via zogenaamde zoekmachines) omgezet naar een string die de peptide sequentie voorstelt.
+    De massa/ladingsverhouding (m/z) van deze peptiden wordt dan aan de hand van een massa spectrometer gemeten, en na een ingewikkeld zoekproces (via zogenaamde zoekmachines) omgezet naar een string die de peptide sequentie voorstelt.
     Deze peptide sequenties zijn de input voor Unipept.
     \\ \\
     Zoals eerder vermeld, is Unipept een tool die specifiek gericht is op het analyseren van tryptische peptiden.
     De reden hiervoor is de manier waarop de achterliggende index-structuur die Unipept gebruikt opgebouwd wordt.
-    In gaat als volgt in grote lijnen:
+    Dit opbouwen gaat in grote lijnen als volgt:
+
     \begin{enumerate}
         \item Haal alle proteïnen op uit de UniProtKB databank.
         \item Splits deze proteïnen volgens de vuistregel die trypsine volgt.
         \item Sla alle resulterende tryptische peptiden op in een index-structuur.
     \end{enumerate}
-    \leavevmode\newline
+
     Als voordeel heeft dat dit toelaat efficiënt tryptische peptiden te zoeken.
     Er is echter een belangrijke keerzijde aan deze manier van werken.
-    Tryptische peptiden met \textit{missed cleavage} (of niet-tryptische peptiden) zijn inefficiënt om te zoeken omdat tijdens het opbouwen van de Unipept index-structuur de vuist regel gevolgd wordt, en er dus nooit gemiste knippen zijn.
+    Tryptische peptiden met \textit{missed cleavage} (of niet-tryptische peptiden) zijn inefficiënt om te zoeken.
+    Dit komt doordat tijdens het opbouwen van de Unipept index-structuur de vuist regel gevolgd wordt, en elke peptide in de index structuur strikt tryptisch is.
     \\ \\
     Op dit moment is er wel een work-around die toe laat deze peptiden toch te zoeken (maar met een erg significante performantie overhead).
     Dit verklaart dan ook de nood voor een nieuwe index-structuur die deze tekortkoming op lost.
     Dit is exact waar deze thesis op focust.
     \newline
-    Voor een gedetailleerdere beschrijving over Unipept en het onderzoeksveld van metaproteomica raad ik aan om de inleiding van het doctoraat van Dr. Pieter Verschaffelt (TODO: is pieter dokter?) te lezen.
-    Deze inleiding is dan ook gebaseerd daarop~\cite{phdPieterUnipept}.
+    Voor een gedetailleerdere beschrijving over Unipept en het onderzoeksveld van metaproteomica raad ik aan om de inleiding van het doctoraat van Dr. Pieter Verschaffelt te lezen.
+    Dit is ook waarop ik deze inleiding gebaseerd heb~\cite{phdPieterUnipept}.
 
 
     \section{Probleemstelling}\label{sec:probleemstelling}
     Het exacte probleem dat opgelost moet worden is het snel zoeken van willekeurige peptiden in een databank met proteïnen.
     Bij het vinden van een match moet het daarna mogelijk zijn de informatie op te halen die hoort bij alle proteïnen die matchen.
-    Als we dit vertalen naar informatica termen moeten we dus snel een kortere string kunnen zoeken in een grote hoeveelheid ander strings.
+    Als we dit vertalen naar informatica termen moeten we dus snel een kortere string (peptide) kunnen zoeken in een grote hoeveelheid andere strings (de proteïnes).
     \\ \\
     Belangrijk hierbij is dat dit niet alleen snel, maar ook geheugen efficiënt moet gebeuren.
     Dit omdat de datasets waarmee gewerkt wordt extreem groot zijn.
@@ -154,15 +156,15 @@
 
     \subsection{Proteïne databanken}\label{subsec:proteine-databanken}
     Om te testen hoe goed een implementatie is en hoe deze vergelijkt met al bestaande implementaties is het belangrijk om enkele representatieve datasets te hebben.
-    De gebruikte datasets zijn allemaal eiwit databanken die een subset zijn van UniProt (meer specifiek UniProtKB 2023\_04) (TODO: cite uniprot).
-    UniprotKB is een eiwit databank die in 2 grote delen op te splitsen valt.
+    De gebruikte datasets zijn allemaal eiwit databanken die een subset zijn van UniProtKB (meer specifiek UniProtKB 2023\_04)~\cite{UniprotKB}.
+    UniprotKB is een eiwit databank die in 2 grote delen op te splitsen valt (gegeven statistieken zijn voor release 2023\_04).
     \begin{enumerate}
         \item Swiss-Prot: Dit is een kleinere, manueel gecureerde, dataset die 570 157 eiwit sequenties bevat.
         \item TrEMBL: Deze dataset bevat 251 600 768 sequenties en is dus veel groter dan Swiss-Prot.
         Het grote verschil is dat deze dataset \textbf{niet} manueel gecureerd is.
     \end{enumerate}
 
-    Om het benchmarken van implementaties praktisch te houden maak ik gebruik van 2 Subsets hiervan.
+    Om het benchmarken van implementaties praktisch te houden maak ik gebruik van 2 subsets hiervan.
 
     \paragraph{Swiss-Prot} Dit is de standaard Swiss-Prot databank die deel is van UniProt (zoals eerder uitgelegd).
     Een kort overzicht van alle statistieken is terug te vinden in tabel~\ref{tab:swissprot_eigenschappen} terwijl figuur~\ref{fig:swissprot_aminozuur} en figuur~\ref{fig:swissprot_length} meer inzicht geven in de distributie van de aminozuren en lengte van de proteïnen.
@@ -200,12 +202,12 @@
     \end{figure}
 
     Een klein detail dat valt op te merken is dat in tabel~\ref{tab:swissprot_eigenschappen} het totaal aantal sequenties iets kleiner is dan wat eerder aangegeven is.
-    Dit is omdat het gebruikte input bestand een voorwerkt bestand is dat al door een deel van de Unipept pipeline verwerkt is.
-    Hierbij worden sequenties met een taxon id dat niet in de Unipept databank zit verwijderd.
-    Dit verklaart het kleine verschil.
+    Dit is omdat het gebruikte input bestand een bestand is dat al door een deel van de Unipept pipeline verwerkt is.
+    Hierbij worden sequenties met een taxon id dat niet in de Unipept databank zit verwijderd, wat het kleine verschil verklaart.
 
-    \paragraph{Human-Prot} Deze dataset is samengesteld aan de hand van 3 referentiedatabanken die deel uit maken van UniProt.
+    \paragraph{Human-Prot} Deze dataset is samengesteld aan de hand van 3 referentiedatabanken die deel uit maken van UniProtKB\@.
     Deze werd geleverd aan me door mijn begeleider Pieter Verschaffelt.
+    De 3 datasets waaruit dit opgebouwd is zijn:
     \begin{enumerate}
         \item Human Genome~\cite{proteomes_homo_sapiens}
         \item Influenza B~\cite{proteomes_infuenza_b}
@@ -255,13 +257,13 @@
     Het zwaartepunt van het aantal voorkomens ligt bij Swiss-Prot wel iets later (rond 100 vs rond 200).
 
     \subsection{Peptide zoekbestanden}\label{subsec:peptide-zoek-bestanden}
-    Natuurlijk is een erg belangrijk deel van het opbouwen van een indexstructuur de zoek performantie achteraf.
+    Natuurlijk is een erg belangrijk deel van het opbouwen van een indexstructuur de zoekperformantie.
     Hiervoor hebben we bij elke proteïnen databank een lijst aan peptiden die we proberen te zoeken.
     Voor onze beide databanken zijn enkele datasets opgesteld.
 
     \subsubsection{Swiss-prot} Voor deze databank hebben we enkele zoekbestanden voorzien.
-    2 bestanden die gesampled zijn en een reeks aan effectieve zoekbestanden die een real-world scenario voorstellen.
-    De 2 gesamplede bestanden zijn zo gekozen dat 1 ervan enkel tryptische peptiden bevat, terwijl de andere ook peptiden bevat met \textit{missed cleavage}.
+    2 bestanden die gesampled zijn en een reeks aan real-life stalen.
+    De 2 gesamplede bestanden zijn zo gekozen dat de ene enkel tryptische peptiden bevat, terwijl de andere ook peptiden bevat met \textit{missed cleavage}.
     De eerste kan dus op dit moment al efficiënt door Unipept behandeld worden, terwijl dit voor de 2e niet kan.
 
     \paragraph{Sampled}
