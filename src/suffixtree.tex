@@ -351,6 +351,13 @@ Toch kunnen we besluiten dat de C++ implementatie een beetje performanter zal zi
     \label{fig:performance_match_tree}
 \end{figure}
 
+Dit is verbijsterend snel vergeleken met de huidige implementatie in Unipept.
+Daar duurt het op dit moment 2 minuten en 12 seconden om alle peptiden van het Swiss-Prot zoekbestand zonder \textit{missed cleavages} te zoeken,
+en maar liefst 30 minuten 37 seconden voor het zoekbestand met \textit{missed cleavages}!
+Dit is maar liefst $\frac{132 000}{152.98} = 857$ en $\frac{1 837 000}{140.64} = 13 000$ keer trager!
+Als keerzijde van de medaille gebruikt Unipept op dit moment hiervoor slechts 6.7 GiB geheugen, en dit kan zelfs nog naar beneden.
+Dit is ongeveer 13 keer lager!
+
 \paragraph{Zoek match en haal informatie over kinderen op}
 De reden dat dit belangrijk is, is dat alle bladeren in deze sub-boom de proteïnen voorstellen waar dat de gevonden peptide een deel van is.
 De relevante informatie over de huidige peptide is daarom de informatie dat verbonden is aan deze proteïnen. % TODO: voor wat konden we dit ook nog gebruiken?
@@ -441,6 +448,7 @@ Dit is dus een extreem groot verschil.
 \section{Conclusie Suffix Bomen}\label{sec:conclusie-suffix-bomen}
 Het is duidelijk dat suffix bomen erg performant zijn voor dit scenario.
 Het opbouwen gebeurt snel en het zoeken voor een match gaat vliegensvlug.
+
 \\ \\
 Door de eigen implementatie in Rust kunnen we ook wat tijd besparen ten opzichte van een equivalente C++ implementatie.
 Een deel van de winst zit tijdens het opbouwen van de boom, maar vooral tijdens het zoeken wanneer informatie uit de bladeren gehaald moet worden.
