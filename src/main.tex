@@ -1,28 +1,3 @@
-%\documentclass[12pt,a4paper,faculty=we,language=nl]{ugent-doc}
-%
-%% Optional: margins and spacing
-%%-------------------------------
-%% Uncomment and adjust to change the default values set by the template
-%% Note: the defaults are suggested values by Ghent University
-%\geometry{bottom=2.5cm,top=2.5cm,left=2.5cm,right=2.5cm}
-%%\renewcommand{\baselinestretch}{1.15} % line spacing
-%
-%
-%% Font
-%%------
-%\usepackage[T1]{fontenc}
-%\usepackage[utf8]{inputenc}
-%% Comment/remove the two lines below to use the default Computer Modern font
-%\usepackage{libertine}
-%\usepackage{libertinust1math}
-
-% Proper word splitting
-%-----------------------
-%\usepackage[dutch]{babel}
-
-% Mathematics
-%-------------
-
 \documentclass[11pt,dutch,faculty=we,layout=titlefont,underline=false,titleUppercase=true,titleUnderline=true]{ugent2016-report}
 \usepackage[dutch]{babel}
 \usepackage{fontspec,unicode-math}
@@ -65,11 +40,13 @@
 %\subtitle{Hello}
 \academicyear{2023--2024}
 \programme{Informatica}
-\studentnumber{01902993}
+%\studentnumber{01902993}
 \email{bram.devlaminck@ugent.be}
-\promotors{Prof.\ Dr.\ Peter Dawyndt\newline Prof.\ Dr.\ Bart Mesuere}
 
-
+\titletext{%
+    Promotoren: prof.\ dr.\ Peter Dawyndt, prof. dr.\ ir.\ Bart Mesuere \\%
+    Begeleiders: dr. Pieter Verschaffelt, Tibo Vande Moortele
+}
 
 
 \begin{document}
@@ -361,6 +338,9 @@
         \label{tab:humanprot_zoekbestand}
     \end{table}
 
+
+    Nog extra grafieken die eigenschappen van de bovenstaand beschreven zoekbestanden zijn terug te vinden in appendix~\ref{ch:appendix-statistieken-zoekbestanden}.
+    Deze appendix bevat voor elk van de al vermeldde zoekbestanden een grafiek die de distributie van de aminozuren geeft en de distributie van de peptide lengte.
 
     \section{Benchmark hardware}\label{sec:benchmark-hardware}
     Alle benchmarks zijn uitgevoerd op een virtuele machine op een server die beheerd wordt door Unipept.

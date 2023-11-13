@@ -444,11 +444,9 @@ Tot slot heb ik ook eens vergeleken hoe groot de behaalde tijdswinst is bij het 
 Bij het aggregeren op basis van de bladeren met de RMQ implementatie was de uitvoeringstijd maar liefst 12 uur, 19 minuten en 16 seconden!
 Dit is dus een extreem groot verschil.
 
-
 \section{Conclusie Suffix Bomen}\label{sec:conclusie-suffix-bomen}
 Het is duidelijk dat suffix bomen erg performant zijn voor dit scenario.
 Het opbouwen gebeurt snel en het zoeken voor een match gaat vliegensvlug.
-
 \\ \\
 Door de eigen implementatie in Rust kunnen we ook wat tijd besparen ten opzichte van een equivalente C++ implementatie.
 Een deel van de winst zit tijdens het opbouwen van de boom, maar vooral tijdens het zoeken wanneer informatie uit de bladeren gehaald moet worden.
