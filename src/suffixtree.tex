@@ -227,6 +227,17 @@ Toch kunnen we besluiten dat de C++ implementatie een beetje performanter zal zi
 De reden dat dit belangrijk is, is dat alle bladeren in deze sub-boom de proteïnen voorstellen waar dat de gevonden peptide een deel van is.
 De relevante informatie over de huidige peptide is daarom de informatie dat verbonden is aan deze proteïnen. % TODO: voor wat konden we dit ook nog gebruiken?
 
+Figuur~\ref{fig:performance_all-occurrences_tree} bevat een overzicht van de nodige zoektijd voor beide implementaties op alle zoekbestanden.
+We zien duidelijk dat er hier een gigantisch verschil is tussen de C++ en Rust implementatie.
+Vermoedelijk komt dit door de andere memory layout die ontstaat doordat de Rust implementatie 1 grote Vector gebruikt, terwijl de C++ implementatie losse toppen gebruikt die verspreid liggen in het geheugen.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{search_all-occurrences_performance_tree}
+    \caption{Uitvoeringstijd voor inclusief het doorzoeken van de volledige subboom na match voor alle zoekbestanden}
+    \label{fig:performance_all-occurrences_tree}
+\end{figure}
+
 \section{Taxon ID aggregatie}\label{sec:taxon-id-aggregatie}
 Mogelijks het belangrijkste stukje info over een staal peptiden is weten van welke organismen dit komt.
 Aangezien peptiden kunnen matchen met proteïnen die uit verschillende organismen komen moet er een manier gekozen worden om deze informatie te aggregeren, of te beslissen van welk organisme dit komt met de grootste kans.
