@@ -6,8 +6,135 @@ De reden om deze datastructuur als eerste te behandelen is dat hij vrij intuïti
 Bovendien kan een goede tijdscomplexiteit bereikt worden aangezien het zoeken in een suffix boom in $O(n)$ kan (met $n$ de lengte van de zoekstring, in ons geval is dit een peptide).
 Het opbouwen kan ook lineair gebruik makende van het algoritme van Ukkonen~\cite{Ukkonen1995}, met heeft een complexiteit van $O(m)$, met $m$ de som van de lengtes van alle proteïnes in de databank.
 
+
+\section{Wat zijn suffix bomen?}\label{sec:wat-zijn-suffix-bomen?}
+Suffix bomen zijn een soort veralgemening van tries (prefix bomen).
+Door er voor te zorgen dat het laatste teken uniek is zal elke suffix van de input string uniek zijn (elke suffix is dus nooit de prefix van een andere suffix).
+Dit zorgt er voor dat elke suffix een eigen blad in de boom zal krijgen.
+Dit is dan ook van waar de naam suffix boom komt.
+Elk pad tot een blad in de boom zal exact 1 suffix voorstellen uit de inputstring waarmee de boom gebouwd is.
+Als voorbeeld stelt figuur~\ref{fig:suffix_tree_example} de suffix boom voor van de string \texttt{acacgt\$}.
+Merk op dat we \texttt{`\$`} als uniek eindteken gebruiken.
+
+\begin{figure}[H]
+    \center
+    \begin{tikzpicture}
+    [
+        level 1/.style = {sibling distance = 3.5cm, level distance = 2cm},
+        level 2/.style = {sibling distance = 1.5cm, level distance = 2cm}
+    ]
+
+        \node[draw, circle] {}
+        child {
+            node[draw, rounded corners] {\texttt{t\$}}
+            edge from parent node [above] {\texttt{t\$}}
+        }
+        child {
+            node[draw, rounded corners] {\texttt{gt\$}}
+            edge from parent node [below] {\texttt{gt\$}}
+        }
+        child {
+            node[draw, circle] {}
+            child {
+                node[draw, rounded corners] {\texttt{cgt\$}}
+                edge from parent node [left] {\texttt{gt\$}}
+            }
+            child {
+                node[draw, rounded corners] {\texttt{cacgt\$}}
+                edge from parent node [right] {\texttt{acgt\$}}
+            }
+            edge from parent node [right] {\texttt{c}}
+        }
+        child {
+            node[draw, circle] {}
+            child {
+                node[draw, rounded corners] {\texttt{acacgt\$}}
+                edge from parent node [left] {\texttt{gt\$}}
+            }
+            child {
+                node[draw, rounded corners] {\texttt{acgt\$}}
+                edge from parent node [right] {\texttt{acgt\$}}
+            }
+            edge from parent node [below] {\texttt{ac}}
+        }
+        child {
+            node[draw, rounded corners] {\texttt{\$}}
+            edge from parent node [above] {\texttt{\$}}
+        }
+        ;
+    \end{tikzpicture}
+    \caption{Suffix boom voor the string \texttt{acacgt\$}}\label{fig:suffix_tree_example}
+
+\end{figure}
+
+Natuurlijk is dit niet efficiënt om effectief op deze manier op te slaan.
+Als de tekst lengte $n$ heeft, heeft de suffix boom voor de tekst ten hoogste $2n - 1$ toppen en $2n - 2$ bogen.
+Het aantal toppen en bogen is dus $\Theta(n)$.
+Jammer genoeg vraagt alleen het opslaan van alle prefixen in de bladeren $\Theta(n^2)$ geheugen\cite{AD3_ukkonen}.
+In de plaats kunnen we pointers bijhouden naar het begin en einde van een substring in de originele string.
+Dit zorgt er voor dat we geen kopie meer moeten opslaan van de originele string in elk blad!
+We moeten dit zelfs niet in elk blad bijhouden!
+We kunnen simpelweg bij elke boog tussen de toppen de labels bijhouden.
+Het label van het blad kunnen we daarna reconstrueren door de labels van de bogen op weg naar dit blad te concateneren.
+Door dit te doen is de nodige opslag per top een constante, en is het geheugen gebruik lineair.
+Figuur~\ref{fig:suffix_tree_example_indices} toont hoe dit er in de praktijk uit ziet.
+Merk op dat de eind-index exclusief is.
+Een boog met waarde \texttt{1,3}, stelt dus de substring \texttt{ca} voor uit het voorbeeld.
+
+\begin{figure}[H]
+    \center
+    \begin{tikzpicture}
+    [
+        level 1/.style = {sibling distance = 2.5cm},
+        level 2/.style = {sibling distance = 1cm}
+    ]
+
+        \node[draw, circle] {}
+        child {
+            [fill] circle (2pt)
+            edge from parent node [above] {5,7}
+        }
+        child {
+            [fill] circle (2pt)
+            edge from parent node [below] {4,7}
+        }
+        child {
+            node[draw, circle] {}
+            child {
+                [fill] circle (2pt)
+                edge from parent node [left] {4,7}
+            }
+            child {
+                [fill] circle (2pt)
+                edge from parent node [right] {2,7}
+            }
+            edge from parent node [right] {1,2}
+        }
+        child {
+            node[draw, circle] {}
+            child {
+                [fill] circle (2pt)
+                edge from parent node [left] {4,7}
+            }
+            child {
+                [fill] circle (2pt)
+                edge from parent node [right] {2,7}
+            }
+            edge from parent node [below] {0,2}
+        }
+        child {
+            [fill] circle (2pt)
+            edge from parent node [above] {6,7}
+        }
+        ;
+    \end{tikzpicture}
+    \caption{Suffix boom voor de string \texttt{acacgt\$} gebruik makende van indices}\label{fig:suffix_tree_example_indices}
+
+\end{figure}
+
+
 \section{Ukkonen}\label{sec:Ukkonen}
-Het algoritme van Ukkonen staat gekend als vrij moeilijk.
+Het algoritme van Ukkonen om suffix bomen op te bouwen staat gekend als vrij moeilijk.
 Zeker de originele paper zelf is niet makkelijk verstaanbaar naar mijn mening en bevat weinig pseudocode.
 Om dit beter te verstaan ben ik op zoek gegaan naar meerdere papers en boeken die dit algoritme in detail beschrijven.
 Uiteindelijk kwam het grootste deel van de informatie van 3 verschillende plaatsen:
@@ -31,6 +158,7 @@ Tijdens het debuggen zie je namelijk enkel ``ik ben nu in top $y$ die de substri
 Tot slot had ik op het einde ook enkele bugs die niet voorkwamen in kleinere voorbeelden die nog met de hand uit te werken waren, wat daardoor relatief wat tijd vroeg om op te lossen.
 
 \subsection{Rust}\label{subsec:rust}
+
 \subsubsection{Eerste ervaring}
 Aangezien dit mijn eerste ervaring was met Rust deel ik graag even mijn eerste bevindingen mee.
 Zelf heb ik eerst \textit{the Rust book} gelezen~\cite{the_rust_book}.
@@ -39,7 +167,7 @@ Een veelvoorkomend patroon in het boek is dat een deel van een concept geïntrod
 Dit zorgt ervoor dat het soms moeilijk is de bomen door het bos te zien.
 Zeker aangezien Rust vaak verschillende syntaxen heeft om hetzelfde te doen, waardoor je als lezer moeilijk je kunt focussen op de essentiële delen.
 \\ \\
-Om de meest essentiële basis componenten van Rust wat onder de knie te krijgen heb ik daarna de oefeningen van Rustlings~\cite{rustlings} gemaakt op aanraden van mede thesis student Stijn Declercq.
+Om de meest essentiële basis componenten van Rust wat onder de knie te krijgen heb ik daarna de oefeningen van Rustlings~\cite{rustlings} gemaakt op aanraden van mede thesis student Stijn De Clercq.
 Dit zijn een reeks aan erg kleine oefeningen die meestal in maximaal enkele minuten gemaakt zijn, maar er voor zorgen dat je toch al eens in contact komt met alle basisonderdelen van Rust.
 Naar mijn mening is dit dus zeker een waardevolle toevoeging tijdens het leren van Rust.
 
@@ -212,7 +340,7 @@ Het zoeken van de LCA die overeenkomt met alle proteïnen waar de gevonden pepti
 Grafiek~\ref{fig:performance_match_tree} toont de nodige tijd om alle peptiden van de gebruikte zoekbestanden 1x te zoeken totdat er een (mis)match was voor de peptide.
 De grafiek bevat de gemiddelde resultaten van 5000 \textit{runs}, maar zelfs dan bleven de resultaten wat schommelen.
 Doordat de te meten tijd zo klein is, kan de kleinste invloed al voor een zichtbaar verschil zorgen.
-Dit kan bv een achtergrond proces zijn, maar ook invloed van een andere VM die op de fysieke machine bezig is (wat hier het geval is, aangezien Stijn Declercq ook een VM op \textit{Matty} gebruikt voor zijn testen).
+Dit kan bv een achtergrond proces zijn, maar ook invloed van een andere VM die op de fysieke machine bezig is (wat hier het geval is, aangezien Stijn De Clercq ook een VM op \textit{Matty} gebruikt voor zijn testen).
 Dit was ook merkbaar tijdens het testen waar dat de verschillen tussen 2 opeenvolgende uitvoeringen vaak groter waren dan het verschil tussen de C++ en Rust implementatie.
 Toch kunnen we besluiten dat de C++ implementatie een beetje performanter zal zijn aangezien dit in elk zoekbestand (nipt) sneller is (soms zelfs minder dan een milliseconde!).
 
@@ -237,6 +365,7 @@ Vermoedelijk komt dit door de andere memory layout die ontstaat doordat de Rust 
     \caption{Uitvoeringstijd voor inclusief het doorzoeken van de volledige subboom na match voor alle zoekbestanden}
     \label{fig:performance_all-occurrences_tree}
 \end{figure}
+
 
 \section{Taxon ID aggregatie}\label{sec:taxon-id-aggregatie}
 Mogelijks het belangrijkste stukje info over een staal peptiden is weten van welke organismen dit komt.
@@ -307,6 +436,7 @@ Zelf maak ik gebruik van de RMQ implementatie aangezien deze significant sneller
 Tot slot heb ik ook eens vergeleken hoe groot de behaalde tijdswinst is bij het gebruik kunnen maken van de directe aggregatie op de kinderen, vergeleken met moeten aggregeren op de bladeren.
 Bij het aggregeren op basis van de bladeren met de RMQ implementatie was de uitvoeringstijd maar liefst 12 uur, 19 minuten en 16 seconden!
 Dit is dus een extreem groot verschil.
+
 
 \section{Conclusie Suffix Bomen}\label{sec:conclusie-suffix-bomen}
 Het is duidelijk dat suffix bomen erg performant zijn voor dit scenario.
