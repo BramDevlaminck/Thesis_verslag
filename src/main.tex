@@ -74,60 +74,94 @@
 
 
     \section{Inleiding}\label{sec:inleiding}
-    Unipept is een toolset die vooral gericht is op de analyse van stalen uit in het onderzoeksveld van de metaproteomica.
-    Om uit te leggen wat metaproteomica is, is het nuttig eerst te weten wat de discipline van proteomica onderzoekt.
-    In proteomica wordt een set van proteïnen komende uit 1 organism onderzocht om daaruit informatie te halen.
-    Het prefix meta uit metaproteomica slaat op het feit dat in deze discipline stalen onderzocht worden waarin de proteïnen van meerdere organismen (meestal uit dezelfde biologische omgeving) voorkomen.
-    Dit maakt de analyse moeilijker aangezien proteïnen van verschillende organismen gelijkaardige amino zuur sequenties kunnen hebben (al dan niet door toeval).
+    \subsection{genomica, transcriptomica \& proteomica}\label{subsec:genomica-transcriptomica-&-proteomica}
+    Eiwitten zijn alomtegenwoordig en spelen een heel belangrijke rol in ons dagelijkse leven.
+    Ze staan in voor de goede werking van belangrijke levensprocessen in ons lichaam, maar ook in dat van alle andere levende organismen zoals dieren, planten, bacteriën en zelfs virussen.
+    Binnen de proteomica, de studie van alle eiwitten die binnen een enkel organisme tot expressie kunnen komen, probeert men te begrijpen hoe eiwitten in elkaar zitten, hoe deze met elkaar en binnen een bepaalde omgeving met elkaar interageren en wat hun belangrijkste functie is.
+    Naast proteomica bestaan er ook nog 2 andere disciplines gerelateerde disciplines.
     \\ \\
-    Op dit moment is Unipept gericht op de analyse van tryptische peptiden.
-    Dit zijn peptiden die ontstaan na het knippen van proteïnen aan de hand van trypsine.
+    De eerste van deze alternatieve disciplines is genomica, het onderzoek naar het genoom.
+    Het genoom van een organisme is de collectie van het DNA dat terug te vinden is in het organisme.
+    Dit DNA stelt voor welke proteïnen mogelijks door het organisme geconstrueerd kunnen worden.
+    Een belangrijk verschil met proteomica is dat het DNA instructies voorstelt voor de productie van alle mogelijke proteïnen dat het organisme kan maken.
+    Het geeft dus geen informatie over de proteïnen die op dat moment in de tijd actief zijn.
+    Het is dus een voorstelling van wat het organisme kan, niet wat het op \textit{dit} moment aan het doen is.
+    Belangrijk is dat ongeveer 98\% van het menselijke genoom niet-coderend is, wat wil zeggen dat dit deel het DNA niet omgezet kunnen worden naar een betekenisvolle proteïne.
+    \\ \\
+    De andere alternatieve discipline is de transcriptomica.
+    Deze discipline onderzoekt het transcriptoom van een organisme.
+    Het transcriptoom is de verzameling van alle RNA moleculen die in het organisme aanwezig zijn.
+    Aangezien RNA (meer specifiek messenger RNA (mRNA) en transfer RNA (tRNA)) een belangrijk onderdeel is van het proces om DNA om te zetten naar proteïnen is het transcriptoom een indicatie van welke delen uit het DNA effectief proteïnen encoderen.
+    \\ \\
+    Onze focus ligt vooral op het veld van de metaproteomica.
+    het ``meta'' prefix wilt zeggen dat de te analyseren stalen niet van 1 organisme zijn, maar van meerdere organismen (typisch binnen hetzelfde ecosysteem).
+    Dit maakt de analyse moeilijker aangezien proteïnen van verschillende organismen gelijkaardige aminozuursequenties kunnen hebben (al dan niet door toeval).
+    Om alles iets concreter te maken is het doel van de metaproteomica om op zoek te gaan naar de taxa die hoort bij een verzameling van peptiden.
+
+    \subsection{Tryptische peptiden}\label{subsec:tryptische-peptiden}
+    Tryptische peptiden zijn peptiden die ontstaan na het knippen van proteïnen aan de hand van trypsine.
     Dit is een protease (eiwitafbrekend enzym) dat proteïnen opsplitst in meerdere peptiden.
-    Er zijn nog andere proteases die gebruikt kunnen worden, maar trypsine is de meeste gebruikte aangezien het de proteïnen op vaste plaatsen knipt.
+    Er zijn nog andere proteases die gebruikt kunnen worden, maar trypsine is veruit de populairste door zijn eenduidig gedrag en efficiëntie.
     \\ \\
-    Trypsine zal een eiwit knippen na elke voorkomen van lysine (K) of arginine (R) indien het opeenvolgende aminozuur geen proline (P) is.
+    Trypsine zal een eiwit knippen na elke voorkomen van lysine (K) of arginine (R) indien het eerst opeenvolgende aminozuur geen proline (P) is.
     Deze vuistregel is echter niet perfect.
-    Soms zal trypsine een locatie waar normaal geknipt zou worden missen.
+    Soms zal trypsine een locatie waar normaal geknipt moet worden missen.
     Dit noemen we een \textit{missed cleavage}.
     \\ \\
-    De massa/ladingsverhouding (m/z) van deze peptiden wordt dan aan de hand van een massa spectrometer gemeten, en na een ingewikkeld zoekproces (via zogenaamde zoekmachines) omgezet naar een string die de peptide sequentie voorstelt.
-    Deze peptide sequenties zijn de input voor Unipept.
+    Het omzetten van effectieve peptiden naar hun string-representatie is een ingewikkeld proces.
+    Om te beginnen wordt de massa/ladingsverhouding (m/z) van peptiden aan de hand van een massa spectrometer gemeten.
+    Daarna worden deze resultaten aan de hand van een ingewikkeld zoekproces (via zogenaamde zoekmachines) omgezet naar een string die de peptide sequentie voorstelt.
+    Deze peptide sequenties zijn de input voor tools zoals Unipept.
+
+    \subsection{Unipept}\label{subsec:unipept-introductie}
+    Unipept is een toolset die vooral gericht is op de analyse van stalen uit het onderzoeksveld van de metaproteomica, maar er is ook een onderdeel (UMGAP~\cite{UMGAP_paper}) gericht op het analyseren van stalen uit de metagenomica.
     \\ \\
-    Zoals eerder vermeld, is Unipept een tool die specifiek gericht is op het analyseren van tryptische peptiden.
-    De reden hiervoor is de manier waarop de achterliggende index-structuur die Unipept gebruikt opgebouwd wordt.
+    Unipept biedt hiervoor enkele tools aan.
+    \begin{itemize}
+        \item \textbf{Unipept Web application} Dit is de origineel Unipept tool en is publiek beschikbaar op \url{https://unipept.ugent.be}.
+        Met de gebruiksvriendelijke \textit{user interface} wordt het uitvoeren metaproteomica analyse beschikbaar gesteld.
+        De resultaten van deze analyse worden aan de hand van visualisaties en tabellen aan de gebruiker getoond.
+        Deze kunnen daarna makkelijk geëxporteerd worden (bijv. voor analyse in andere tools).
+        \item \textbf{Unipept CLI} Dit is een \textit{power-user} tool om analyse uit te voeren op grotere stalen
+        \item \textbf{Unipept API} Dit is een collectie van \textit{endpoints} die toelaten dat andere applicaties de functionaliteit van Unipept integreren.
+        \item \textbf{Unipept Desktop} Dit is de recentste toevoeging aan Unipept ecosysteem en laat toe dat onderzoekers niet noodzakelijk met de Unipept servers moeten communiceren om analyse uit te voeren.
+        Deze applicatie combineert de voordelen van de web app, CLI en API laat toe om lokaal stalen te analyseren gebruik makende van een gebruiksvriendelijke UI\@.
+
+    \end{itemize}
+
+    Op dit moment is Unipept gericht op de analyse van tryptische peptiden.
+    De reden dat Unipept niet efficiënt werkt voor niet-tryptische peptiden is de manier waarop de achterliggend gebruikte index-structuur opgebouwd wordt.
     Dit opbouwen gaat in grote lijnen als volgt:
 
     \begin{enumerate}
-        \item Haal alle proteïnen op uit de UniProtKB databank.
+        \item Haal alle proteïnen en bijbehorende taxonomische en functionele annotaties op uit de UniProtKB databank.
         \item Splits deze proteïnen volgens de vuistregel die trypsine volgt.
         \item Sla alle resulterende tryptische peptiden op in een index-structuur.
     \end{enumerate}
 
-    Als voordeel heeft dat dit toelaat efficiënt tryptische peptiden te zoeken.
+    Deze aanpak heeft als voordeel dat we op een efficiënte manier tryptische peptiden kunnen opzoeken (samen met de bijbehorende annotaties).
     Er is echter een belangrijke keerzijde aan deze manier van werken.
-    Tryptische peptiden met \textit{missed cleavage} (of niet-tryptische peptiden) zijn inefficiënt om te zoeken.
-    Dit komt doordat tijdens het opbouwen van de Unipept index-structuur de vuist regel gevolgd wordt, en elke peptide in de index structuur strikt tryptisch is.
+    Tryptische peptiden met \textit{missed cleavage} en niet-tryptische peptiden zijn inefficiënt om te zoeken.
+    Dit komt doordat tijdens het opbouwen van de Unipept index-structuur de vuistregel gevolgd wordt, en elke peptide in de index structuur strikt tryptisch is.
     \\ \\
-    Op dit moment is er wel een work-around die toe laat deze peptiden toch te zoeken (maar met een erg significante performantie overhead).
-    Dit verklaart dan ook de nood voor een nieuwe index-structuur die deze tekortkoming op lost.
-    Dit is exact waar deze thesis op focust.
+    Op dit moment is er wel een work-around die toe laat deze peptiden toch te zoeken (maar met een erg significante impact op de performantie).
+    Dit verklaart dan ook de nood voor een nieuwe index-structuur die toe laat volledig willekeurig gesplitste peptiden te zoeken.
     \newline
     Voor een gedetailleerdere beschrijving over Unipept en het onderzoeksveld van metaproteomica raad ik aan om de inleiding van het doctoraat van Dr. Pieter Verschaffelt te lezen.
     Dit is ook waarop deze inleiding gebaseerd is~\cite{phdPieterUnipept}.
 
 
     \section{Probleemstelling}\label{sec:probleemstelling}
-    Het exacte probleem dat opgelost moet worden is het snel zoeken van willekeurige peptiden in een databank met proteïnen.
+    Het exacte probleem dat opgelost moet worden is het snel terugvinden van willekeurige peptiden in een eiwitdatabank.
     Bij het vinden van een match moet het daarna mogelijk zijn de informatie op te halen die hoort bij alle proteïnen die matchen.
-    Als we dit vertalen naar informatica termen moeten we dus snel een kortere string (peptide) kunnen zoeken in een grote hoeveelheid andere strings (de proteïnes).
+    Als we dit vertalen naar informatica termen moeten we snel een kortere string (peptide) kunnen zoeken in een grote hoeveelheid andere strings (de proteïnes).
     \\ \\
-    Belangrijk hierbij is dat dit niet alleen snel, maar ook geheugen efficiënt moet gebeuren.
+    Belangrijk hierbij is dat dit niet alleen gebeurt, maar we ook proberen het vereiste geheugen tot een minimum te beperken.
     Dit omdat de datasets waarmee gewerkt wordt extreem groot zijn.
     Om dit te doen is het doel van deze thesis om meerdere datastructuren uit te werken en te implementeren in Rust, waarna ze getest kunnen worden.
-    Het gebruik van Rust laat ons toe om extreem hoge performantie te verkrijgen (vergelijkbaar met C en C++~\cite{rustPerformantie}) in combinatie met \textit{memory safety}.
+    Het gebruik van Rust laat ons toe om extreem hoge performantie te verkrijgen (vergelijkbaar met C en C++~\cite{rustPerformantie}) in combinatie met \textit{memory safety}\footnote{\textit{Memory safety} is een eigenschap die verzekert dat programma's enkel gebruik kunnen maken van geldige geheugenlocaties en geen \textit{undefined behaviour} zoals \textit{buffer overflows}, \textit{dangling pointers} en andere geheugen gerelateeerde fouten kunnen vertonen}.
     Bovendien zijn sommige delen van Unipept al geschreven in Rust (zie UMGAP~\cite{UMGAP_paper, UMGAP_source}).
     Dit laat toe om waar mogelijk bestaande code te hergebruiken.
-
 
     \section{Benchmark Datasets}\label{sec:datasets}
 
