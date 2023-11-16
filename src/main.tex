@@ -74,6 +74,7 @@
 
 
     \section{Inleiding}\label{sec:inleiding}
+
     \subsection{genomica, transcriptomica \& proteomica}\label{subsec:genomica-transcriptomica-&-proteomica}
     Eiwitten zijn alomtegenwoordig en spelen een heel belangrijke rol in ons dagelijkse leven.
     Ze staan in voor de goede werking van belangrijke levensprocessen in ons lichaam, maar ook in dat van alle andere levende organismen zoals dieren, planten, bacteriën en zelfs virussen.
@@ -163,19 +164,19 @@
     Bovendien zijn sommige delen van Unipept al geschreven in Rust (zie UMGAP~\cite{UMGAP_paper, UMGAP_source}).
     Dit laat toe om waar mogelijk bestaande code te hergebruiken.
 
+
     \section{Benchmark Datasets}\label{sec:datasets}
 
     \subsection{Proteïne databanken}\label{subsec:proteine-databanken}
     Om te testen hoe goed een implementatie is en hoe deze vergelijkt met al bestaande implementaties is het belangrijk om enkele representatieve datasets te hebben.
-    De gebruikte datasets zijn allemaal eiwit databanken die een subset zijn van UniProtKB (meer specifiek UniProtKB 2023\_04)~\cite{UniprotKB}.
-    UniprotKB is een eiwit databank die in 2 grote delen op te splitsen valt (gegeven statistieken zijn voor release 2023\_04).
+    De gebruikte datasets zijn allemaal eiwitdatabanken die een subset vormen van UniProtKB (meer specifiek UniProtKB 2023\_04)~\cite{UniprotKB}.
+    UniprotKB is een eiwitdatabank die uit 2 grote delen bestaat (gegeven statistieken zijn voor release 2023\_04).
     \begin{enumerate}
-        \item Swiss-Prot: Dit is een kleinere, manueel gecureerde, dataset die 570 157 eiwit sequenties bevat.
+        \item Swiss-Prot: Dit is een kleinere, manueel gecureerde, dataset die 570 157 eiwitsequenties bevat.
         \item TrEMBL: Deze dataset bevat 251 600 768 sequenties en is dus veel groter dan Swiss-Prot.
         Het grote verschil is dat deze dataset \textbf{niet} manueel gecureerd is.
     \end{enumerate}
-
-    Om het benchmarken van implementaties praktisch te houden maak ik gebruik van 2 subsets hiervan.
+    Om het vergelijken van de performantie van verschillende implementaties praktisch te houden maak ik tijdens het testen gebruik van 2 subsets hiervan.
 
     \paragraph{Swiss-Prot} Dit is de standaard Swiss-Prot databank die deel is van UniProt (zoals eerder uitgelegd).
     Een kort overzicht van alle statistieken is terug te vinden in tabel~\ref{tab:swissprot_eigenschappen} terwijl figuur~\ref{fig:swissprot_aminozuur} en figuur~\ref{fig:swissprot_length} meer inzicht geven in de distributie van de aminozuren en lengte van de proteïnen.
@@ -183,14 +184,14 @@
     \begin{table}[h!]
         \centering
         \begin{tabular}{c c}
-            Metriek                    & Waarde      \\
+            Metriek                   & Waarde      \\
             \hline\hline
-            Totaal aantal sequenties   & 569 619     \\
-            Totale lengte              & 205 954 074 \\
-            Minimale proteïne lengte   & 2           \\
-            Maximale proteïne lengte   & 35 213      \\
-            Gemiddelde proteïne lengte & 361.56      \\
-            Mediaan proteïne lengte    & 295         \\
+            Totaal aantal sequenties  & 569 619     \\
+            Totale lengte             & 205 954 074 \\
+            Minimale proteïnelengte   & 2           \\
+            Maximale proteïnelengte   & 35 213      \\
+            Gemiddelde proteïnelengte & 361.56      \\
+            Mediaan proteïnelengte    & 295         \\
             \hline
         \end{tabular}
         \caption{Eigenschappen van de Swiss-Prot databank}
@@ -207,18 +208,18 @@
 
     \begin{figure}[H]
         \centering
-        \subfloat[Overzicht van lengte distributie alle proteïnen]{\includegraphics[width=0.5\linewidth]{swissprot_length_distribution_large}}
-        \subfloat[Ingezoomd beeld van de lengtedistributie tot 1000 aminozuren lang]{\includegraphics[width=0.5\linewidth]{swissprot_length_distribution_small}}
+        \subfloat[Overzicht van de lengtedistributie van alle proteïnen]{\includegraphics[width=0.485\linewidth]{swissprot_length_distribution_large}}
+        \subfloat[Ingezoomd beeld van de lengtedistributie tot 1000 aminozuren lang]{\includegraphics[width=0.485\linewidth]{swissprot_length_distribution_small}}
         \caption{Lengtedistributie van de proteïnen in de Swiss-Prot databank}\label{fig:swissprot_length}
     \end{figure}
 
     Een klein detail dat valt op te merken is dat in tabel~\ref{tab:swissprot_eigenschappen} het totaal aantal sequenties iets kleiner is dan wat eerder aangegeven is.
-    Dit is omdat het gebruikte input bestand een bestand is dat al door een deel van de Unipept pipeline verwerkt is.
-    Hierbij worden sequenties met een taxon id dat niet in de Unipept databank zit verwijderd, wat het kleine verschil verklaart.
+    Dit is omdat het gebruikte invoerbestand een bestand is dat al door een deel van de Unipept pipeline verwerkt werd.
+    Hierbij worden sequenties met een onbekend taxon id verwijderd, wat het kleine verschil verklaart.
 
     \paragraph{Human-Prot} Deze dataset is samengesteld aan de hand van 3 referentiedatabanken die deel uit maken van UniProtKB\@.
     Deze werd geleverd aan me door mijn begeleider Pieter Verschaffelt.
-    De 3 datasets waaruit dit opgebouwd is zijn:
+    De 3 datasets waaruit dit opgebouwd is, zijn:
     \begin{enumerate}
         \item Human Genome~\cite{proteomes_homo_sapiens}
         \item Influenza B~\cite{proteomes_infuenza_b}
@@ -232,14 +233,14 @@
     \begin{table}[h!]
         \centering
         \begin{tabular}{ c c }
-            Metriek                    & Waarde     \\
+            Metriek                   & Waarde     \\
             \hline\hline
-            Totaal aantal sequenties   & 82 695     \\
-            Totale lengte              & 30 293 046 \\
-            Minimale proteïne lengte   & 2          \\
-            Maximale proteïne lengte   & 35 991     \\
-            Gemiddelde proteïne lengte & 366.32     \\
-            Mediaan proteïne lengte    & 204        \\
+            Totaal aantal sequenties  & 82 695     \\
+            Totale lengte             & 30 293 046 \\
+            Minimale proteïnelengte   & 2          \\
+            Maximale proteïnelengte   & 35 991     \\
+            Gemiddelde proteïnelengte & 366.32     \\
+            Mediaan proteïnelengte    & 204        \\
             \hline
         \end{tabular}
         \caption{Eigenschappen van de Human-Prot databank}
@@ -255,12 +256,12 @@
 
     \begin{figure}[H]
         \centering
-        \subfloat[Overzicht van lengte distributie alle proteïnen]{\includegraphics[width=0.5\linewidth]{humanprot_length_distribution_large}}
+        \subfloat[Overzicht van de lengtedistributie van alle proteïnen]{\includegraphics[width=0.5\linewidth]{humanprot_length_distribution_large}}
         \subfloat[Ingezoomd beeld van de lengtedistributie tot 1000 aminozuren lang]{\includegraphics[width=0.5\linewidth]{humanprot_length_distribution_small}}
         \caption{Lengtedistributie van de proteïnen in de Human-Prot databank}\label{fig:humanprot_length}
     \end{figure}
 
-    Enkele belangrijke conclusies dat we hier al uit kunnen trekken zijn dat dat zo goed als alle letters gebruikt worden (ook al zijn er maar 20 aminozuren).
+    Enkele belangrijke conclusies die we hier al uit kunnen trekken zijn dat zo goed als alle letters gebruikt worden (ook al zijn er maar 20 aminozuren).
     Dit komt doordat sommige letters eigenlijk een soort wildcard voorstellen.
     Zo staat ``X'' voor elk mogelijk aminozuur, ``Z'' voor ``Q'' of ``E'',\ldots
 
@@ -268,16 +269,17 @@
     Het zwaartepunt van het aantal voorkomens ligt bij Swiss-Prot wel iets later (rond 100 vs rond 200).
 
     \subsection{Peptide zoekbestanden}\label{subsec:peptide-zoek-bestanden}
-    Natuurlijk is een erg belangrijk deel van het opbouwen van een indexstructuur de zoekperformantie.
-    Hiervoor hebben we bij elke proteïnen databank een lijst aan peptiden die we proberen te zoeken.
-    Voor onze beide databanken zijn enkele datasets opgesteld.
+    Natuurlijk is een erg belangrijk aspect van een indexstructuur de zoekperformantie.
+    Hiervoor hebben we bij elke eiwitdatabank een lijst aan peptiden die we proberen te zoeken.
+    Voor beide databanken zijn enkele datasets opgesteld.
 
-    \subsubsection{Swiss-prot} Voor deze databank hebben we enkele zoekbestanden voorzien.
-    2 bestanden die gesampled zijn en een reeks aan real-life stalen.
-    De 2 gesamplede bestanden zijn zo gekozen dat de ene enkel tryptische peptiden bevat, terwijl de andere ook peptiden bevat met \textit{missed cleavage}.
-    De eerste kan dus op dit moment al efficiënt door Unipept behandeld worden, terwijl dit voor de 2e niet kan.
+    \subsubsection{Swiss-prot}
+    Voor deze databank hebben we enkele zoekbestanden voorzien.
+    Twee bestanden die gesampled zijn en een reeks aan real-life stalen.
+    De twee gesamplede bestanden zijn zo gekozen dat de ene enkel tryptische peptiden bevat, terwijl de andere ook peptiden bevat met \textit{missed cleavage}.
+    De eerste kan dus op dit moment al efficiënt door Unipept behandeld worden, terwijl dit voor de tweede niet kan.
 
-    \paragraph{Sampled}
+    \paragraph{Artificiële stalen}
     Een kort overzicht van enkele statistieken over de gesamplede bestanden valt te zien in respectievelijk tabel~\ref{tab:swiss_geen_missed_cleavage} en tabel~\ref{tab:swiss_missed_cleavage}.
 
     \begin{table}[!h]
@@ -288,10 +290,10 @@
                 \hline\hline
                 Totaal aantal sequenties   & 100 000   \\
                 Totale lengte              & 1 605 909 \\
-                Minimale proteïne lengte   & 5         \\
-                Maximale proteïne lengte   & 50        \\
-                Gemiddelde proteïne lengte & 16.06     \\
-                Mediaan proteïne lengte    & 13        \\
+                Minimale proteïnelengte    & 5         \\
+                Maximale proteïnelengte    & 50        \\
+                Gemiddelde proteïnelengte  & 16.06     \\
+                Mediaan proteïnelengte     & 13        \\
                 Aantal vindbare peptiden   & 67 375    \\
                 Aantal tryptische peptiden & 100 000   \\
                 \hline
@@ -306,10 +308,10 @@
                 \hline\hline
                 Totaal aantal sequenties   & 100 000   \\
                 Totale lengte              & 2 544 356 \\
-                Minimale proteïne lengte   & 5         \\
-                Maximale proteïne lengte   & 93        \\
-                Gemiddelde proteïne lengte & 25.44     \\
-                Mediaan proteïne lengte    & 23        \\
+                Minimale proteïnelengte    & 5         \\
+                Maximale proteïnelengte    & 93        \\
+                Gemiddelde proteïnelengte  & 25.44     \\
+                Mediaan proteïnelengte     & 23        \\
                 Aantal vindbare peptiden   & 62 581    \\
                 Aantal tryptische peptiden & 4107      \\
                 \hline
@@ -319,9 +321,8 @@
         \end{minipage}
     \end{table}
 
-    \paragraph{Real-life stalen}
-    Om een beter beeld te krijgen over de performantie worden ook enkele real-life stalen uit een kleine micro-organisme gemeenschap gebruikt.
-    Namelijk uit SIHUMIx\footnote{SImplified HUMan Intestinal microbiota}\cite{SIHUMI_first_introduction, SIHUMI_frequently_used}.
+    \paragraph{Experimentele stalen}
+    Om een beter beeld te krijgen over de performantie worden ook enkele stalen gebruikt die komen uit experimenten met een kleine micro-organisme gemeenschap, namelijk SIHUMIx\footnote{SImplified HUMan Intestinal microbiota}\cite{SIHUMI_first_introduction, SIHUMI_frequently_used}.
     Aangezien dit effectieve stalen zijn bevatten deze \textit{missed cleavages} die natuurlijk ontstaan zijn.
     Opnieuw wordt een overzicht van enkele eigenschappen gegeven in de volgende tabel.
     Elke \texttt{S<XX>} kolom stelt de waarden voor staal met bestandsnaam \texttt{S<XX>.txt} voor.
@@ -334,10 +335,10 @@
             \hline\hline
             Totaal aantal sequenties   & 25 000  & 25 000  & 24 424  & 25 000  & 25 000  & 25 000  \\
             Totale lengte              & 420 544 & 420 423 & 373 633 & 316 114 & 366 922 & 430 674 \\
-            Minimale proteïne lengte   & 6       & 6       & 6       & 6       & 6       & 6       \\
-            Maximale proteïne lengte   & 50      & 50      & 47      & 43      & 50      & 50      \\
-            Gemiddelde proteïne lengte & 16.82   & 16.82   & 15.30   & 12.64   & 14.68   & 17.23   \\
-            Mediaan proteïne lengte    & 15      & 16      & 14      & 12      & 14      & 16      \\
+            Minimale proteïnelengte    & 6       & 6       & 6       & 6       & 6       & 6       \\
+            Maximale proteïnelengte    & 50      & 50      & 47      & 43      & 50      & 50      \\
+            Gemiddelde proteïnelengte  & 16.82   & 16.82   & 15.30   & 12.64   & 14.68   & 17.23   \\
+            Mediaan proteïnelengte     & 15      & 16      & 14      & 12      & 14      & 16      \\
             Aantal vindbare peptiden   & 2570    & 2698    & 3652    & 4135    & 3792    & 2761    \\
             Aantal tryptische peptiden & 17 263  & 162     & 152     & 207     & 155     & 242     \\
             \hline
@@ -347,8 +348,8 @@
     \end{table}
 
     \subsubsection{Human-Prot}
-    Voor deze databank hebben we 1 zoekbestand voorzien.
-    Dit bestand bevat niet-tryptische peptiden, waardoor het dus op dit moment niet te zoeken valt in Unipept.
+    Voor deze databank hebben we 1 zoekbestand bestaande uit HLA peptiden voorzien.
+    Dit zijn korte niet-tryptische peptiden uit het immunopeptidomics onderzoeksveld, waardoor het dus op dit moment niet te zoeken valt in Unipept.
     Aangezien de dataset waarbij dit zoekbestand hoort zelf samengesteld is, hebben we ook zelf willekeurige samples genomen om een zoekbestand op te stellen.
     Hierdoor is elk van de peptiden die we zullen proberen te vinden effectief vindbaar in de dataset.
     Een kort overzicht van enkele eigenschappen is terug te vinden in tabel~\ref{tab:humanprot_zoekbestand}
@@ -360,10 +361,10 @@
             \hline\hline
             Totaal aantal sequenties   & 250000        \\
             Totale lengte              & 2 458 834 046 \\
-            Minimale proteïne lengte   & 1             \\
-            Maximale proteïne lengte   & 12            \\
-            Gemiddelde proteïne lengte & 9.84          \\
-            Mediaan proteïne lengte    & 10            \\
+            Minimale peptidelengte     & 1             \\
+            Maximale peptidelengte     & 12            \\
+            Gemiddelde peptidelengte   & 9.84          \\
+            Mediaan peptidelengte      & 10            \\
             Aantal vindbare peptiden   & 250 000       \\
             Aantal tryptische peptiden & 102 659       \\
             \hline
@@ -374,7 +375,8 @@
 
 
     Nog extra grafieken die eigenschappen van de bovenstaand beschreven zoekbestanden zijn terug te vinden in appendix~\ref{ch:appendix-statistieken-zoekbestanden}.
-    Deze appendix bevat voor elk van de al vermeldde zoekbestanden een grafiek die de distributie van de aminozuren geeft en de distributie van de peptide lengte.
+    Deze appendix bevat voor elk van de al vermeldde zoekbestanden een grafiek die de distributie van de aminozuren geeft en de distributie van de peptidelengte.
+
 
     \section{Benchmark hardware}\label{sec:benchmark-hardware}
     Alle benchmarks zijn uitgevoerd op een virtuele machine op een server die beheerd wordt door Unipept.
@@ -383,12 +385,12 @@
     \begin{table}[h!]
         \centering
         \begin{tabular}{p{0.35\linewidth} p{0.6\linewidth}}
-            Onderdeel         &                                                                           \\
+            Onderdeel         &                                                                         \\
             \hline\hline
-            CPU               & 2x Intel Xeon 4410Y (12 cores / 24 threads, 2-3.9 GhZ, 30MiB cache)       \\
-            RAM               & 768 GiB                                                                   \\
+            CPU               & 2x Intel Xeon 4410Y (12 cores / 24 threads, 2-3.9 GhZ, 30MiB cache)     \\
+            RAM               & 768 GiB                                                                 \\
             Opslag            & 6x 16TiB HDD (3.5 inch, 7.2K RPM SATA), 4x 3.84TiB (2.5 inch SSD, SATA) \\
-            Besturingssysteem & Debian 12 (met Proxmox)                                                   \\
+            Besturingssysteem & Debian 12 (met Proxmox)                                                 \\
             \hline
         \end{tabular}
         \caption{Hardware specificaties \textit{Matt}}
