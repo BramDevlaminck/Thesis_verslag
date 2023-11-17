@@ -143,7 +143,7 @@
     Deze aanpak heeft als voordeel dat we op een efficiënte manier tryptische peptiden kunnen opzoeken (samen met de bijbehorende annotaties).
     Er is echter een belangrijke keerzijde aan deze manier van werken.
     Tryptische peptiden met \textit{missed cleavage} en niet-tryptische peptiden zijn inefficiënt om te zoeken.
-    Dit komt doordat tijdens het opbouwen van de Unipept index-structuur de vuistregel gevolgd wordt, en elke peptide in de index structuur strikt tryptisch is.
+    Dit komt doordat tijdens het opbouwen van de Unipept index-structuur de vuistregel gevolgd wordt, en elke peptide in de indexstructuur strikt tryptisch is.
     \\ \\
     Op dit moment is er wel een work-around die toe laat deze peptiden toch te zoeken (maar met een erg significante impact op de performantie).
     Dit verklaart dan ook de nood voor een nieuwe index-structuur die toe laat volledig willekeurig gesplitste peptiden te zoeken.
@@ -195,7 +195,7 @@
             Mediaan proteïnelengte    & 295         \\
             \hline
         \end{tabular}
-        \caption{Eigenschappen van de Swiss-Prot databank}
+        \caption{Eigenschappen van de Swiss-Prot databank die gebruikt om de indexstructuur op te bouwen.}
         \label{tab:swissprot_eigenschappen}
     \end{table}
 
@@ -210,8 +210,9 @@
     \begin{figure}[H]
         \centering
         \subfloat[Overzicht van de lengtedistributie van alle proteïnen]{\includegraphics[width=0.485\linewidth]{swissprot_length_distribution_large}}
+        \hfill
         \subfloat[Ingezoomd beeld van de lengtedistributie tot 1000 aminozuren lang]{\includegraphics[width=0.485\linewidth]{swissprot_length_distribution_small}}
-        \caption{Lengtedistributie van de proteïnen in de Swiss-Prot databank}\label{fig:swissprot_length}
+        \caption{Lengtedistributie van de proteïnen in de Swiss-Prot databank. Dit geeft een goede indicatie van hoe lang de proteïnen zijn in de databank die gebruikt zal worden om peptiden te zoeken.}\label{fig:swissprot_length}
     \end{figure}
 
     Een klein detail dat valt op te merken is dat in tabel~\ref{tab:swissprot_eigenschappen} het totaal aantal sequenties iets kleiner is dan wat eerder aangegeven is.
@@ -244,7 +245,7 @@
             Mediaan proteïnelengte    & 204        \\
             \hline
         \end{tabular}
-        \caption{Eigenschappen van de Human-Prot databank}
+        \caption{Eigenschappen van de Human-Prot databank die gebruikt om de indexstructuur op te bouwen.}
         \label{tab:humanprot_eigenschappen}
     \end{table}
 
@@ -257,9 +258,10 @@
 
     \begin{figure}[H]
         \centering
-        \subfloat[Overzicht van de lengtedistributie van alle proteïnen]{\includegraphics[width=0.5\linewidth]{humanprot_length_distribution_large}}
-        \subfloat[Ingezoomd beeld van de lengtedistributie tot 1000 aminozuren lang]{\includegraphics[width=0.5\linewidth]{humanprot_length_distribution_small}}
-        \caption{Lengtedistributie van de proteïnen in de Human-Prot databank}\label{fig:humanprot_length}
+        \subfloat[Overzicht van de lengtedistributie van alle proteïnen]{\includegraphics[width=0.485\linewidth]{humanprot_length_distribution_large}}
+        \hfill
+        \subfloat[Ingezoomd beeld van de lengtedistributie tot 1000 aminozuren lang]{\includegraphics[width=0.485\linewidth]{humanprot_length_distribution_small}}
+        \caption{Lengtedistributie van de proteïnen in de Human-Prot databank. Dit geeft een goede indicatie van hoe lang de proteïnen zijn in de databank die gebruikt zal worden om peptiden te zoeken.}\label{fig:humanprot_length}
     \end{figure}
 
     Enkele belangrijke conclusies die we hier al uit kunnen trekken zijn dat zo goed als alle letters gebruikt worden (ook al zijn er maar 20 aminozuren).
@@ -299,7 +301,7 @@
                 Aantal tryptische peptiden & 100 000   \\
                 \hline
             \end{tabular}
-            \caption{Eigenschappen van \newline het Swiss-Prot zoekbestand \newline zonder \textit{missed cleavage}}
+            \caption{Eigenschappen van \newline het Swiss-Prot zoekbestand \newline zonder \textit{missed cleavage}. Dit is één van de bestanden die gebruikt wordt om de zoekperformantie van de indexstructuur te meten.}
             \label{tab:swiss_geen_missed_cleavage}
         \end{minipage}
         \begin{minipage}{.5\linewidth}
@@ -317,7 +319,7 @@
                 Aantal tryptische peptiden & 4107      \\
                 \hline
             \end{tabular}
-            \caption{Eigenschappen van \newline het Swiss-Prot zoekbestand \newline met \textit{missed cleavage}}
+            \caption{Eigenschappen van \newline het Swiss-Prot zoekbestand \newline met \textit{missed cleavage}. Dit is één van de bestanden die gebruikt wordt om de zoekperformantie van de indexstructuur te meten.}
             \label{tab:swiss_missed_cleavage}
         \end{minipage}
     \end{table}
@@ -344,7 +346,7 @@
             Aantal tryptische peptiden & 17 263  & 162     & 152     & 207     & 155     & 242     \\
             \hline
         \end{tabular}
-        \caption{Eigenschappen van de SIHUMIx zoekbestanden}
+        \caption{Eigenschappen van de SIHUMIx zoekbestanden. Deze worden allemaal gebruikt om de zoekperformantie van de indexstructuur te meten. Aangezien deze zoekbestanden experimentele stalen zijn geven ze een betere weergave van de te verwachten performantie bij realistische gebruiksscenario's.}
         \label{tab:sihumi_zoekbestanden}
     \end{table}
 
@@ -370,7 +372,7 @@
             Aantal tryptische peptiden & 102 659       \\
             \hline
         \end{tabular}
-        \caption{Eigenschappen van het Human-Prot zoekbestand}
+        \caption{Eigenschappen van het Human-Prot zoekbestand. Dit is één van de bestanden die gebruikt wordt om de zoekperformantie van de indexstructuur te meten.}
         \label{tab:humanprot_zoekbestand}
     \end{table}
 
@@ -386,15 +388,15 @@
     \begin{table}[h!]
         \centering
         \begin{tabular}{p{0.35\linewidth} p{0.6\linewidth}}
-            Onderdeel         &                                                                         \\
+            Onderdeel         &                                                                           \\
             \hline\hline
-            CPU               & 2x Intel Xeon 4410Y (12 cores / 24 threads, 2-3.9 GhZ, 30MiB cache)     \\
-            RAM               & 768 GiB                                                                 \\
-            Opslag            & 6x 16TiB HDD (3.5 inch, 7.2K RPM SATA), 4x 3.84TiB (2.5 inch SSD, SATA) \\
-            Besturingssysteem & Debian 12 (met Proxmox)                                                 \\
+            CPU               & 2x Intel Xeon 4410Y (12 cores / 24 threads, 2 - 3.9 GhZ, 30 MiB cache)    \\
+            RAM               & 768 GiB                                                                   \\
+            Opslag            & 6x 16 TiB HDD (3.5 inch, 7.2K RPM SATA), 4x 3.84 TiB SSD (2.5 inch, SATA) \\
+            Besturingssysteem & Debian 12 (met Proxmox)                                                   \\
             \hline
         \end{tabular}
-        \caption{Hardware specificaties \textit{Matt}}
+        \caption{Hardware specificaties \textit{Matt}. Dit is de fysieke machine waarop de VM draait die gebruikt wordt tijdens het testen van de performantie.}
         \label{tab:Matt_hardware}
     \end{table}
 

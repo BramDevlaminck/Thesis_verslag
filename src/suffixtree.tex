@@ -307,10 +307,10 @@ Om de uitvoeringstijd en het geheugenverbruik te meten heb ik gebruik gemaakt va
 De resultaten hiervan zijn terug te vinden in figuur~\ref{fig:tree_building}.
 \begin{figure}[H]
     \centering
-    \subfloat[Tijd nodig om de boom op te bouwen]{\includegraphics[width=\linewidth]{building_tree_time}}\\[4ex] % [4ex] om wat extra vertical spacing in te voegen
+    \subfloat[Tijd nodig om de suffixboom op te bouwen]{\includegraphics[width=\linewidth]{building_tree_time}}\\[4ex] % [4ex] om wat extra vertical spacing in te voegen
 
-    \subfloat[Maximaal gebruikt geheugen tijdens het opbouwen van de boom]{\includegraphics[width=\linewidth]{building_tree_memory}}
-    \caption{Vergelijking van C++ en Rust voor het opbwouven van de suffixboom}\label{fig:tree_building}
+    \subfloat[Maximaal gebruikt geheugen tijdens het opbouwen van de suffixboom]{\includegraphics[width=\linewidth]{building_tree_memory}}
+    \caption{Vergelijking van C++ en Rust voor het opbouwen van de suffixboom. De tijd en het geheugengebruik is gemeten gebruik makende van het \texttt{time} commando met als invoerbestand de Swiss-Prot of Human-Prot eiwitdatabank.}\label{fig:tree_building}
 \end{figure}
 
 Uit deze grafieken vallen 2 duidelijke conclusies te trekken.
@@ -346,7 +346,7 @@ Toch kunnen we besluiten dat de C++ implementatie een beetje performanter is aan
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{search_match_performance_tree}
-    \caption{Uitvoeringstijd voor het zoeken tot een match voor alle zoekbestanden}
+    \caption{Uitvoeringstijd in milliseconden voor het zoeken tot een match voor alle zoekbestanden. Deze resultaten zijn het gemiddelde van 5000 uitvoeringen. 1 iteratie wordt gezien als 1x elke peptide die deel is van het zoekbestand te zoeken in de suffixboom, en te stoppen wanneer er een (mis)match gevonden is. Het meten van de tijd is gebeurd in de code zelf.}
     \label{fig:performance_match_tree}
 \end{figure}
 
@@ -368,7 +368,7 @@ Vermoedelijk komt dit door de andere \textit{memory layout} die ontstaat doordat
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{search_all-occurrences_performance_tree}
-    \caption{Uitvoeringstijd inclusief het doorzoeken van de volledige subboom na match voor alle zoekbestanden}
+    \caption{Uitvoeringstijd inclusief het doorzoeken van de volledige subboom na match voor alle zoekbestanden. Deze resultaten zijn het gemiddelde van 10 uitvoeringen. 1 iteratie wordt gezien als 1x elke peptide die deel is van het zoekbestand te zoeken in de suffixboom, en bij een match de volledige resterende subboom te doorzoeken. Dit toont de tijd die nodig is om informatie uit de bladeren op te halen voor alle proteïnen waar een peptide substring van is. Het meten van de tijd is gebeurd in de code zelf.}
     \label{fig:performance_all-occurrences_tree}
 \end{figure}
 
@@ -418,7 +418,7 @@ De licht grijze toppen zijn ingevuld zijn aan de hand van aggregatie, terwijl de
             };
         \end{tikzpicture}
     }
-    \caption{Minimaal voorbeeld van de 2 aggregatie manieren gebruik makende van LCA*}\label{fig:lca*_diff}
+    \caption{Minimaal voorbeeld van de 2 aggregatie manieren gebruik makende van LCA*. De grijze toppen zijn berekend aan de hand van een LCA*, terwijl de zwarte toppen gegeven zijn.}\label{fig:lca*_diff}
 \end{figure}
 
 Onderstaande uitleg behandelt de werkwijze voor bovenstaande figuren.
