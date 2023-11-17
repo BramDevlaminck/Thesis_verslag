@@ -220,8 +220,8 @@ Het enige verschil is dat ik in de Rust implementatie gebruik heb gemaakt van ee
     \textit{And then I went and invented a null pointer.
     And if you use a null pointer you either have to check every reference or you risk disaster. \cite{null_mistake}}
 \end{quote}
-Null-pointers worden ook wel \textit{the billion-dollar mistake} genoemd vanwege het grote aantal bugs dat veroorzaakt worden door null pointers.
-Daarom voorziet Rust een andere manier om de waarde ``null'' voor te stellen.
+\textit{Null pointers} worden ook wel \textit{the billion-dollar mistake} genoemd vanwege het grote aantal bugs dat ze veroorzaken.
+Daarom voorziet Rust een andere manier om de waarde \textit{null} voor te stellen.
 Dit wordt gedaan aan de hand van de \texttt{Option<T>} enum.
 
 \begin{minted}{Rust}
@@ -232,28 +232,28 @@ enum Option<T> {
 \end{minted}
 
 Deze enum heeft 2 mogelijke waarden: \texttt{None} of \texttt{Some(T)}.
-\texttt{None} is het equivalent dat overeen komt met null, terwijl \texttt{Some(T)} wil zeggen dat de waarde niet-null is, en meer specifiek is de waarde \texttt{T}.
+\texttt{None} is het equivalent van \textit{null}, terwijl \texttt{Some(T)} wil zeggen dat de waarde verschillend is van null, meer specifiek is de waarde \texttt{T}.
 Aangezien het grootste deel van wat bijgehouden wordt per top eigenlijk pointers zijn maakte ik veelvoudig gebruik van deze Option-enum.
-Alle pointers in een top kunnen namelijk null zijn!
-De parent pointer moet nullable zijn aangezien de root geen parent heeft, de child pointers moeten allemaal nullable zijn omdat bladeren geen kinderen hebben (en in de interne toppen zijn niet alle kinderen altijd nodig) en de suffix-links moeten nullable zijn aangezien niet elke top een suffix link heeft naar een andere top.
+Alle pointers in een top kunnen namelijk null zijn.
+De \textit{parent pointer} moet nullable zijn aangezien de root geen parent heeft, de \textit{child pointers} moeten allemaal nullable zijn omdat bladeren geen kinderen hebben (en in de interne toppen zijn niet alle kinderen altijd nodig) en de suffix-links moeten nullable zijn aangezien niet elke top een suffix link heeft naar een andere top.
 \\ \\
-Dit werkte perfect en kon proper afgehandeld worden op de idiomatische manier die overeenkomt met propere Rust code.
+Dit werkte perfect en kon mooi afgehandeld worden op de idiomatische manier die overeenkomt met goede Rust code.
 Na de eerste benchmarks bleek het geheugengebruik echter problematisch.
 Bijna exact 2x zo hoog als de equivalente C++ implementatie.
 Om zo'n drastisch verschil in geheugenverbruik te kunnen verklaren moest er wel iets fundamenteel verschillen aan de manier dat toppen hun data bijhouden.
-Al snel bleek dat het gebruik van \texttt{Option<usize>} als datatype in plaats van \texttt{usize} 8 bytes aan overhead per index had!
+Al snel bleek dat het gebruik van \texttt{Option<usize>} als datatype in plaats van \texttt{usize} 8 bytes aan overhead per index had.
 Dit is inderdaad exact het dubbele geheugenverbruik op een 64-bit machine aangezien een \texttt{usize} 8 bytes groot is.
-Dit valt makkelijk te controleren aan de hand van de \texttt{std::mem::size\_of} functie deel van de Rust standaard bibliotheek.
+Dit valt makkelijk te controleren aan de hand van de \texttt{std::mem::size\_of} functie, deel van de Rust standaard bibliotheek.
 Onderstaand voorbeeld toont dat dit inderdaad het geval is.
 \begin{minted}{Rust}
 assert_eq!(mem::size_of::<Option<usize>>(), 16);
 assert_eq!(mem::size_of::<usize>(), 8);
 \end{minted}
 
-Als oplossing heb ik uiteindelijk mijn eigen ``null'' value gedefinieerd gebruik makende van een Trait.
+Als oplossing heb ik uiteindelijk mijn eigen \textit{null} value gedefinieerd gebruik makende van een \textit{trait}\footnote{Een trait in Rust definieert een functionaliteit dat een bepaald type heeft, en kan delen met andere types}.
 Deze oplossing verslaat volledig het doel van de \texttt{Option<T>} enum, maar is jammergenoeg nodig omdat het gewoonweg niet acceptabel is het geheugenverbruik te verdubbelen hiervoor.
 Bovendien blijft memory safety gegarandeerd aangezien het foutief indexeren van de NULL-value (\texttt{usize::MAX} in dit geval) een index-out-of-bounds error creëert.
-Wat tijdens runtime gedetecteerd wordt en dus geen verdere problemen geeft (buiten dat het programma zal crashen).
+Wat tijdens runtime gedetecteerd wordt en dus geen verdere problemen geeft (afgezien van een mogelijke crash van het programma).
 
 \begin{minted}{Rust}
 /// Custom trait implemented by types that have a value that represents NULL
@@ -280,13 +280,14 @@ impl Nullable<NodeIndex> for NodeIndex {
 
 \subsection{Performantie}\label{subsec:performantie}
 Natuurlijk is het belangrijk dat de implementatie performant (en correct) is.
-Aangezien er een bestaande C++ implementatie was van Ukkonen in C++ was dit een perfecte maatstaf.
-
-Uiteindelijk heb ik 1 aanpassingen moeten maken in de C++ code die al bestond om een eerlijke vergelijking uit te voeren.
+Aangezien we ook over een bestaande C++ implementatie van Ukkonen's algoritme beschikken, was dit een perfecte maatstaf.
+Uiteindelijk heb ik één aanpassingen moeten maken in deze C++ code om een eerlijke vergelijking uit te voeren.
 Oorspronkelijk werd er in elke top plaats gehouden voor 256 mogelijke kinderen.
-Dit was veel te hoog voor deze usecase waardoor het geheugenverbruik dramatisch groot was (ongeveer een factor 10 hoger dan wat nodig was).
+Dit was veel te hoog voor onze usecase.
+Er zijn nl. slechts 20 aminozuren en enkele \textit{wildcard characters}.
+Dit verklaart onmiddellijk waarom het geheugengebruik ongeveer een factor 10 hoger was dan nodig.
 Uiteindelijk ben ik gegaan voor een implementatie (zowel in Rust als C++) waarin plaats gehouden wordt voor 28 kinderen.
-Dit zijn de 26 letters van het alfabet (de 20 aminozuren + enkele \textit{wildcard characters}) + \texttt{`\#`} + \texttt{`\$`}.
+Dit zijn de 26 letters van het alfabet + \texttt{`\#`} + \texttt{`\$`}.
 \texttt{`\#`} en \texttt{`\$`} worden gebruikt als resp. scheidingsteken en eindteken.
 Dit is ook wat al gebeurde in de bestaande C++ implementatie.
 \\ \\
@@ -335,12 +336,12 @@ De reden voor deze manier van zoeken is dat het mogelijk is om info te propagere
 In ons geval is dit bijvoorbeeld de LCA van de taxon IDs op voorhand te berekenen.
 Het zoeken van de LCA die overeenkomt met alle proteïnen waar de gevonden peptide mee matcht kan dus al stoppen vanaf er een match is.
 \\ \\
-Grafiek~\ref{fig:performance_match_tree} toont de nodige tijd om alle peptiden van de gebruikte zoekbestanden 1x te zoeken totdat er een (mis)match was voor de peptide.
-De grafiek bevat de gemiddelde resultaten van 5000 \textit{runs}, maar zelfs dan bleven de resultaten wat schommelen.
-Doordat de te meten tijd zo klein is, kan de kleinste invloed al voor een zichtbaar verschil zorgen.
-Dit kan bv een achtergrond proces zijn, maar ook invloed van een andere VM die op de fysieke machine bezig is (wat hier het geval is, aangezien Stijn De Clercq ook een VM op \textit{Matty} gebruikt voor zijn testen).
+Grafiek~\ref{fig:performance_match_tree} toont de nodige tijd om alle peptiden van de gebruikte zoekbestanden éénmalig te zoeken totdat er een (mis)match was voor de peptide.
+De grafiek bevat de gemiddelde resultaten van 5000 uitvoeringen, maar zelfs dan bleven de resultaten wat schommelen.
+Doordat de te meten tijd zo klein is, kan de kleinste invloed van omgevingsfactoren al voor een zichtbaar verschil zorgen.
+Dit kan bv een achtergrondproces zijn, maar ook invloed van een andere VM die op de fysieke machine bezig is.
 Dit was ook merkbaar tijdens het testen waar dat de verschillen tussen 2 opeenvolgende uitvoeringen vaak groter waren dan het verschil tussen de C++ en Rust implementatie.
-Toch kunnen we besluiten dat de C++ implementatie een beetje performanter is aangezien dit in elk zoekbestand (nipt) sneller is (soms zelfs minder dan een milliseconde!).
+Toch kunnen we besluiten dat de C++ implementatie een beetje performanter is aangezien dit in elk zoekbestand (nipt) sneller is (soms zelfs minder dan een milliseconde).
 
 \begin{figure}[H]
     \centering
@@ -349,7 +350,7 @@ Toch kunnen we besluiten dat de C++ implementatie een beetje performanter is aan
     \label{fig:performance_match_tree}
 \end{figure}
 
-Dit is verbijsterend snel vergeleken met de huidige implementatie in Unipept.
+Het verschil met de huidige implementatie van Unipept is gigantisch.
 Daar duurt het op dit moment 2 minuten en 12 seconden om alle peptiden van het Swiss-Prot zoekbestand zonder \textit{missed cleavages} te zoeken,
 en maar liefst 30 minuten 37 seconden voor het zoekbestand met \textit{missed cleavages}!
 Dit is maar liefst $\frac{132 000}{152.98} = 857$ en $\frac{1 837 000}{140.64} = 13 000$ keer trager!
@@ -358,16 +359,16 @@ Dit is ongeveer 13 keer lager!
 
 \paragraph{Zoek match en haal informatie over kinderen op}
 De reden dat dit belangrijk is, is dat alle bladeren in deze sub-boom de proteïnen voorstellen waar dat de gevonden peptide een deel van is.
-De relevante informatie over de huidige peptide is daarom de informatie dat verbonden is aan deze proteïnen. % TODO: voor wat konden we dit ook nog gebruiken?
+De relevante informatie over de huidige peptide is daarom de informatie die verbonden is met deze proteïnen.
 
 Figuur~\ref{fig:performance_all-occurrences_tree} bevat een overzicht van de nodige zoektijd voor beide implementaties op alle zoekbestanden.
 We zien duidelijk dat er hier een gigantisch verschil is tussen de C++ en Rust implementatie.
-Vermoedelijk komt dit door de andere memory layout die ontstaat doordat de Rust implementatie 1 grote Vector gebruikt, terwijl de C++ implementatie losse toppen gebruikt die verspreid liggen in het geheugen.
+Vermoedelijk komt dit door de andere \textit{memory layout} die ontstaat doordat de Rust implementatie 1 grote Vector gebruikt, terwijl de C++ implementatie losse toppen gebruikt die verspreid liggen in het geheugen.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{search_all-occurrences_performance_tree}
-    \caption{Uitvoeringstijd voor inclusief het doorzoeken van de volledige subboom na match voor alle zoekbestanden}
+    \caption{Uitvoeringstijd inclusief het doorzoeken van de volledige subboom na match voor alle zoekbestanden}
     \label{fig:performance_all-occurrences_tree}
 \end{figure}
 
