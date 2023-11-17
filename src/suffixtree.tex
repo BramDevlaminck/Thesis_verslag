@@ -327,7 +327,7 @@ Uit deze grafieken vallen 2 duidelijke conclusies te trekken.
 Bij het zoeken zijn er 2 belangrijke manieren om te vergelijken.
 \begin{enumerate}
     \item Zoek totdat we weten als er een match bestaat voor de peptide of niet, en stop dan.
-    \item Zoek totdat er een match is, en doorzoek daarna de volledige sub-boom om alle informatie van de kinderen op te halen.
+    \item Zoek totdat er een match is, en doorzoek daarna de volledige subboom om alle informatie van de kinderen op te halen.
 
 \end{enumerate}
 
@@ -358,7 +358,7 @@ Als keerzijde van de medaille gebruikt Unipept op dit moment hiervoor slechts 6.
 Dit is ongeveer 13 keer lager!
 
 \paragraph{Zoek match en haal informatie over kinderen op}
-De reden dat dit belangrijk is, is dat alle bladeren in deze sub-boom de proteïnen voorstellen waar dat de gevonden peptide een deel van is.
+De reden dat dit belangrijk is, is dat alle bladeren in deze subboom de proteïnen voorstellen waar dat de gevonden peptide een deel van is.
 De relevante informatie over de huidige peptide is daarom de informatie die verbonden is met deze proteïnen.
 
 Figuur~\ref{fig:performance_all-occurrences_tree} bevat een overzicht van de nodige zoektijd voor beide implementaties op alle zoekbestanden.
@@ -374,24 +374,25 @@ Vermoedelijk komt dit door de andere \textit{memory layout} die ontstaat doordat
 
 
 \section{Taxon ID aggregatie}\label{sec:taxon-id-aggregatie}
-Mogelijks het belangrijkste stukje info over een staal peptiden is weten van welke organismen dit komt.
+Één van de belangrijkste analyses die Unipept aanbiedt, is de taxonomische analyse waarin uitgezocht wordt met welke organismen de peptiden uit een staal overeenkomen.
 Aangezien peptiden kunnen matchen met proteïnen die uit verschillende organismen komen moet er een manier gekozen worden om deze informatie te aggregeren, of te beslissen van welk organisme dit komt met de grootste kans.
-Aangezien er geen manier is om met zekerheid te zeggen uit welke proteïne de peptide komt (als er meerdere opties zijn) gaat Unipept de info gaan veralgemenen.
-Anders gezegd: Unipept zal enkel info geven die geldt op alle gematchte proteïnen.
-1 van deze stukjes informatie is het Taxon ID\@.
-Ipv een lijst van alle mogelijke ID's te geven (wat een extreem grote lijst kan zijn), en wat zou vereisen de volledige sub-boom na het vinden van een match af te lopen, gaan we deze taxon IDs gaan aggregeren aan de hand van een strategie gebruik makende van de NCBI taxonomy database~\cite{NCBI_original_article, NCBI_update}.
-Met andere woorden, we gaan dus op zoek naar de kleinste gemeenschappelijke voorouder van alle taxon ids die in de bladeren van de sub-boom zitten van een bepaalde top.
+Aangezien er geen manier is om met zekerheid te zeggen uit welke proteïne de peptide komt (als er meerdere opties zijn) gaat Unipept de info conservatief veralgemenen.
+Anders gezegd: Unipept zal enkel info geven die geldt voor alle gematchte proteïnen.
+Één van deze stukjes informatie is het Taxon ID\@.
+In plaats van een lijst van alle mogelijke IDs te geven (wat een extreem grote lijst kan zijn), en wat zou vereisen de volledige subboom na het vinden van een match af te lopen, gaan we deze taxon IDs gaan aggregeren aan de hand van een strategie gebruik makende van de NCBI taxonomy database~\cite{NCBI_original_article, NCBI_update}.
+Met andere woorden, we gaan dus op zoek naar de kleinste gemeenschappelijke voorouder van alle taxon IDs die in de bladeren van de subboom zitten van een bepaalde top.
 Hiervoor bestaan verschillende strategieën die al uitgewerkt zijn in UMGAP, en die hier herbruikbaar waren.
 \\ \\
 Origineel was het plan om LCA* te gebruiken als aggregatie strategie.
-Dit is een heuristiek van LCA (lowest common ancestor) die de meest specifieke taxon in de boom zoekt die ofwel een ouder of kind is van elke taxon in de boom.
-Anders gezegd is dit de LCA van een lijst taxa, nadat we alle taxa verwijdert hebben die ouder zijn van minstens 1 taxon in die lijst~\cite{UMGAP_paper}.
+Dit is een heuristiek om de LCA (lowest common ancestor) te berekenen.
+Hierbij zoeken we de meest specifieke taxon in de boom die ofwel een ouder of kind is van elke taxon in de boom.
+Anders gezegd is dit de LCA van een lijst taxa, nadat we alle taxa verwijdert hebben die ouder zijn van minstens één taxon in die lijst~\cite{UMGAP_paper}.
 Het voordeel hiervan is dat we iets langer exactere info kunnen behouden.
-Want bij LCA zelf zal het resultaat altijd 1 zijn vanaf 1 top in de subtree dit als LCA heeft (1 is namelijk ouder van alle andere taxons!).
+Want bij LCA zelf zal het resultaat altijd één zijn vanaf één top in de subtree dit als LCA heeft (1 is namelijk ouder van alle andere taxons!).
 \\ \\
-Het idee was dat we niet elke keer naar de bladeren moeten gaan om het taxon id te berekenen van 1 top, maar dat dit ging kunnen op basis van de taxon ids van de directe kinderen van de top.
-Op deze manier gingen we met 1 bottom-up sweep van de boom alle taxon ids kunnen berekenen.
-Dit bleek echter niet mogelijk omdat kijken naar de directe kinderen een ander resultaat geeft van gebruik maken van de bladeren van de sub-boom.
+Het idee was dat we niet elke keer naar de bladeren moeten gaan om het taxon ID te berekenen van 1 top, maar dat dit ging kunnen op basis van de taxon IDs van de directe kinderen van de top.
+Op deze manier gingen we met één bottom-up sweep van de boom alle taxon IDs kunnen berekenen.
+Dit bleek echter niet mogelijk omdat kijken naar de directe kinderen een ander resultaat geeft dan gebruik maken van de bladeren van de subboom.
 Figuur~\ref{fig:lca*_diff} toont een minimaal voorbeeld uitgewerkt voor beide strategieën.
 De licht grijze toppen zijn ingevuld zijn aan de hand van aggregatie, terwijl de zwarte toppen gegeven zijn.
 
@@ -420,7 +421,7 @@ De licht grijze toppen zijn ingevuld zijn aan de hand van aggregatie, terwijl de
     \caption{Minimaal voorbeeld van de 2 aggregatie manieren gebruik makende van LCA*}\label{fig:lca*_diff}
 \end{figure}
 
-Onderstaande uitleg behandeld de werkwijze voor bovenstaande figuren.
+Onderstaande uitleg behandelt de werkwijze voor bovenstaande figuren.
 \begin{itemize}
     \item Het toepassen van LCA* voor het berekenen van de top op basis van de bladeren van de boom (\{9606, 10566, 9606\}) heeft als resultaat 1 voor de root van de boom.
     9606 en 10566 zijn geen ouder of kind van elkaar, dus zal LCA* hetzelfde doen als LCA\@.
@@ -449,12 +450,11 @@ Het opbouwen gebeurt snel en het zoeken voor een match gaat vliegensvlug.
 \\ \\
 Door de eigen implementatie in Rust kunnen we ook wat tijd besparen ten opzichte van een equivalente C++ implementatie.
 Een deel van de winst zit tijdens het opbouwen van de boom, maar vooral tijdens het zoeken wanneer informatie uit de bladeren gehaald moet worden.
-Vermoedelijk ligt de andere geheugen structuur hiervoor aan de basis.
+Vermoedelijk ligt de andere geheugenstructuur hiervoor aan de basis.
 \\ \\
 Ondanks de veelbelovende resultaten op vlak van snelheid is er een keerzijde aan de medaille.
 Het geheugengebruik is zo groot dat we op zoek moeten naar een andere datastructuur.
 Voor de Swiss-Prot databank gaat het geheugenverbruik al boven 80 GB, terwijl ons einddoel is om dit te gebruiken op de TrEMBL dataset.
-Dit wilt zeggen dat we alles \textit{slechts} $\pm$ 500 maal moeten opschalen en dan werkt het!
-De oplossing is dus simpelweg een server gebruiken met ongeveer 50 TB RAM geheugen!
-Of toch niet\ldots
-Tijd om naar een andere datastructuur te gaan!
+Dit wilt zeggen dat als we alles \textit{slechts} $\pm$ 500 maal kunnen opschalen het doel bereikt is.
+Dit zou echter vereisen dat we een server hebben met ongeveer 50 TB aan RAM geheugen.
+Dit is niet mogelijk, we moeten daarom op zoek naar een andere datastructuur die minder geheugen vereist.
