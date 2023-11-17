@@ -1,19 +1,18 @@
-\chapter{Suffix Bomen}\label{ch:suffix-bomen}
-Een eerste datastructuur die het mogelijk maakt om snel strings in een groot aantal andere strings te zoeken zijn suffix bomen.
-Meer precies eigenlijk een gegeneraliseerde suffix boom.
+\chapter{Suffixbomen}\label{ch:suffix-bomen}
+Een eerste datastructuur die het mogelijk maakt om snel kleine strings in een groot aantal andere strings op te zoeken zijn suffixbomen.
+Meer precies eigenlijk een gegeneraliseerde suffixboom.
 \\ \\
-De reden om deze datastructuur als eerste te behandelen is dat hij vrij intuïtief is en de makkelijkste van alle mogelijke opties.
-Bovendien kan een goede tijdscomplexiteit bereikt worden aangezien het zoeken in een suffix boom in $O(n)$ kan (met $n$ de lengte van de zoekstring, in ons geval is dit een peptide).
-Het opbouwen kan ook lineair gebruik makende van het algoritme van Ukkonen~\cite{Ukkonen1995}, met heeft een complexiteit van $O(m)$, met $m$ de som van de lengtes van alle proteïnes in de databank.
+We behandelen deze datastructuur als eerste omdat hij vrij intuïtief is en de makkelijkste van alle mogelijke opties.
+Bovendien kan een goede tijdscomplexiteit bereikt worden aangezien het zoeken in een suffixboom in $O(n)$ tijd kan (met $n$ de lengte van de zoekstring, in ons geval is dit een peptide).
+Het opbouwen van de suffixboom kan ook in lineaire tijd gebeuren, al zei het dan lineair in de totale lengte van alle proteïnen in de databank (die we aanduiden met $m$). % TODO: vraag wat moest komen na: al zei het dan lineair in de totoale lengte van de ?
 
-
-\section{Wat zijn suffix bomen?}\label{sec:wat-zijn-suffix-bomen?}
-Suffix bomen zijn een soort veralgemening van tries (prefix bomen).
-Door er voor te zorgen dat het laatste teken uniek is zal elke suffix van de input string uniek zijn (elke suffix is dus nooit de prefix van een andere suffix).
+\section{Wat zijn suffixbomen?}\label{sec:wat-zijn-suffix-bomen?}
+suffixbomen zijn een soort veralgemening van tries (prefix bomen).
+Door er voor te zorgen dat het laatste teken uniek is zal elke suffix van de inputstring uniek zijn (elke suffix is dus nooit de prefix van een andere suffix).
 Dit zorgt er voor dat elke suffix een eigen blad in de boom zal krijgen.
-Dit is dan ook van waar de naam suffix boom komt.
-Elk pad tot een blad in de boom zal exact 1 suffix voorstellen uit de inputstring waarmee de boom gebouwd is.
-Als voorbeeld stelt figuur~\ref{fig:suffix_tree_example} de suffix boom voor van de string \texttt{acacgt\$}.
+Dit is dan ook van waar de naam suffixboom komt.
+Elk pad tot een blad in de boom zal exact 1 suffix voorstellen uit de inputstring waarvoor de boom gebouwd is.
+Als voorbeeld stelt figuur~\ref{fig:suffix_tree_example} de suffixboom voor van de string \texttt{acacgt\$}.
 Merk op dat we \texttt{`\$`} als uniek eindteken gebruiken.
 
 \begin{figure}[H]
@@ -63,20 +62,20 @@ Merk op dat we \texttt{`\$`} als uniek eindteken gebruiken.
         }
         ;
     \end{tikzpicture}
-    \caption{Suffix boom voor the string \texttt{acacgt\$}}\label{fig:suffix_tree_example}
+    \caption{suffixboom voor the string \texttt{acacgt\$}}\label{fig:suffix_tree_example}
 
 \end{figure}
 
 Natuurlijk is dit niet efficiënt om effectief op deze manier op te slaan.
-Als de tekst lengte $n$ heeft, heeft de suffix boom voor de tekst ten hoogste $2n - 1$ toppen en $2n - 2$ bogen.
+Als de tekst lengte $n$ heeft, heeft de suffixboom voor de tekst ten hoogste $2n - 1$ toppen en $2n - 2$ bogen.
 Het aantal toppen en bogen is dus $\Theta(n)$.
-Jammer genoeg vraagt alleen het opslaan van alle prefixen in de bladeren $\Theta(n^2)$ geheugen\cite{AD3_ukkonen}.
+Jammer genoeg vraagt alleen het opslaan van alle prefixen in de bladeren $\Theta(n^2)$ geheugen~\cite{AD3_ukkonen}.
 In de plaats kunnen we pointers bijhouden naar het begin en einde van een substring in de originele string.
 Dit zorgt er voor dat we geen kopie meer moeten opslaan van de originele string in elk blad!
 We moeten dit zelfs niet in elk blad bijhouden!
 We kunnen simpelweg bij elke boog tussen de toppen de labels bijhouden.
-Het label van het blad kunnen we daarna reconstrueren door de labels van de bogen op weg naar dit blad te concateneren.
-Door dit te doen is de nodige opslag per top een constante, en is het geheugen gebruik lineair.
+Het label van het blad kunnen we daarna reconstrueren door de labels van de bogen op weg naar dit blad te achter elkaar te plaatsen.
+Door dit te doen is de nodige opslag per top een constante, en is het geheugengebruik lineair.
 Figuur~\ref{fig:suffix_tree_example_indices} toont hoe dit er in de praktijk uit ziet.
 Merk op dat de eind-index exclusief is.
 Een boog met waarde \texttt{1,3}, stelt dus de substring \texttt{ca} voor uit het voorbeeld.
@@ -128,34 +127,34 @@ Een boog met waarde \texttt{1,3}, stelt dus de substring \texttt{ca} voor uit he
         }
         ;
     \end{tikzpicture}
-    \caption{Suffix boom voor de string \texttt{acacgt\$} gebruik makende van indices}\label{fig:suffix_tree_example_indices}
+    \caption{suffixboom voor de string \texttt{acacgt\$} gebruik makende van indices}\label{fig:suffix_tree_example_indices}
 
 \end{figure}
 
 
-\section{Ukkonen}\label{sec:Ukkonen}
-Het algoritme van Ukkonen om suffix bomen op te bouwen staat gekend als vrij moeilijk.
-Zeker de originele paper zelf is niet makkelijk verstaanbaar naar mijn mening en bevat weinig pseudocode.
-Om dit beter te verstaan ben ik op zoek gegaan naar meerdere papers en boeken die dit algoritme in detail beschrijven.
-Uiteindelijk kwam het grootste deel van de informatie van 3 verschillende plaatsen:
-\begin{enumerate}
-    \item Het boek \textit{Algorithms on Strings, Trees and Sequences}~\cite{Gusfield1997}.
-    \item De cursus \textit{Algoritmen \& Datastucturen 3} aan UGent gegeven door prof. Gunnar Brinkmann~\cite{AD3_ukkonen}.
-    \item De cursus Computational Challenges in Bioinformatics gegeven door prof. dr. Jan Fostier and prof. dr. Peter Dawyndt.
-    Naast een cursus met wat info over het algoritme van Ukkonen is er ook een implementatie van dit algoritme gemaakt door Jan Fostier in C++ \footnote{\url{https://github.ugent.be/jfostier/CCB/tree/master/suffixtree}}.
-\end{enumerate}
+\section{Het Algoritme van Ukkonen}\label{sec:Ukkonen}
+Het algoritme van Ukkonen om suffixbomen op te bouwen~\cite{Ukkonen1995} is niet eenvoudig.
+De pseudocode en de theoretische beschrijving in de originele paper is beide vrij complex.
+Het algoritme komt echter uitgebreid aan bod in een heleboel andere publicaties en boeken~\cite{Gusfield1997, AD3_ukkonen, CCB_course, Ukkonen_CCB}.
+%\begin{enumerate}
+%    \item Het boek \textit{Algorithms on Strings, Trees and Sequences}~\cite{Gusfield1997}.
+%    \item De cursus \textit{Algoritmen \& Datastucturen 3} aan UGent gegeven door prof. Gunnar Brinkmann~\cite{AD3_ukkonen}.
+%    \item De cursus Computational Challenges in Bioinformatics gegeven door prof. dr. Jan Fostier and prof. dr. Peter Dawyndt.
+%    Naast een cursus met wat info over het algoritme van Ukkonen is er ook een implementatie van dit algoritme gemaakt door Jan Fostier in C++~\cite{Ukkonen_CCB}.
+%\end{enumerate}
 
 \subsection{Kotlin}\label{subsec:kotlin}
-Om te beginnen heb ik eerst een implementatie van het algoritme van Ukkonen in Kotlin gemaakt zodat ik me niet op taal-specifieke problemen zou moeten focussen (vooral restricties rond borrowing in Rust).
-Hier was gelukkig de referentie code van Jan Fostier een grote hulp omdat dit tijdens het mogelijk maakte om te zien wat de toestand van het programma zou moeten zijn na $x$ iteraties.
+Ik ben begonnen met een implementatie van Ukkonen's algoritme in Kotlin zodat ik me niet op taal-specifieke problemen zou moeten focussen (vooral restricties rond \textit{borrowing} in Rust).
+Hier was gelukkig de referentiecode van prof. Jan Fostier~\cite{Ukkonen_CCB} een grote hulp omdat dit het mogelijk maakte om tijdens het debuggen te zien wat de toestand van het programma is na $x$ stappen.
 \\ \\
-1 van de verschillen is dat ik hier toen gekozen heb voor een representatie van de kinderen aan de hand van een HashMap ipv een array van pointers, simpelweg uit gemak zodat ik rechtstreeks de characters als key kon gebruiken, en die niet moest omzetten naar een index.
-De reden om Kotlin te kiezen en niet Python is simpelweg performantie aangezien het in kotlin nog doenbaar was om de test datasets op te bouwen in een redelijke tijd.
+Één van de verschillen tussen mijn implementatie en de referentie-implementatie is de representatie van de kinderen.
+In mijn implementatie is dit aan de hand van een HashMap in plaats van een array van pointers, simpelweg uit gemak zodat ik rechtstreeks een karakter als sleutel kon gebruiken, en die niet moest omzetten naar een index.
+Om dit prototype te maken heb ik gekozen voor Kotlin boven Python aangezien Kotlin performanter is en ook een aangename ontwikkelingservaring biedt.
+Hierdoor is het mogelijk om toch de test datasets op te bouwen in een redelijke tijd.
 \\ \\
-Uiteindelijk bleek de grootste struikelblok in het implementeren van het Ukkonen enkele off-by-1 errors.
+Uiteindelijk bleek de grootste struikelblok in het implementeren van Ukkonen enkele off-by-1 fouten.
 Aangezien je tijdens het algoritme eigenlijk werkt met substrings, maar deze opgeslagen worden aan de hand van hun begin- en eind-index wordt het debuggen veel omslachtiger.
-Tijdens het debuggen zie je namelijk enkel ``ik ben nu in top $y$ die de substring van index $i$ tot index $j$ voorstelt, en de kinderen stellen de substring $k$ tot $l$, \ldots voor''.
-Tot slot had ik op het einde ook enkele bugs die niet voorkwamen in kleinere voorbeelden die nog met de hand uit te werken waren, wat daardoor relatief wat tijd vroeg om op te lossen.
+Tot slot had ik op het einde ook enkele bugs die niet voorkwamen in kleinere voorbeelden die met de hand uit te werken waren, wat daardoor relatief wat tijd vroeg om op te lossen.
 
 \subsection{Rust}\label{subsec:rust}
 
@@ -175,43 +174,42 @@ Naar mijn mening is dit dus zeker een waardevolle toevoeging tijdens het leren v
 \begin{quote}
     \textit{Rust is known to be notorious difficult when it comes to certain data structures like linked lists, trees, etc. \cite{rust_difficulty_quote}}
 \end{quote}
-Deze quote komt rechtstreeks uit een Medium artikel en toont direct dat het maken van een suffix boom in Rust niet-triviaal ging zijn.
+Deze quote komt rechtstreeks uit een Medium artikel en toont direct aan dat het maken van een suffixboom in Rust niet-triviaal ging zijn.
 De oorzaak hiervoor ligt bij het \textit{ownership} systeem van Rust.
-Dit systeem zorgt er voor dat slechts 1 variabele eigenaar kan zijn van een stukje data.
-In dit geval kan dus slechts 1 top een andere top opslaan, of er een \textit{mutable reference} naar hebben.
-Meer praktisch wil dit dus zeggen dat slechts 1 top een pointer kan hebben naar een andere top, met de toelating om die top aan te passen (wat nodig is tijdens het opbouwen van de boom, waarin kinderen nog toegevoegd worden, toppen moeten gesplitst worden enz.)
+Dit systeem zorgt er voor dat slechts één variabele eigenaar kan zijn van een stukje data.
+In dit geval kan dus slechts één top een andere top opslaan, of er een \textit{mutable reference} naar hebben.
+Meer praktisch wil dit dus zeggen dat slechts één top een \textit{pointer} kan hebben naar een andere top, met de toelating om die top aan te passen (wat nodig is tijdens het opbouwen van de boom. Er worden namelijk nog kindere toegevoegd en toppen gesplitst)
 Dit is een groot probleem aangezien ouders pointers naar kinderen moeten hebben, de kinderen een pointer naar hun ouder, en er dan ook nog eens pointers zijn voor de suffix links.
-Dit gaat duidelijk niet zomaar voldoen aan het ownership systeem!
 \\ \\
 Als oplossing hiervoor introduceert Rust het \texttt{Rc<T>} datatype.
-Hierbij gaat Rust afstappen van zijn standaard ownership systeem en gebruik maken van Reference Counting.
-Pas wanneer alle references weg zijn zal het geheugen automatisch vrij gegeven worden.
-De beperking hierbij is echter dat deze referenties \textit{immutable} zijn, dit voldoet niet tijdens het opbouwen van de boom.
+Hierbij gaat Rust afstappen van zijn standaard \textit{ownership} systeem en gebruik maken van Reference Counting.
+Pas wanneer alle referenties weg zijn zal het geheugen automatisch vrij gegeven worden.
+De beperking hierbij is echter dat deze referenties \textit{immutable} zijn, dit volstaat niet tijdens het opbouwen van de boom.
 \\ \\
 Als oplossing hiervoor heeft Rust dan weer het \textit{interior mutability} patroon~\cite{interior_mutability} aan de hand van het datatype \texttt{Refcell}.
 Dit laat toe om data toch aan te passen, ook al is een reference immutable.
-Aangezien dit de standaard Rust regels doorbreekt, is dit \texttt{unsafe} en kan Rust \textit{at compile-time} geen \textit{memory safety} meer garanderen.
+Aangezien dit de standaard Rust regels doorbreekt, is dit \texttt{unsafe}\footnote{Dit is code waarvan de compiler niet kan nagaan als die aan alle voorwaarden voldoet die nodig zijn om \textit{memory safety} te kunnen garanderen. Dit sleutelwoord bestaat zodat de programmeur meer vrijheid zou kunnen krijgen om bepaalde patronen toch toe te kunnen passen. De verantwoordelijkheid om correct het geheugen te gebruiken wordt hier bij de programmeur gelegd. Een andere reden om \texttt{unsafe} te gebruiken is om bepaalde interacties met hardware uit te voeren. Deze zijn inherent onveilig en zouden anders onmogelijk zijn.} en kan Rust \textit{at compile-time} geen \textit{memory safety} meer garanderen.
 \texttt{Refcell} zal gelukkig wel de nodige code invoegen zodat runtime memory safety wel gegarandeerd kan worden.
 Mogelijke foutieve geheugen operaties zullen dus tijdens het uitvoeren van het programma gedetecteerd worden, \textbf{ten koste van performantie}.
 \\ \\
 Maar zelfs nu blijft er nog altijd een probleem.
-Geheugen aan de hand van reference counting zal enkel vrijgegeven kunnen worden indien de reference counter op 0 staat.
+Geheugen dat beheerd wordt aan de hand van \textit{reference counting} zal enkel vrijgegeven kunnen worden indien de \textit{reference counter} op 0 staat.
 Er zijn echter scenario's waar dit nooit zal gebeuren.
 Namelijk bij cyclische verwijzingen, een patroon dat jammer genoeg erg vaak voor komt (in ons geval bv een ouder die een pointer heeft naar een kind, en een kind een pointer naar de ouder).
 Als oplossing hiervoor introduceert Rust dan weer het \texttt{Weak<T>} datatype.
 \\ \\
 Dit is duidelijk erg ingewikkeld, en introduceert ook nog eens performance overhead die niet nodig lijkt.
 Een optie zou natuurlijk zijn door expliciet het \texttt{unsafe} keyword te gebruiken wat toe laat de ownership regels van Rust volledig uit te schakelen (zowel compile-time als run-time).
-Het nadeel hiervan is natuurlijk dat we dan de garanties van memory safety kwijt zijn, wat net 1 van de hoofdredenen is om Rust te gebruiken.
+Het nadeel hiervan is natuurlijk dat we dan de garanties van memory safety kwijt zijn, wat net één van de hoofdredenen is om Rust te gebruiken.
 Dit was dus geen mogelijke optie.
 Gelukkig is er een alternatieve manier waar ik op gestoten ben, een arena-based implementatie~\cite{rust_arena_trees}.
-Het idee hierbij is dat er 1 arena gemaakt wordt waarbij ownership erg simpel is.
+Het idee hierbij is dat er één arena gemaakt wordt waarbij ownership erg simpel is.
 In mijn implementatie is dit bijvoorbeeld een \texttt{Vector}.
 Alle toppen worden hierbij in deze ene vector opgeslagen.
-In plaats van pointers naar elkaar houden, zullen de toppen indexen bijhouden.
+In plaats van pointers naar elkaar houden bij te houden zullen de toppen indexen bijhouden.
 Deze index stelt de index in de arena van de top voor waarnaar anders een pointer wordt bijgehouden.
 \\ \\
-Na het maken van deze ontwerpaanpassingen bleef slechts 1 moeilijkheid over.
+Na het maken van deze ontwerpaanpassingen bleef slechts één moeilijkheid over.
 Uitzoeken hoe de cursor (die bij houdt waar we zijn in de boom tijdens het bouwen), de input string en de boom zelf zich van elkaar moeten verhouden in het ownership systeem.
 Uiteindelijk viel dit vrij makkelijk uit te zoeken.
 Het omzetten van de resterende Kotlin code naar Rust was erg simpel en bijna een één op één vertaling.
@@ -288,10 +286,10 @@ Uiteindelijk heb ik 1 aanpassingen moeten maken in de C++ code die al bestond om
 Oorspronkelijk werd er in elke top plaats gehouden voor 256 mogelijke kinderen.
 Dit was veel te hoog voor deze usecase waardoor het geheugenverbruik dramatisch groot was (ongeveer een factor 10 hoger dan wat nodig was).
 Uiteindelijk ben ik gegaan voor een implementatie (zowel in Rust als C++) waarin plaats gehouden wordt voor 28 kinderen.
-Dit zijn de 26 letters van het alfabet + \texttt{`\#`} + \texttt{`\$`}.
-De reden om \texttt{`\#`} en \texttt{`\$`} ook te gebruiken is omdat er een scheidingsteken nodig is tussen de sequenties (in deze implementatie \texttt{`\#`}) en een uniek teken op het einde (de \texttt{`\$`}).
+Dit zijn de 26 letters van het alfabet (de 20 aminozuren + enkele \textit{wildcard characters}) + \texttt{`\#`} + \texttt{`\$`}.
+\texttt{`\#`} en \texttt{`\$`} worden gebruikt als resp. scheidingsteken en eindteken.
 Dit is ook wat al gebeurde in de bestaande C++ implementatie.
-
+\\ \\
 Een andere aanpak zou kunnen zijn om HashMaps te gebruiken.
 Het totale geheugenverbruik zal hierdoor afnemen naar ongeveer 60\% van het huidige verbruik, maar ten koste van performantie tijdens het zoeken (wat net erg belangrijk is).
 Hoe dan ook blijft het geheugen verbruik extreem groot, welke implementatie ook gekozen wordt.
@@ -311,7 +309,7 @@ De resultaten hiervan zijn terug te vinden in figuur~\ref{fig:tree_building}.
     \subfloat[Tijd nodig om de boom op te bouwen]{\includegraphics[width=\linewidth]{building_tree_time}}\\[4ex] % [4ex] om wat extra vertical spacing in te voegen
 
     \subfloat[Maximaal gebruikt geheugen tijdens het opbouwen van de boom]{\includegraphics[width=\linewidth]{building_tree_memory}}
-    \caption{Vergelijking van C++ en Rust voor het opbwouven van de suffix boom}\label{fig:tree_building}
+    \caption{Vergelijking van C++ en Rust voor het opbwouven van de suffixboom}\label{fig:tree_building}
 \end{figure}
 
 Uit deze grafieken vallen 2 duidelijke conclusies te trekken.
@@ -432,8 +430,8 @@ Onderstaande uitleg behandeld de werkwijze voor bovenstaande figuren.
     De LCA van 9606 is natuurlijk gewoon zichzelf!
 \end{itemize}
 
-Het berekenen van de LCA* op de eerste manier is echter niet schaalbaar voor de volledige suffix boom.
-Om een idee van grootorde te geven: de suffix boom voor de Swiss-Prot dataset bevat 328 922 516 toppen in het totaal, waarvan 206 523 693 bladeren.
+Het berekenen van de LCA* op de eerste manier is echter niet schaalbaar voor de volledige suffixboom.
+Om een idee van grootorde te geven: de suffixboom voor de Swiss-Prot dataset bevat 328 922 516 toppen in het totaal, waarvan 206 523 693 bladeren.
 \\ \\
 Daarom hebben we uiteindelijk toch voor de standaard LCA aggregatie manier gekozen.
 Deze laat wel toe de toppen op deze efficiëntere manier te aggregeren.
@@ -444,8 +442,8 @@ Tot slot heb ik ook eens vergeleken hoe groot de behaalde tijdswinst is bij het 
 Bij het aggregeren op basis van de bladeren met de RMQ implementatie was de uitvoeringstijd maar liefst 12 uur, 19 minuten en 16 seconden!
 Dit is dus een extreem groot verschil.
 
-\section{Conclusie Suffix Bomen}\label{sec:conclusie-suffix-bomen}
-Het is duidelijk dat suffix bomen erg performant zijn voor dit scenario.
+\section{Conclusie suffixbomen}\label{sec:conclusie-suffix-bomen}
+Het is duidelijk dat suffixbomen erg performant zijn voor dit scenario.
 Het opbouwen gebeurt snel en het zoeken voor een match gaat vliegensvlug.
 \\ \\
 Door de eigen implementatie in Rust kunnen we ook wat tijd besparen ten opzichte van een equivalente C++ implementatie.
