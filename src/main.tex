@@ -158,9 +158,12 @@
     Binnen het onderzoeksgebied van de informatica kunnen we dit probleem herformuleren.
     Binnen een grote verzameling van middellange strings (alle eiwitten in onze databank), moeten we voor een verzameling van korte strings (peptiden) terugvinden in welke van deze middellange strings ze voorkomen.
     \\ \\
-    Belangrijk hierbij is dat dit niet alleen gebeurt, maar we ook proberen het vereiste geheugen tot een minimum te beperken.
+    Belangrijk hierbij is dat dit niet alleen snel gebeurt, maar we ook proberen het vereiste geheugen tot een minimum te beperken.
     Dit omdat de datasets waarmee gewerkt wordt extreem groot zijn.
-    Om dit te doen is het doel van deze thesis om meerdere datastructuren uit te werken en te implementeren in Rust, waarna ze getest kunnen worden.
+    \\ \\
+    Tot slot willen we ook inexacte matching toevoegen tijdens het zoeken.
+    Door dit te doen kunnen we beter omgaan met kleine fouten die gebeuren tijdens het uitlezen van de experimentele stalen.
+    Om dit allemaal te doen is het doel van deze thesis om meerdere datastructuren uit te werken en te implementeren in Rust, waarna ze getest kunnen worden.
     Het gebruik van Rust laat ons toe om extreem hoge performantie te verkrijgen (vergelijkbaar met C en C++~\cite{rustPerformantie}) in combinatie met \textit{memory safety}\footnote{\textit{Memory safety} is een eigenschap die verzekert dat programma's enkel gebruik kunnen maken van geldige geheugenlocaties en geen \textit{undefined behaviour} zoals \textit{buffer overflows}, \textit{dangling pointers} en andere geheugen gerelateeerde fouten kunnen vertonen}.
     Bovendien zijn sommige delen van Unipept al geschreven in Rust (zie UMGAP~\cite{UMGAP_paper, UMGAP_source}).
     Dit laat toe om waar mogelijk bestaande code te hergebruiken.
