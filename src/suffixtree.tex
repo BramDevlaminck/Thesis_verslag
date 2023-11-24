@@ -71,13 +71,13 @@ Als de tekst lengte $n$ heeft, heeft de suffixboom voor de tekst ten hoogste $2n
 Het aantal toppen en bogen is dus $\Theta(n)$.
 Jammer genoeg vraagt alleen het opslaan van alle prefixen in de bladeren $\Theta(n^2)$ geheugen~\cite{AD3_ukkonen}.
 In de plaats kunnen we pointers bijhouden naar het begin en einde van een substring in de originele string.
-Dit zorgt er voor dat we geen kopie meer moeten opslaan van de originele string in elk blad!
-We moeten dit zelfs niet in elk blad bijhouden!
+Dit zorgt er voor dat we geen kopie meer moeten opslaan van de originele string in elk blad.
+Sterker nog, we moeten dit zelfs niet in elk blad bijhouden.
 We kunnen simpelweg bij elke boog tussen de toppen de labels bijhouden.
 Het label van het blad kunnen we daarna reconstrueren door de labels van de bogen op weg naar dit blad te achter elkaar te plaatsen.
 Door dit te doen is de nodige opslag per top een constante, en is het geheugengebruik lineair.
 Figuur~\ref{fig:suffix_tree_example_indices} toont hoe dit er in de praktijk uit ziet.
-Merk op dat de eind-index exclusief is.
+Merk op dat de eindindex exclusief is.
 Een boog met waarde \texttt{1,3}, stelt dus de substring \texttt{ca} voor uit het voorbeeld.
 
 \begin{figure}[H]
@@ -134,8 +134,9 @@ Een boog met waarde \texttt{1,3}, stelt dus de substring \texttt{ca} voor uit he
 
 \section{Het Algoritme van Ukkonen}\label{sec:Ukkonen}
 Het algoritme van Ukkonen om suffixbomen op te bouwen~\cite{Ukkonen1995} is niet eenvoudig.
-De pseudocode en de theoretische beschrijving in de originele paper is beide vrij complex.
+De pseudocode en de theoretische beschrijving in de originele paper zijn beide vrij complex.
 Het algoritme komt echter uitgebreid aan bod in een heleboel andere publicaties en boeken~\cite{Gusfield1997, AD3_ukkonen, CCB_course, Ukkonen_CCB}.
+Deze waren een erg grote hulp in het maken van een eigen eigen implementatie.
 %\begin{enumerate}
 %    \item Het boek \textit{Algorithms on Strings, Trees and Sequences}~\cite{Gusfield1997}.
 %    \item De cursus \textit{Algoritmen \& Datastucturen 3} aan UGent gegeven door prof. Gunnar Brinkmann~\cite{AD3_ukkonen}.
@@ -147,13 +148,13 @@ Het algoritme komt echter uitgebreid aan bod in een heleboel andere publicaties 
 Ik ben begonnen met een implementatie van Ukkonen's algoritme in Kotlin zodat ik me niet op taal-specifieke problemen zou moeten focussen (vooral restricties rond \textit{borrowing} in Rust).
 Hier was gelukkig de referentiecode van prof. Jan Fostier~\cite{Ukkonen_CCB} een grote hulp omdat dit het mogelijk maakte om tijdens het debuggen te zien wat de toestand van het programma is na $x$ stappen.
 \\ \\
-Één van de verschillen tussen mijn implementatie en de referentie-implementatie is de representatie van de kinderen.
+Één van de verschillen tussen mijn Kotlin implementatie en de referentie-implementatie is de manier waarop de kinderen voorgesteld worden.
 In mijn implementatie is dit aan de hand van een HashMap in plaats van een array van pointers, simpelweg uit gemak zodat ik rechtstreeks een karakter als sleutel kon gebruiken, en die niet moest omzetten naar een index.
 Om dit prototype te maken heb ik gekozen voor Kotlin boven Python aangezien Kotlin performanter is en ook een aangename ontwikkelingservaring biedt.
 Hierdoor is het mogelijk om toch de test datasets op te bouwen in een redelijke tijd.
 \\ \\
 Uiteindelijk bleek de grootste struikelblok in het implementeren van Ukkonen enkele off-by-1 fouten.
-Aangezien je tijdens het algoritme eigenlijk werkt met substrings, maar deze opgeslagen worden aan de hand van hun begin- en eind-index wordt het debuggen veel omslachtiger.
+Aangezien je tijdens het algoritme eigenlijk werkt met substrings, maar deze opgeslagen worden aan de hand van hun begin- en eindindex wordt het debuggen veel omslachtiger.
 Tot slot had ik op het einde ook enkele bugs die niet voorkwamen in kleinere voorbeelden die met de hand uit te werken waren, wat daardoor relatief wat tijd vroeg om op te lossen.
 
 \subsection{Rust}\label{subsec:rust}
@@ -161,7 +162,7 @@ Tot slot had ik op het einde ook enkele bugs die niet voorkwamen in kleinere voo
 \subsubsection{Eerste ervaring}
 Aangezien dit mijn eerste ervaring was met Rust deel ik graag even mijn eerste bevindingen mee.
 Zelf heb ik eerst \textit{the Rust book} gelezen~\cite{the_rust_book}.
-Wat op zich veel goede informatie heeft, maar naar mijn ervaring soms te veel.
+Wat op zich veel goede informatie heeft, maar naar mijn ervaring soms te veel details bevat.
 Een veelvoorkomend patroon in het boek is dat een deel van een concept geïntroduceerd wordt en dat je dan als lezer geïnformeerd wordt dat je er nu nog niet over moet denken, dat er meer informatie hierover komt in een later hoofdstuk.
 Dit zorgt ervoor dat het soms moeilijk is de bomen door het bos te zien.
 Zeker aangezien Rust vaak verschillende syntaxen heeft om hetzelfde te doen, waardoor je als lezer moeilijk je kunt focussen op de essentiële delen.
@@ -178,16 +179,16 @@ Deze quote komt rechtstreeks uit een Medium artikel en toont direct aan dat het 
 De oorzaak hiervoor ligt bij het \textit{ownership} systeem van Rust.
 Dit systeem zorgt er voor dat slechts één variabele eigenaar kan zijn van een stukje data.
 In dit geval kan dus slechts één top een andere top opslaan, of er een \textit{mutable reference} naar hebben.
-Meer praktisch wil dit dus zeggen dat slechts één top een \textit{pointer} kan hebben naar een andere top, met de toelating om die top aan te passen (wat nodig is tijdens het opbouwen van de boom. Er worden namelijk nog kindere toegevoegd en toppen gesplitst)
+Meer praktisch wil dit dus zeggen dat slechts één top een \textit{pointer} kan hebben naar een andere top, met de toelating om die top aan te passen (wat nodig is tijdens het opbouwen van de boom. Er worden namelijk nog kindere toegevoegd en toppen gesplitst).
 Dit is een groot probleem aangezien ouders pointers naar kinderen moeten hebben, de kinderen een pointer naar hun ouder, en er dan ook nog eens pointers zijn voor de suffix links.
 \\ \\
 Als oplossing hiervoor introduceert Rust het \texttt{Rc<T>} datatype.
 Hierbij gaat Rust afstappen van zijn standaard \textit{ownership} systeem en gebruik maken van Reference Counting.
-Pas wanneer alle referenties weg zijn zal het geheugen automatisch vrij gegeven worden.
+Pas wanneer alle referenties weg zijn zal het geheugen automatisch vrijgegeven worden.
 De beperking hierbij is echter dat deze referenties \textit{immutable} zijn, dit volstaat niet tijdens het opbouwen van de boom.
 \\ \\
 Als oplossing hiervoor heeft Rust dan weer het \textit{interior mutability} patroon~\cite{interior_mutability} aan de hand van het datatype \texttt{Refcell}.
-Dit laat toe om data toch aan te passen, ook al is een reference immutable.
+Dit laat toe om data toch aan te passen, ook al is de referentie \textit{immutable}.
 Aangezien dit de standaard Rust regels doorbreekt, is dit \texttt{unsafe}\footnote{Dit is code waarvan de compiler niet kan nagaan als die aan alle voorwaarden voldoet die nodig zijn om \textit{memory safety} te kunnen garanderen. Dit sleutelwoord bestaat zodat de programmeur meer vrijheid zou kunnen krijgen om bepaalde patronen toch toe te kunnen passen. De verantwoordelijkheid om correct het geheugen te gebruiken wordt hier bij de programmeur gelegd. Een andere reden om \texttt{unsafe} te gebruiken is om bepaalde interacties met hardware uit te voeren. Deze zijn inherent onveilig en zouden anders onmogelijk zijn.} en kan Rust \textit{at compile-time} geen \textit{memory safety} meer garanderen.
 \texttt{Refcell} zal gelukkig wel de nodige code invoegen zodat runtime memory safety wel gegarandeerd kan worden.
 Mogelijke foutieve geheugen operaties zullen dus tijdens het uitvoeren van het programma gedetecteerd worden, \textbf{ten koste van performantie}.
@@ -195,14 +196,14 @@ Mogelijke foutieve geheugen operaties zullen dus tijdens het uitvoeren van het p
 Maar zelfs nu blijft er nog altijd een probleem.
 Geheugen dat beheerd wordt aan de hand van \textit{reference counting} zal enkel vrijgegeven kunnen worden indien de \textit{reference counter} op 0 staat.
 Er zijn echter scenario's waar dit nooit zal gebeuren.
-Namelijk bij cyclische verwijzingen, een patroon dat jammer genoeg erg vaak voor komt (in ons geval bv een ouder die een pointer heeft naar een kind, en een kind een pointer naar de ouder).
+Namelijk bij cyclische verwijzingen, een patroon dat jammer genoeg erg vaak voor komt (in ons geval bv. een ouder die een pointer heeft naar een kind, en een kind een pointer naar de ouder).
 Als oplossing hiervoor introduceert Rust dan weer het \texttt{Weak<T>} datatype.
 \\ \\
-Dit is duidelijk erg ingewikkeld, en introduceert ook nog eens performance overhead die niet nodig lijkt.
-Een optie zou natuurlijk zijn door expliciet het \texttt{unsafe} keyword te gebruiken wat toe laat de ownership regels van Rust volledig uit te schakelen (zowel compile-time als run-time).
+Dit is duidelijk erg ingewikkeld, en introduceert ook nog eens \textit{performance overhead} die niet nodig lijkt.
+Een optie zou natuurlijk zijn door expliciet het \texttt{unsafe} keyword te gebruiken wat toe laat de ownership regels van Rust volledig uit te schakelen (zowel tijdens het compileren als tijdens het uitvoeren).
 Het nadeel hiervan is natuurlijk dat we dan de garanties van memory safety kwijt zijn, wat net één van de hoofdredenen is om Rust te gebruiken.
 Dit was dus geen mogelijke optie.
-Gelukkig is er een alternatieve manier waar ik op gestoten ben, een arena-based implementatie~\cite{rust_arena_trees}.
+Gelukkig is er een alternatieve manier waar ik op gestoten ben, een \textit{arena-based} implementatie~\cite{rust_arena_trees}.
 Het idee hierbij is dat er één arena gemaakt wordt waarbij ownership erg simpel is.
 In mijn implementatie is dit bijvoorbeeld een \texttt{Vector}.
 Alle toppen worden hierbij in deze ene vector opgeslagen.
@@ -210,7 +211,7 @@ In plaats van pointers naar elkaar houden bij te houden zullen de toppen indexen
 Deze index stelt de index in de arena van de top voor waarnaar anders een pointer wordt bijgehouden.
 \\ \\
 Na het maken van deze ontwerpaanpassingen bleef slechts één moeilijkheid over.
-Uitzoeken hoe de cursor (die bij houdt waar we zijn in de boom tijdens het bouwen), de input string en de boom zelf zich van elkaar moeten verhouden in het ownership systeem.
+Uitzoeken hoe de cursor (die bijhoudt waar we zijn in de boom tijdens het bouwen), de input string en de boom zelf zich van elkaar moeten verhouden in het ownership systeem.
 Uiteindelijk viel dit vrij makkelijk uit te zoeken.
 Het omzetten van de resterende Kotlin code naar Rust was erg simpel en bijna een één op één vertaling.
 Het enige verschil is dat ik in de Rust implementatie gebruik heb gemaakt van een array om de kinderen bij te houden in plaats van een HashMap.
@@ -234,8 +235,8 @@ enum Option<T> {
 Deze enum heeft 2 mogelijke waarden: \texttt{None} of \texttt{Some(T)}.
 \texttt{None} is het equivalent van \textit{null}, terwijl \texttt{Some(T)} wil zeggen dat de waarde verschillend is van null, meer specifiek is de waarde \texttt{T}.
 Aangezien het grootste deel van wat bijgehouden wordt per top eigenlijk pointers zijn maakte ik veelvoudig gebruik van deze Option-enum.
-Alle pointers in een top kunnen namelijk null zijn.
-De \textit{parent pointer} moet nullable zijn aangezien de root geen parent heeft, de \textit{child pointers} moeten allemaal nullable zijn omdat bladeren geen kinderen hebben (en in de interne toppen zijn niet alle kinderen altijd nodig) en de suffix-links moeten nullable zijn aangezien niet elke top een suffix link heeft naar een andere top.
+Alle pointers in een top kunnen namelijk \textit{null} zijn.
+De \textit{parent pointer} moet nullable zijn aangezien de root geen ouder heeft, de \textit{child pointers} moeten allemaal nullable zijn omdat bladeren geen kinderen hebben (en in de interne toppen zijn niet alle kinderen altijd nodig) en de suffix links moeten nullable zijn aangezien niet elke top een suffix link heeft naar een andere top.
 \\ \\
 Dit werkte perfect en kon mooi afgehandeld worden op de idiomatische manier die overeenkomt met goede Rust code.
 Na de eerste benchmarks bleek het geheugengebruik echter problematisch.
@@ -250,7 +251,7 @@ assert_eq!(mem::size_of::<Option<usize>>(), 16);
 assert_eq!(mem::size_of::<usize>(), 8);
 \end{minted}
 
-Als oplossing heb ik uiteindelijk mijn eigen \textit{null} value gedefinieerd gebruik makende van een \textit{trait}\footnote{Een trait in Rust definieert een functionaliteit dat een bepaald type heeft, en kan delen met andere types}.
+Als oplossing heb ik uiteindelijk mijn eigen \textit{null} waarde gedefinieerd gebruik makende van een \textit{trait}\footnote{Een trait in Rust definieert een functionaliteit dat een bepaald type heeft, en kan delen met andere types}.
 Deze oplossing verslaat volledig het doel van de \texttt{Option<T>} enum, maar is jammergenoeg nodig omdat het gewoonweg niet acceptabel is het geheugenverbruik te verdubbelen hiervoor.
 Bovendien blijft memory safety gegarandeerd aangezien het foutief indexeren van de NULL-value (\texttt{usize::MAX} in dit geval) een index-out-of-bounds error creëert.
 Wat tijdens runtime gedetecteerd wordt en dus geen verdere problemen geeft (afgezien van een mogelijke crash van het programma).
@@ -283,7 +284,7 @@ Natuurlijk is het belangrijk dat de implementatie performant (en correct) is.
 Aangezien we ook over een bestaande C++ implementatie van Ukkonen's algoritme beschikken, was dit een perfecte maatstaf.
 Uiteindelijk heb ik één aanpassingen moeten maken in deze C++ code om een eerlijke vergelijking uit te voeren.
 Oorspronkelijk werd er in elke top plaats gehouden voor 256 mogelijke kinderen.
-Dit was veel te hoog voor onze usecase.
+Dit was veel te hoog voor onze use case.
 Er zijn nl. slechts 20 aminozuren en enkele \textit{wildcard characters}.
 Dit verklaart onmiddellijk waarom het geheugengebruik ongeveer een factor 10 hoger was dan nodig.
 Uiteindelijk ben ik gegaan voor een implementatie (zowel in Rust als C++) waarin plaats gehouden wordt voor 28 kinderen.
@@ -333,20 +334,20 @@ Bij het zoeken zijn er 2 belangrijke manieren om te vergelijken.
 
 \paragraph{Zoek een match}
 De reden voor deze manier van zoeken is dat het mogelijk is om info te propageren van de bladeren tot bovenin de boom.
-In ons geval is dit bijvoorbeeld de LCA van de taxon IDs op voorhand te berekenen.
+In ons geval is dit bijvoorbeeld de LCA\footnote{Lowest Common Ancestor} van de taxon IDs op voorhand te berekenen.
 Het zoeken van de LCA die overeenkomt met alle proteïnen waar de gevonden peptide mee matcht kan dus al stoppen vanaf er een match is.
 \\ \\
 Grafiek~\ref{fig:performance_match_tree} toont de nodige tijd om alle peptiden van de gebruikte zoekbestanden éénmalig te zoeken totdat er een (mis)match was voor de peptide.
 De grafiek bevat de gemiddelde resultaten van 5000 uitvoeringen, maar zelfs dan bleven de resultaten wat schommelen.
 Doordat de te meten tijd zo klein is, kan de kleinste invloed van omgevingsfactoren al voor een zichtbaar verschil zorgen.
-Dit kan bv een achtergrondproces zijn, maar ook invloed van een andere VM die op de fysieke machine bezig is.
+Dit kan bv. een achtergrondproces zijn, maar ook invloed van een andere VM die op de fysieke machine bezig is.
 Dit was ook merkbaar tijdens het testen waar dat de verschillen tussen 2 opeenvolgende uitvoeringen vaak groter waren dan het verschil tussen de C++ en Rust implementatie.
 Toch kunnen we besluiten dat de C++ implementatie een beetje performanter is aangezien dit in elk zoekbestand (nipt) sneller is (soms zelfs minder dan een milliseconde).
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{search_match_performance_tree}
-    \caption{Uitvoeringstijd in milliseconden voor het zoeken tot een match voor alle zoekbestanden. Deze resultaten zijn het gemiddelde van 5000 uitvoeringen. 1 iteratie wordt gezien als 1x elke peptide die deel is van het zoekbestand te zoeken in de suffixboom, en te stoppen wanneer er een (mis)match gevonden is. Het meten van de tijd is gebeurd in de code zelf.}
+    \caption{Uitvoeringstijd in milliseconden voor het zoeken tot een match voor alle zoekbestanden. Deze resultaten zijn het gemiddelde van 5000 uitvoeringen. Één iteratie wordt gezien als één maal elke peptide die deel is van het zoekbestand te zoeken in de suffixboom, en te stoppen wanneer er een (mis)match gevonden is. Het meten van de tijd is gebeurd in de code zelf.}
     \label{fig:performance_match_tree}
 \end{figure}
 
@@ -386,13 +387,13 @@ Hiervoor bestaan verschillende strategieën die al uitgewerkt zijn in UMGAP, en 
 Origineel was het plan om LCA* te gebruiken als aggregatie strategie.
 Dit is een heuristiek om de LCA (lowest common ancestor) te berekenen.
 Hierbij zoeken we de meest specifieke taxon in de boom die ofwel een ouder of kind is van elke taxon in de boom.
-Anders gezegd is dit de LCA van een lijst taxa, nadat we alle taxa verwijdert hebben die ouder zijn van minstens één taxon in die lijst~\cite{UMGAP_paper}.
+Anders gezegd is dit de LCA van een lijst taxa, nadat we alle taxa verwijderd hebben die ouder zijn van minstens één taxon in die lijst~\cite{UMGAP_paper}.
 Het voordeel hiervan is dat we iets langer exactere info kunnen behouden.
-Want bij LCA zelf zal het resultaat altijd één zijn vanaf één top in de subtree dit als LCA heeft (1 is namelijk ouder van alle andere taxons!).
+Want bij LCA zelf zal het resultaat altijd 1 zijn vanaf één top in de subtree dit als LCA heeft (1 is namelijk ouder van alle andere taxons!).
 \\ \\
-Het idee was dat we niet elke keer naar de bladeren moeten gaan om het taxon ID te berekenen van 1 top, maar dat dit ging kunnen op basis van de taxon IDs van de directe kinderen van de top.
+Het idee was dat we niet elke keer naar de bladeren moeten gaan om het taxon ID te berekenen van één top, maar dat dit ging kunnen op basis van de taxon IDs van de directe kinderen van de top.
 Op deze manier gingen we met één bottom-up sweep van de boom alle taxon IDs kunnen berekenen.
-Dit bleek echter niet mogelijk omdat kijken naar de directe kinderen een ander resultaat geeft dan gebruik maken van de bladeren van de subboom.
+Dit bleek echter niet mogelijk omdat gebruik maken van de directe kinderen een ander resultaat geeft dan gebruik maken van de bladeren van de subboom.
 Figuur~\ref{fig:lca*_diff} toont een minimaal voorbeeld uitgewerkt voor beide strategieën.
 De licht grijze toppen zijn ingevuld zijn aan de hand van aggregatie, terwijl de zwarte toppen gegeven zijn.
 
@@ -440,7 +441,7 @@ Deze laat wel toe de toppen op deze efficiëntere manier te aggregeren.
 UMGAP biedt 2 manieren aan om LCA te doen.
 Gebruik makende van RMQ (Range Minimum Queries) en een boom-gebaseerde structuur.
 Zelf maak ik gebruik van de RMQ implementatie aangezien deze significant sneller was (8 min 58 sec vs 20 min en 25 sec voor de Swiss-Prot databank).
-Tot slot heb ik ook eens vergeleken hoe groot de behaalde tijdswinst is bij het gebruik kunnen maken van de directe aggregatie op de kinderen, vergeleken met moeten aggregeren op de bladeren.
+Tot slot heb ik ook eens vergeleken hoe groot de behaalde tijdswinst is bij het gebruik kunnen maken van de directe aggregatie op de kinderen, vergeleken met aggregatie op basis van de bladeren.
 Bij het aggregeren op basis van de bladeren met de RMQ implementatie was de uitvoeringstijd maar liefst 12 uur, 19 minuten en 16 seconden!
 Dit is dus een extreem groot verschil.
 

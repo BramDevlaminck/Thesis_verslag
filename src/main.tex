@@ -95,9 +95,9 @@
     Aangezien RNA (meer specifiek messenger RNA (mRNA) en transfer RNA (tRNA)) een belangrijk onderdeel is van het proces om DNA om te zetten naar proteïnen is het transcriptoom een indicatie van welke delen uit het DNA effectief proteïnen encoderen.
     \\ \\
     Onze focus ligt vooral op het veld van de metaproteomica.
-    het ``meta'' prefix wilt zeggen dat de te analyseren stalen niet van 1 organisme zijn, maar van meerdere organismen (typisch binnen hetzelfde ecosysteem).
+    het \textit{meta} prefix wilt zeggen dat de te analyseren stalen niet van 1 organisme zijn, maar van meerdere organismen (typisch binnen hetzelfde ecosysteem).
     Dit maakt de analyse moeilijker aangezien proteïnen van verschillende organismen gelijkaardige aminozuursequenties kunnen hebben (al dan niet door toeval).
-    Om alles iets concreter te maken is het doel van de metaproteomica om op zoek te gaan naar de taxa die hoort bij een verzameling van peptiden.
+    Meer specifiek is het doel van metaproteomica om op zoek te gaan naar de taxa die hoort bij een verzameling van peptiden.
 
     \subsection{Tryptische peptiden}\label{subsec:tryptische-peptiden}
     Tryptische peptiden zijn peptiden die ontstaan na het knippen van proteïnen aan de hand van trypsine.
@@ -120,10 +120,10 @@
     Unipept biedt hiervoor enkele tools aan.
     \begin{itemize}
         \item \textbf{Unipept Web application} Dit is de origineel Unipept tool en is publiek beschikbaar op \url{https://unipept.ugent.be}.
-        Met de gebruiksvriendelijke \textit{user interface} wordt het uitvoeren metaproteomica analyse beschikbaar gesteld.
+        Met de gebruiksvriendelijke \textit{user interface} wordt het uitvoeren van een metaproteomica analyse eenvoudig beschikbaar gesteld.
         De resultaten van deze analyse worden aan de hand van visualisaties en tabellen aan de gebruiker getoond.
         Deze kunnen daarna makkelijk geëxporteerd worden (bijv. voor analyse in andere tools).
-        \item \textbf{Unipept CLI} Dit is een \textit{power-user} tool om analyse uit te voeren op grotere stalen
+        \item \textbf{Unipept CLI} Dit is een \textit{power-user} tool om analyses uit te voeren op grotere stalen
         \item \textbf{Unipept API} Dit is een collectie van \textit{endpoints} die toelaten dat andere applicaties de functionaliteit van Unipept integreren.
         \item \textbf{Unipept Desktop} Dit is de recentste toevoeging aan Unipept ecosysteem en laat toe dat onderzoekers niet noodzakelijk met de Unipept servers moeten communiceren om analyse uit te voeren.
         Deze applicatie combineert de voordelen van de web app, CLI en API laat toe om lokaal stalen te analyseren gebruik makende van een gebruiksvriendelijke UI\@.
@@ -164,7 +164,7 @@
     Tot slot willen we ook inexacte matching toevoegen tijdens het zoeken.
     Door dit te doen kunnen we beter omgaan met kleine fouten die gebeuren tijdens het uitlezen van de experimentele stalen.
     Om dit allemaal te doen is het doel van deze thesis om meerdere datastructuren uit te werken en te implementeren in Rust, waarna ze getest kunnen worden.
-    Het gebruik van Rust laat ons toe om extreem hoge performantie te verkrijgen (vergelijkbaar met C en C++~\cite{rustPerformantie}) in combinatie met \textit{memory safety}\footnote{\textit{Memory safety} is een eigenschap die verzekert dat programma's enkel gebruik kunnen maken van geldige geheugenlocaties en geen \textit{undefined behaviour} zoals \textit{buffer overflows}, \textit{dangling pointers} en andere geheugen gerelateeerde fouten kunnen vertonen}.
+    Het gebruik van Rust laat ons toe om extreem hoge performantie te verkrijgen (vergelijkbaar met C en C++~\cite{rustPerformantie}) in combinatie met \textit{memory safety}\footnote{\textit{Memory safety} is een eigenschap die verzekert dat programma's enkel gebruik kunnen maken van geldige geheugenlocaties en geen \textit{undefined behaviour} zoals \textit{buffer overflows}, \textit{dangling pointers} en andere geheugen gerelateeerde fouten kunnen vertonen.}.
     Bovendien zijn sommige delen van Unipept al geschreven in Rust (zie UMGAP~\cite{UMGAP_paper, UMGAP_source}).
     Dit laat toe om waar mogelijk bestaande code te hergebruiken.
 
@@ -183,7 +183,7 @@
     Om het vergelijken van de performantie van verschillende implementaties praktisch te houden maak ik tijdens het testen gebruik van 2 subsets hiervan.
 
     \paragraph{Swiss-Prot} Dit is de standaard Swiss-Prot databank die deel is van UniProt (zoals eerder uitgelegd).
-    Een kort overzicht van alle statistieken is terug te vinden in tabel~\ref{tab:swissprot_eigenschappen} terwijl figuur~\ref{fig:swissprot_aminozuur} en figuur~\ref{fig:swissprot_length} meer inzicht geven in de distributie van de aminozuren en lengte van de proteïnen.
+    Een kort overzicht van alle statistieken is terug te vinden in tabel~\ref{tab:swissprot_eigenschappen}, terwijl figuur~\ref{fig:swissprot_aminozuur} en figuur~\ref{fig:swissprot_length} meer inzicht geven in de distributie van de aminozuren en lengte van de proteïnen.
 
     \begin{table}[h!]
         \centering
@@ -198,7 +198,7 @@
             Mediaan proteïnelengte    & 295         \\
             \hline
         \end{tabular}
-        \caption{Eigenschappen van de Swiss-Prot databank die gebruikt om de indexstructuur op te bouwen.}
+        \caption{Eigenschappen van de Swiss-Prot databank die gebruikt wordt om de indexstructuur op te bouwen.}
         \label{tab:swissprot_eigenschappen}
     \end{table}
 
@@ -219,11 +219,11 @@
     \end{figure}
 
     Een klein detail dat valt op te merken is dat in tabel~\ref{tab:swissprot_eigenschappen} het totaal aantal sequenties iets kleiner is dan wat eerder aangegeven is.
-    Dit is omdat het gebruikte invoerbestand een bestand is dat al door een deel van de Unipept pipeline verwerkt werd.
+    Dit is omdat het gebruikte invoerbestand al door een deel van de Unipept pipeline verwerkt werd.
     Hierbij worden sequenties met een onbekend taxon id verwijderd, wat het kleine verschil verklaart.
 
     \paragraph{Human-Prot} Deze dataset is samengesteld aan de hand van 3 referentiedatabanken die deel uit maken van UniProtKB\@.
-    Deze werd geleverd aan me door mijn begeleider Pieter Verschaffelt.
+    Deze werd aan me geleverd door mijn begeleider Pieter Verschaffelt.
     De 3 datasets waaruit dit opgebouwd is, zijn:
     \begin{enumerate}
         \item Human Genome~\cite{proteomes_homo_sapiens}
@@ -381,7 +381,7 @@
 
 
     Nog extra grafieken die eigenschappen van de bovenstaand beschreven zoekbestanden zijn terug te vinden in appendix~\ref{ch:appendix-statistieken-zoekbestanden}.
-    Deze appendix bevat voor elk van de al vermeldde zoekbestanden een grafiek die de distributie van de aminozuren geeft en de distributie van de peptidelengte.
+    Deze appendix bevat voor elk van de al vermelde zoekbestanden een grafiek die de distributie van de aminozuren geeft en de distributie van de peptidelengte.
 
 
     \section{Benchmark hardware}\label{sec:benchmark-hardware}
