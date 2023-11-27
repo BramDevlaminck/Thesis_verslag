@@ -137,12 +137,6 @@ Het algoritme van Ukkonen om suffixbomen op te bouwen~\cite{Ukkonen1995} is niet
 De pseudocode en de theoretische beschrijving in de originele paper zijn beide vrij complex.
 Het algoritme komt echter uitgebreid aan bod in een heleboel andere publicaties en boeken~\cite{Gusfield1997, AD3_ukkonen, CCB_course, Ukkonen_CCB}.
 Deze waren een erg grote hulp in het maken van een eigen eigen implementatie.
-%\begin{enumerate}
-%    \item Het boek \textit{Algorithms on Strings, Trees and Sequences}~\cite{Gusfield1997}.
-%    \item De cursus \textit{Algoritmen \& Datastucturen 3} aan UGent gegeven door prof. Gunnar Brinkmann~\cite{AD3_ukkonen}.
-%    \item De cursus Computational Challenges in Bioinformatics gegeven door prof. dr. Jan Fostier and prof. dr. Peter Dawyndt.
-%    Naast een cursus met wat info over het algoritme van Ukkonen is er ook een implementatie van dit algoritme gemaakt door Jan Fostier in C++~\cite{Ukkonen_CCB}.
-%\end{enumerate}
 
 \subsection{Kotlin}\label{subsec:kotlin}
 Ik ben begonnen met een implementatie van Ukkonen's algoritme in Kotlin zodat ik me niet op taal-specifieke problemen zou moeten focussen (vooral restricties rond \textit{borrowing} in Rust).
@@ -158,18 +152,6 @@ Aangezien je tijdens het algoritme eigenlijk werkt met substrings, maar deze opg
 Tot slot had ik op het einde ook enkele bugs die niet voorkwamen in kleinere voorbeelden die met de hand uit te werken waren, wat daardoor relatief wat tijd vroeg om op te lossen.
 
 \subsection{Rust}\label{subsec:rust}
-
-\subsubsection{Eerste ervaring}
-Aangezien dit mijn eerste ervaring was met Rust deel ik graag even mijn eerste bevindingen mee.
-Zelf heb ik eerst \textit{the Rust book} gelezen~\cite{the_rust_book}.
-Wat op zich veel goede informatie heeft, maar naar mijn ervaring soms te veel details bevat.
-Een veelvoorkomend patroon in het boek is dat een deel van een concept geïntroduceerd wordt, waarna je als lezer geïnformeerd wordt dat je er op dat moment nog niet over moet denken omdat dat er in een later hoofdstuk een uitgebreidere uitleg volgt.
-Dit zorgt ervoor dat het soms moeilijk is de bomen door het bos te zien.
-Een voorbeeld hiervan zijn de verschillende syntaxen die Rust aanbiedt om soms hetzelfde te doen, dit maakt het als lezer moeilijker om te focussen op de essentiële delen.
-\\ \\
-Om de meest essentiële basis componenten van Rust wat onder de knie te krijgen heb ik daarna de oefeningen van Rustlings~\cite{rustlings} gemaakt op aanraden van mede thesis student Stijn De Clercq.
-Dit zijn een reeks aan erg kleine oefeningen die meestal in maximaal enkele minuten gemaakt zijn, maar ervoor zorgen dat je toch al eens in contact komt met alle basisonderdelen van Rust.
-Naar mijn mening is dit dus zeker een waardevolle toevoeging tijdens het leren van Rust.
 
 \subsubsection{Boomstructuren}
 \begin{quote}
