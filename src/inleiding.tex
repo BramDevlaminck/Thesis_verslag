@@ -23,7 +23,7 @@ Belangrijk is dat ongeveer 98\% van het menselijke genoom niet-coderend is, wat 
 \\ \\
 De andere discipline is de transcriptomica.
 Deze discipline onderzoekt het transcriptoom van een organisme, wat de verzameling is van alle RNA moleculen die in het organisme aanwezig zijn.
-Het transcriptoom ook een belangrijke indicatie van welke onderdelen van het DNA effectief proteïnen encoderen.
+Het transcriptoom een belangrijke indicatie van welke onderdelen van het DNA effectief proteïnen encoderen.
 Dit omdat RNA, meer specifiek messenger RNA (mRNA) en transfer RNA (tRNA), een belangrijk onderdeel is van het proces om DNA om te zetten naar proteïnen.
 \\ \\
 Onze focus ligt vooral binnen het veld van de metaproteomica.
@@ -45,13 +45,14 @@ Figuur~\ref{fig:trypsine} bevat een voorbeeld van de werking.
 \begin{figure}[H]
     \centering
     \includesvg[width=0.9\textwidth]{trypsine_verwerking}
-    \caption{Voorbeeld van de werking van trypsine op 2 proteïnen. De aminozuren in het rood zijn lysine (K) of arginine (R), waarna trypsine knipt (behalve als het eerstvolgende aminzoruur proline (P) is). Bij de tweede proteïne is er geen knip na het tweede voorkomen van lysine omdat die gevolgd wordt door proline~\cite{phdPieterUnipept}.}
+    \caption{Voorbeeld van de werking van trypsine op 2 proteïnen. De aminozuren in het rood zijn lysine (K) of arginine (R), waarna trypsine knipt (behalve als het eerstvolgende aminzoruur proline (P) is). De tweede proteïne bevat een voorbeeld waar niet geknipt wordt na lysine, doordat het opeenvolgende aminozuur proline is~\cite{phdPieterUnipept}.}
     \label{fig:trypsine}
 \end{figure}
 
-Het omzetten van peptiden naar hun string-representatie is een ingewikkeld proces.
+Om de peptiden uit een experiment te kunnen gebruiken bij computeranalyses moeten deze omgezet worden naar een stringrepresentatie.
+Dit is is echter een moeilijk en ingewikkeld proces.
 Om te beginnen wordt de massa/ladingsverhouding (m/z) van peptiden aan de hand van een massa spectrometer gemeten.
-Daarna worden deze resultaten aan de hand van diverse zoekprocessen (via zogenaamde zoekmachines) omgezet naar een stringvoorstelling van de peptide.
+Daarna worden deze resultaten aan de hand van diverse zoekprocessen (via zogenaamde zoekmachines) omgezet naar de stringvoorstelling van de peptide.
 Deze sequenties vormen de input voor tools zoals Unipept.
 
 \subsection{Unipept}\label{subsec:unipept-introductie}
@@ -81,7 +82,7 @@ Dit opbouwen gaat in grote lijnen als volgt:
 
 Deze aanpak heeft als voordeel dat we op een efficiënte manier tryptische peptiden kunnen opzoeken (samen met de bijbehorende annotaties).
 Er is echter een belangrijke keerzijde aan deze manier van werken.
-Niet-tryptische peptiden zijn inefficiënt om te zoeken.
+Niet-tryptische peptiden (hieronder vallen ook peptiden met \textit{missed cleavage}) zijn inefficiënt om te zoeken.
 Dit komt doordat tijdens het opbouwen van de Unipept indexstructuur de vuistregel gevolgd wordt, en elke peptide in de indexstructuur strikt tryptisch is.
 \\ \\
 Op dit moment is er wel een work-around die toe laat deze peptiden toch te zoeken.
@@ -95,8 +96,8 @@ Dit vormde een duidelijke en goede basis voor deze inleiding.
 \section{Probleemstelling}\label{sec:probleemstelling}
 Het exacte probleem dat opgelost moet worden is het snel terugvinden van willekeurige peptiden in een eiwitdatabank.
 Bij het vinden van een match moet het daarna mogelijk zijn de informatie op te halen die hoort bij alle proteïnen die matchen.
-Binnen het onderzoeksgebied van de informatica kunnen we dit probleem herformuleren.
-Binnen een grote verzameling van middellange strings (alle eiwitten in onze databank), moeten we voor een verzameling van korte strings (peptiden) terugvinden in welke van deze middellange strings ze voorkomen.
+Binnen het onderzoeksgebied van de informatica kunnen we dit probleem als volgt herformuleren.
+In een grote verzameling van middellange strings (alle eiwitten in onze databank), moeten we voor een verzameling van korte strings (peptiden) terugvinden in welke van deze middellange strings ze voorkomen.
 \\ \\
 Belangrijk hierbij is dat dit niet alleen snel gebeurt, maar we ook proberen het vereiste geheugen tot een minimum te beperken.
 Dit omdat de datasets waarmee gewerkt wordt extreem groot zijn.
@@ -113,12 +114,12 @@ Dit laat toe om waar mogelijk bestaande code te hergebruiken.
 
 \subsection{Proteïnedatabanken}\label{subsec:proteine-databanken}
 Om te testen hoe goed een implementatie is en hoe deze vergelijkt met al bestaande implementaties is het belangrijk om representatieve datasets te gebruiken.
-Dit zijn allemaal eiwitdatabanken die een subset vormen van UniProtKB (meer specifiek UniProtKB 2023\_04)~\cite{UniprotKB}.
+Deze datasets zijn allemaal eiwitdatabanken die een subset vormen van UniProtKB (meer specifiek UniProtKB 2023\_04)~\cite{UniprotKB}.
 UniProt bestaat uit twee onderdelen (gegeven statistieken zijn voor release 2023\_04).
 \begin{enumerate}
     \item Swiss-Prot: Dit is een kleinere, manueel gecureerde, dataset met 570 157 eiwitsequenties.
     \item TrEMBL: Deze dataset bevat 251 600 768 sequenties en is dus veel groter dan Swiss-Prot.
-    Het grote verschil is dat deze dataset \textbf{niet} manueel gecureerd is.
+    Het belangrijkste verschil is dat deze dataset \textbf{niet} manueel gecureerd is.
 \end{enumerate}
 Om het vergelijken van de performantie van verschillende implementaties praktisch te houden maak ik tijdens het testen gebruik van 2 subsets hiervan.
 
@@ -128,7 +129,7 @@ Figuur~\ref{fig:swissprot_aminozuur} en figuur~\ref{fig:swissprot_length} geven 
 
 \begin{table}[h!]
     \centering
-    \begin{tabular}{c c}
+    \begin{tabular}{l l}
         Metriek                   & Waarde      \\
         \hline\hline
         Totaal aantal sequenties  & 569 619     \\
@@ -160,19 +161,19 @@ Figuur~\ref{fig:swissprot_aminozuur} en figuur~\ref{fig:swissprot_length} geven 
 \end{figure}
 
 Doordat het gebruikte invoerbestand reeds verwerkt werd door een deel van de Unipept pipeline, is er een klein verschil tussen het totaal aantal sequenties in tabel~\ref{tab:swissprot_eigenschappen} en wat eerder aangegeven werd.
-In dit stuk van de pipeline worden onder andere sequenties met een onbekend taxon id verwijderd, wat het kleine verschil verklaart.
+Hierbij worden onder andere sequenties met een onbekend taxon id verwijderd, wat het kleine verschil verklaart.
 
 \paragraph{Human-Prot} Deze dataset is samengesteld aan de hand van drie referentiedatabanken afkomstig van UniProtKB\@.
 Dit zijn de Human Genome~\cite{proteomes_homo_sapiens}, Influenza B~\cite{proteomes_infuenza_b} en Human Papillomavirus~\cite{proteomes_human_papillomavirus} databank.
 Opnieuw komen deze allemaal uit UniProt 2023\_04.
 
 Deze Human-Prot databank is kleiner dan Swiss-Prot waardoor het testen tijdens ontwikkeling sneller is.
-In tabel~\ref{tab:humanprot_eigenschappen} somt enkele belangrijke metrieken op over deze dataset.
+Tabel~\ref{tab:humanprot_eigenschappen} somt enkele belangrijke metrieken op over deze dataset.
 Figuur~\ref{fig:humanprot_aminozuur} en~\ref{fig:humanprot_length} gaan dieper in op een aantal details.
 
 \begin{table}[h!]
     \centering
-    \begin{tabular}{ c c }
+    \begin{tabular}{ l l }
         Metriek                   & Waarde     \\
         \hline\hline
         Totaal aantal sequenties  & 82 695     \\
@@ -211,47 +212,47 @@ Het zwaartepunt van het aantal voorkomens ligt bij Swiss-Prot wel iets later (ro
 
 \subsection{Peptide zoekbestanden}\label{subsec:peptide-zoek-bestanden}
 De zoekperformantie van onze indexstructuur is een erg belangrijk aspect.
-Hiervoor hebben we bij elke eiwitdatabank een lijst aan peptiden die we proberen te zoeken.
+Om dit te meten hebben we bij elke eiwitdatabank een lijst aan peptiden die we proberen te zoeken.
 Voor beide databanken zijn enkele datasets opgesteld.
 
 \subsubsection{Swiss-Prot}
 Voor deze databank hebben we enkele zoekbestanden voorzien.
 Twee bestanden die gesampled zijn en een reeks aan real-life stalen.
-De twee gesamplede bestanden zijn zo gekozen dat de ene enkel tryptische peptiden bevat, terwijl de andere ook peptiden bevat met \textit{missed cleavage}.
+De twee artificiële bestanden zijn zo gekozen dat de ene enkel tryptische peptiden bevat, terwijl de andere ook peptiden bevat met \textit{missed cleavage}.
 De eerste kan dus op dit moment al efficiënt door Unipept behandeld worden, terwijl dit voor de tweede niet mogelijk is.
 
 \paragraph{Artificiële stalen}
 Tabel~\ref{tab:artifiele_bestanden_statistieken} bevat in kolom twee en drie een kort overzicht met statistieken voor deze gesamplede bestanden.
 
 \begin{table}[!h]
-    \centering
-    \begin{tabular}{c c c c}
-        Metriek                    & SP geen \textit{missed cleavages} & SP \textit{missed cleavages} & Human-Prot    \\
+    \hspace*{-0.35cm} % this table is just a bit too wide to, just manually move it a bit to the left to "center" it
+    \begin{tabular}{l l l l}
+        Metriek                    & SP zonder \textit{missed cleavages} & SP met \textit{missed cleavages} & Human-Prot    \\
         \hline\hline
-        Totaal aantal sequenties   & 100 000                           & 100 000                      & 250000        \\
-        Totale lengte              & 1 605 909                         & 2 544 356                    & 2 458 834 046 \\
-        Minimale proteïnelengte    & 5                                 & 5                            & 1             \\
-        Maximale proteïnelengte    & 50                                & 93                           & 12            \\
-        Gemiddelde proteïnelengte  & 16.06                             & 25.44                        & 9.84          \\
-        Mediaan proteïnelengte     & 13                                & 23                           & 10            \\
-        Aantal vindbare peptiden   & 67 375                            & 62 581                       & 250 000       \\
-        Aantal tryptische peptiden & 100 000                           & 4107                         & 102 659       \\
+        Totaal aantal sequenties   & 100 000                             & 100 000                          & 250 000       \\
+        Totale lengte              & 1 605 909                           & 2 544 356                        & 2 458 834 046 \\
+        Minimale proteïnelengte    & 5                                   & 5                                & 1             \\
+        Maximale proteïnelengte    & 50                                  & 93                               & 12            \\
+        Gemiddelde proteïnelengte  & 16.06                               & 25.44                            & 9.84          \\
+        Mediaan proteïnelengte     & 13                                  & 23                               & 10            \\
+        Aantal vindbare peptiden   & 67 375                              & 62 581                           & 250 000       \\
+        Aantal tryptische peptiden & 100 000                             & 4107                             & 102 659       \\
         \hline
     \end{tabular}
-    \caption{Eigenschappen van de Swiss-Prot zoekbestanden met en zonder \textit{missed cleavages}. Dit zijn de kolomen die beginnen met SP (wat staat voor Swiss-Prot). De laatste kolom bevat de statiestieken voor het Human-Prot zoekbestand.}
+    \caption{Eigenschappen van de verschillende zoekbestanden. De kolommen die beginnen met SP bevatten de statistieken van de Swiss-Prot zoekbestanden. De laatste kolom bevat de statistieken voor het zoekbestand dat hoort bij de Human-Prot eiwitdatabank.}
     \label{tab:artifiele_bestanden_statistieken}
 \end{table}
 
 \paragraph{Experimentele stalen}
-Om de performantie beter te beoordelen, gebruiken we ook enkele stalen uit experimenten met een kleine micro-organisme gemeenschap, namelijk SIHUMIx\footnote{Simplified human intestinal microbiota}\cite{SIHUMI_first_introduction, SIHUMI_frequently_used}.
+Om de performantie beter te beoordelen, gebruiken we ook enkele stalen uit experimenten met een kleine micro-organisme gemeenschap, namelijk SIHUMIx\footnote{Simplified human intestinal microbiota}~\cite{SIHUMI_first_introduction, SIHUMI_frequently_used}.
 Aangezien dit effectieve stalen zijn bevatten deze \textit{missed cleavages} die natuurlijk ontstaan zijn.
-Tabel\ref{tab:sihumi_zoekbestanden} bevat de belangrijkste statistieken voor elk zoekbestand.
+Tabel~\ref{tab:sihumi_zoekbestanden} bevat de belangrijkste statistieken voor elk zoekbestand.
 Elke kolom stelt een staal voor met als bestandsnaam \texttt{S<XX>.txt}.
 Deze zoekbestanden worden in combinatie met de Swiss-Prot databank gebruikt tijdens het testen.
 
 \begin{table}[h!]
     \centering
-    \begin{tabular}{ c c c c c c c }
+    \begin{tabular}{ l l l l l l l }
         Metriek                    & S03     & S05     & S07     & S08     & S11     & S14     \\
         \hline\hline
         Totaal aantal sequenties   & 25 000  & 25 000  & 24 424  & 25 000  & 25 000  & 25 000  \\
@@ -271,9 +272,9 @@ Deze zoekbestanden worden in combinatie met de Swiss-Prot databank gebruikt tijd
 \subsubsection{Human-Prot}
 Voor deze databank hebben we 1 zoekbestand bestaande uit HLA-peptiden.
 Dit zijn korte, niet-tryptische peptiden uit het immunopeptidomics onderzoeksveld.
-Hierdoor kan Unipept op dit moment niet gebruikt worden.
+Hierdoor kan Unipept op dit moment niet gebruikt worden om dit soort stalen te analyseren.
 Elke peptide in dit zoekbestand is een sample van een proteïne uit de Human-Prot databank.
-Hierdoor zijn alle peptiden die we proberen te vinden effectief vindbaar in de dataset.
+Hierdoor zijn alle peptiden die we zoeken effectief vindbaar in de dataset.
 Een kort overzicht van enkele eigenschappen is terug te vinden in de laatste kolom van tabel~\ref{tab:artifiele_bestanden_statistieken}
 \\ \\
 Appendix~\ref{ch:appendix-statistieken-zoekbestanden} bevat aanvullende grafieken over bovenstaande zoekbestanden.
