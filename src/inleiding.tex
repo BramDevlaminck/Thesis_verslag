@@ -40,7 +40,15 @@ Trypsine zal eiwitten knippen na elke voorkomen van lysine (K) of arginine (R) i
 Deze vuistregel is echter niet perfect.
 Soms zal trypsine, een locatie waar normaal geknipt moet worden, missen.
 Dit noemen we een \textit{missed cleavage}.
-\\ \\
+Figuur~\ref{fig:trypsine} bevat een voorbeeld van de werking.
+
+\begin{figure}[H]
+    \centering
+    \includesvg[width=0.9\textwidth]{trypsine_verwerking}
+    \caption{Voorbeeld van de werking van trypsine op 2 proteïnen. De aminozuren in het rood zijn lysine (K) of arginine (R), waarna trypsine knipt (behalve als het eerstvolgende aminzoruur proline (P) is). Bij de tweede proteïne is er geen knip na het tweede voorkomen van lysine omdat die gevolgd wordt door proline~\cite{phdPieterUnipept}.}
+    \label{fig:trypsine}
+\end{figure}
+
 Het omzetten van peptiden naar hun string-representatie is een ingewikkeld proces.
 Om te beginnen wordt de massa/ladingsverhouding (m/z) van peptiden aan de hand van een massa spectrometer gemeten.
 Daarna worden deze resultaten aan de hand van diverse zoekprocessen (via zogenaamde zoekmachines) omgezet naar een stringvoorstelling van de peptide.
@@ -62,23 +70,23 @@ Unipept biedt allerhande tools aan om stalen uit het onderzoeksveld van de metap
 \end{itemize}
 
 Op dit moment is Unipept gericht op de analyse van tryptische peptiden.
-De reden hiervoor is de manier waarop de achterliggende index-structuur opgebouwd wordt.
+De reden hiervoor is de manier waarop de achterliggende indexstructuur opgebouwd wordt.
 Dit opbouwen gaat in grote lijnen als volgt:
 
 \begin{enumerate}
     \item Haal alle proteïnen en bijbehorende taxonomische en functionele annotaties op uit de UniProtKB databank.
     \item Splits deze proteïnen volgens de vuistregel die trypsine volgt.
-    \item Sla alle resulterende tryptische peptiden op in een index-structuur.
+    \item Sla alle resulterende tryptische peptiden op in een indexstructuur.
 \end{enumerate}
 
 Deze aanpak heeft als voordeel dat we op een efficiënte manier tryptische peptiden kunnen opzoeken (samen met de bijbehorende annotaties).
 Er is echter een belangrijke keerzijde aan deze manier van werken.
 Niet-tryptische peptiden zijn inefficiënt om te zoeken.
-Dit komt doordat tijdens het opbouwen van de Unipept index-structuur de vuistregel gevolgd wordt, en elke peptide in de indexstructuur strikt tryptisch is.
+Dit komt doordat tijdens het opbouwen van de Unipept indexstructuur de vuistregel gevolgd wordt, en elke peptide in de indexstructuur strikt tryptisch is.
 \\ \\
 Op dit moment is er wel een work-around die toe laat deze peptiden toch te zoeken.
 Dit heeft echter wel een significante impact op de performantie.
-Dit verklaart dan ook de nood voor een nieuwe index-structuur die toe laat volledig willekeurig gesplitste peptiden te zoeken.
+Dit verklaart dan ook de nood voor een nieuwe indexstructuur die toe laat volledig willekeurig gesplitste peptiden te zoeken.
 \newline
 Voor een gedetailleerdere beschrijving over Unipept en het onderzoeksveld van metaproteomica raad ik aan om de inleiding van het doctoraat van Dr. Pieter Verschaffelt te lezen~\cite{phdPieterUnipept}.
 Dit vormde een duidelijke en goede basis voor deze inleiding.
