@@ -8,32 +8,30 @@
 \usepackage{float}
 \usepackage[outputdir=../out]{minted}
 
+\usepackage{booktabs,makecell}
 % Figures
 %---------
 \usepackage{graphicx, ugent2016-assets}
 \graphicspath{{./figures/}}
 \usepackage[inkscapelatex=false]{svg}
-\usepackage{hyperref}
+\usepackage{footmisc}
+
+% Bibliography settings
+%-----------------------
+\usepackage{tikz}
+\usepackage{biblatex}
+\addbibresource{bibliography.bib}
+
+\usepackage[hyperfootnotes=true]{hyperref}
 \hypersetup{
     colorlinks,
     linkcolor={black},
     citecolor={blue!50!black},
     urlcolor={blue!80!black}
 }
-\usepackage{booktabs,makecell}
+
 
 \setlength{\parindent}{0em}
-
-% Bibliography settings
-%-----------------------
-\usepackage[
-%    backend=biber,
-%    maxcitenames=1,
-%    maxbibnames=2,
-%    hyperref=true
-]{biblatex}
-\usepackage{tikz}
-\addbibresource{bibliography.bib}
 
 
 \author{Bram Devlaminck}
