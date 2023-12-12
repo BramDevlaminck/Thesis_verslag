@@ -1,13 +1,11 @@
-\chapter{Introductie}\label{ch:introductie}
+\chapter{Inleiding}\label{ch:introductie}
 
-
-\section{Inleiding}\label{sec:inleiding}
-
-\subsection{Genomica, transcriptomica \& proteomica}\label{subsec:genomica-transcriptomica-&-proteomica}
-Eiwitten zijn alomtegenwoordig en spelen een belangrijke rol in ons dagelijkse leven.
+Eiwitten of proteïnen zijn alomtegenwoordig en spelen een belangrijke rol in ons dagelijkse leven.
 Ze garanderen een correcte werking van belangrijke processen binnen elk organisme.
 Hieronder vallen de levensprocessen van ons eigen lichaam, maar ook die van dieren, planten, bacteriën en zelfs virussen.
 Om deze processen te analyseren zijn er meerdere benaderingen mogelijk.
+
+\section{Genomica, transcriptomica \& proteomica}\label{sec:genomica-transcriptomica-&-proteomica}
 Een eerste mogelijkheid is aan de hand van het onderzoeksgebied van de proteomica.
 Dit is de studie van alle eiwitten die binnen een enkel organisme tot expressie kunnen komen.
 Hierbij probeert men te begrijpen hoe eiwitten in elkaar zitten, hoe deze met elkaar en binnen een bepaalde omgeving met elkaar interageren en wat hun belangrijkste functie is.
@@ -20,6 +18,7 @@ Een belangrijk verschil met proteomica is dat DNA instructies voorstelt voor de 
 Het geeft dus geen informatie over de proteïnen die op dat moment in de tijd actief zijn.
 Het is een voorstelling van wat het organisme kan, niet wat het op \textit{dit} moment aan het doen is.
 Belangrijk is dat ongeveer 98\% van het menselijke genoom niet-coderend is, wat wil zeggen dat dit deel van het DNA niet omgezet kan worden naar een betekenisvolle proteïne.
+In de plaats kunnen ze wel omgezet worden naar \textit{regulatory sequences}, niet-coderende genen, of componenten die nog niet ontdekt zijn.
 \\ \\
 De andere discipline is de transcriptomica.
 Deze discipline onderzoekt het transcriptoom van een organisme, wat de verzameling is van alle RNA moleculen die in het organisme aanwezig zijn.
@@ -27,12 +26,12 @@ Het transcriptoom is een belangrijke indicatie van welke delen uit het DNA effec
 Dit omdat RNA, meer specifiek messenger RNA (mRNA) en transfer RNA (tRNA), een belangrijk onderdeel is van het proces om DNA om te zetten naar proteïnen.
 \\ \\
 Onze focus ligt vooral binnen het veld van de metaproteomica.
-het \textit{meta} prefix zegt dat de te analyseren stalen niet van één organisme zijn, maar van meerdere organismen (typisch binnen hetzelfde ecosysteem).
+Het \textit{meta} prefix zegt dat de te analyseren stalen niet van één organisme afkomstig zijn, maar van meerdere organismen (typisch binnen hetzelfde ecosysteem).
 Dit maakt de analyse moeilijker aangezien proteïnen van verschillende organismen gelijkaardige aminozuursequenties kunnen hebben (al dan niet door toeval).
-Meer specifiek is het doel van metaproteomica om op zoek te gaan naar de taxa die hoort bij een verzameling van peptiden.
-Een een veelvoorkomende categorie van peptiden zijn tryptische peptiden.
+Meer specifiek is het doel van metaproteomica om op zoek te gaan naar de taxa en functies die horen bij een verzameling van peptiden.
+Een een veelvoorkomende categorie van peptiden die we zullen analyseren zijn tryptische peptiden.
 
-\subsection{Tryptische peptiden}\label{subsec:tryptische-peptiden}
+\section{Tryptische peptiden}\label{sec:tryptische-peptiden}
 Tryptische peptiden zijn peptiden die ontstaan na het knippen van proteïnen aan de hand van trypsine.
 Dit is een protease (eiwitafbrekend enzym) dat proteïnen opsplitst in meerdere peptiden.
 Er bestaan nog andere proteases, maar trypsine is veruit de populairste door zijn eenduidig gedrag en efficiëntie.
@@ -56,27 +55,27 @@ Eerst wordt de massa/ladingsverhouding (m/z) van peptiden aan de hand van een ma
 Daarna worden deze resultaten aan de hand van diverse zoekprocessen (via zogenaamde zoekmachines) omgezet naar de stringvoorstelling van de peptide.
 Deze sequenties vormen de input voor tools zoals Unipept.
 
-\subsection{Unipept}\label{subsec:unipept-introductie}
-Unipept biedt allerhande tools aan om stalen uit het onderzoeksveld van de metaproteomica te analyseren, maar er is ook een onderdeel (UMGAP~\cite{UMGAP_paper}) gericht op het analyseren van stalen uit de metagenomica.
+\section{Unipept}\label{sec:unipept-introductie}
+Unipept~\cite{unipept_orig} biedt een ecosysteem van tools aan om stalen uit het onderzoeksveld van de metaproteomica te analyseren, maar er is ook een onderdeel (UMGAP~\cite{UMGAP_paper}) gericht op het analyseren van stalen uit de metagenomica.
 
 \begin{itemize}
-    \item \textbf{Unipept Web application} Dit is de originele Unipept tool en is publiek beschikbaar op \url{https://unipept.ugent.be}.
+    \item \textbf{Unipept Web application~\cite{unipept_orig, unipept_web, unipept_tutorial, unipept_4}} Dit is de originele Unipept tool en is publiek beschikbaar op \url{https://unipept.ugent.be}.
     Met de gebruiksvriendelijke \textit{user interface} wordt analyseren van metaproteomica data beschikbaar gesteld.
     De resultaten van deze analyse worden aan de hand van visualisaties en tabellen aan de gebruiker voorgesteld.
-    Deze kunnen vervolgens makkelijk geëxporteerd worden (bijv. voor analyse in andere tools).
-    \item \textbf{Unipept CLI} Dit is een \textit{power-user} tool om analyses uit te voeren op grotere stalen.
-    \item \textbf{Unipept API} Dit is een collectie van \textit{endpoints} die andere applicaties toelaat om de functionaliteit van Unipept integreren.
-    \item \textbf{Unipept Desktop} Dit is de recentste toevoeging aan het Unipept ecosysteem en laat toe dat onderzoekers niet noodzakelijk met de Unipept servers moeten communiceren om analyses uit te voeren.
-    Deze applicatie combineert de voordelen van de web app, CLI en API en laat toe om lokaal stalen te analyseren, gebruik makende van een gebruiksvriendelijke UI\@.
+    Deze kunnen vervolgens makkelijk geëxporteerd worden (bijv.~voor analyse in andere tools).
+    \item \textbf{Unipept CLI~\cite{unipept_cli}} Dit is een \textit{power-user} tool om analyses uit te voeren op grotere stalen.
+    \item \textbf{Unipept API~\cite{unipept_api}} Dit is een collectie van \textit{endpoints} die andere applicaties, inclusief de CLI, toelaat om de functionaliteit van Unipept te integreren.
+    \item \textbf{Unipept Desktop~\cite{unipept_desktop}} Dit is de recentste toevoeging aan het Unipept ecosysteem en laat toe dat onderzoekers niet noodzakelijk met de Unipept servers moeten communiceren om analyses uit te voeren.
+    Deze applicatie combineert de voordelen van de web app, CLI en API en laat toe om lokaal stalen te analyseren, gebruikmakende van een gebruiksvriendelijke UI\@.
 
 \end{itemize}
 
-Op dit moment is Unipept gericht op de analyse van tryptische peptiden.
+Op dit moment is Unipept exclusief gericht op de analyse van tryptische peptiden.
 De reden hiervoor is de manier waarop de achterliggende indexstructuur opgebouwd wordt.
 Dit opbouwen gaat in grote lijnen als volgt:
 
 \begin{enumerate}
-    \item Haal alle proteïnen en bijbehorende taxonomische en functionele annotaties op uit de UniProtKB databank.
+    \item Haal alle proteïnen en bijbehorende taxonomische en functionele annotaties op uit de UniProtKB databank~\cite{UniprotKB}.
     \item Splits deze proteïnen volgens de vuistregel die trypsine volgt.
     \item Sla alle resulterende tryptische peptiden op in een indexstructuur.
 \end{enumerate}
@@ -85,33 +84,40 @@ Deze aanpak heeft als voordeel dat we op een efficiënte manier tryptische pepti
 Er is echter een belangrijke keerzijde aan deze manier van werken.
 Het zoeken van niet-tryptische peptiden (hieronder vallen ook peptiden met \textit{missed cleavage}) is inefficiënt.
 Dit komt doordat tijdens het opbouwen van de Unipept indexstructuur de vuistregel gevolgd wordt, en elke peptide in de indexstructuur strikt tryptisch is.
+Op basis hiervan worden de taxonomische annotaties voor elke tryptische peptide voorberekend.
 \\ \\
-Op dit moment is er wel een \textit{workaround} die toe laat deze peptiden toch te zoeken.
+Op dit moment is er wel een \textit{workaround} die toelaat om peptiden met \textit{missed cleavage} toch te zoeken.
 Dit heeft echter wel een significante impact op de performantie.
-Dit verklaart dan ook de nood aan een nieuwe indexstructuur die toe laat volledig willekeurig gesplitste peptiden te zoeken.
-\newline
-Voor een gedetailleerdere beschrijving over Unipept en het onderzoeksveld van metaproteomica is het aangeraden om de inleiding van het doctoraat van Dr. Pieter Verschaffelt te lezen~\cite{phdPieterUnipept}.
+Deze verminderde performantie bij \textit{missed cleavage}, in combinatie met het compleet ontbreken van een manier om willekeurig gesplitste peptiden te zoeken verklaart de nood aan een nieuwe indexstructuur.
+\\ \\
+Voor een gedetailleerdere beschrijving over Unipept en het onderzoeksveld van metaproteomica is het aangeraden om de inleiding van het doctoraat van Dr.~Pieter Verschaffelt te lezen~\cite{phdPieterUnipept}.
 Dit vormde een duidelijke en goede basis voor deze inleiding.
 
 
 \section{Probleemstelling}\label{sec:probleemstelling}
-Het probleem waarvoor een oplossing gezocht wordt is het snel terugvinden van willekeurige peptiden in een eiwitdatabank.
+In deze masterproef zoeken we een oplossing voor het snel terugvinden van willekeurige peptiden in een eiwitdatabank.
 Bij het vinden van een match moet het daarna mogelijk zijn de informatie op te halen die hoort bij alle proteïnen die matchen.
 Binnen het onderzoeksgebied van de informatica kunnen we dit probleem als volgt herformuleren:
 ``In een grote verzameling van middellange strings (alle eiwitten in onze databank), moeten we voor een verzameling van korte strings (peptiden) terugvinden in welke van deze middellange strings ze voorkomen.''
+We willen echter niet enkel vinden met welke proteïnes een peptide matcht.
+Ook de bijbehorende taxonomische en functionele annotaties van de gematchte proteïnes moeten zo snel mogelijk te vinden zijn.
+Hiervoor wordt waar mogelijk aggregaties van deze annotaties uitgevoerd tijdens het opbouwen van de indexstructuur.
 \\ \\
-Belangrijk hierbij is dat dit niet alleen snel gebeurt, maar we ook proberen het vereiste geheugen tot een minimum te beperken.
-Dit omdat de datasets waarmee gewerkt wordt extreem groot zijn.
+Belangrijk hierbij is dat dit alles niet alleen snel gebeurt, maar we ook proberen het vereiste geheugen tot een minimum te beperken.
+Wat als acceptabel beschouwd kan worden hangt af van de gebruikte hardware.
+Voor stalen die geanalyseerd worden op een PC m.b.v~Unipept Desktop is dit $\pm$ 16 GB RAM\@.
+Voor grotere stalen waarvan de analyse op de Unipept servers uitgevoerd wordt mikken we op 0.5-2 TB geheugenverbruik.
+Dit komt overeen met een realistische configuratie voor een server die gericht is op het uitvoeren geheugenintensieve taken.
 \\ \\
 Tot slot willen we ook inexacte matching toevoegen tijdens het zoeken.
 Door dit te doen kunnen we beter omgaan met kleine fouten die voorkomen tijdens het uitlezen van de experimentele stalen.
 Om dit allemaal te bereiken is het doel van deze thesis om meerdere datastructuren uit te werken, te implementeren in Rust, en tot slot te testen.
-Het gebruik van Rust laat ons toe om extreem hoge performantie te verkrijgen (vergelijkbaar met C en C++~\cite{rustPerformantie}) in combinatie met \textit{memory safety}\footnote{\textit{Memory safety} is een eigenschap die verzekert dat programma's enkel gebruik kunnen maken van geldige geheugenlocaties en geen \textit{undefined behaviour} zoals \textit{buffer overflows}, \textit{dangling pointers} en andere geheugen gerelateeerde fouten kunnen vertonen.}.
+Het gebruik van Rust laat ons toe om extreem hoge performantie te verkrijgen (vergelijkbaar met C en C++~\cite{rustPerformantie}) in combinatie met \textit{memory safety}\footnote{\textit{Memory safety} is een eigenschap die verzekert dat programma's enkel gebruik kunnen maken van geldige geheugenlocaties en geen \textit{undefined behaviour} zoals \textit{buffer overflows}, \textit{dangling pointers} en andere geheugen gerelateerde fouten kunnen vertonen.}.
 Bovendien zijn sommige delen van Unipept al geschreven in Rust (zie UMGAP~\cite{UMGAP_paper, UMGAP_source}).
 Dit laat toe om waar mogelijk bestaande code te hergebruiken.
 
 
-\section{Benchmark Datasets}\label{sec:datasets}
+\section{Benchmarkdatasets}\label{sec:datasets}
 
 \subsection{Proteïnedatabanken}\label{subsec:proteine-databanken}
 Om te testen hoe goed een implementatie is en hoe deze zich verhoudt ten opzichte van bestaande implementaties is het belangrijk om representatieve datasets te gebruiken.
