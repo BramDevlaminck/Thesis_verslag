@@ -306,14 +306,14 @@ Deze peptidebestanden worden in combinatie met de Swiss-Prot proteïnedatabank g
         \begin{tabular}{ l l l l l l l }
             Metriek                    & SIHUMI 03  & SIHUMI 05  & SIHUMI 05  & SIHUMI 08  & SIHUMI 11  & SIHUMI 14  \\
             \hline\hline
-            Totaal aantal sequenties   & 25 000     & 25 000     & 24 424     & 25 000     & 25 000     & 25 000     \\
-            Totale lengte              & 420 544 aa & 420 423 aa & 373 633 aa & 316 114 aa & 366 922 aa & 430 674 aa \\
+            Totaal aantal sequenties   & 25 000     & 25 000     & 24 424     & 25 000     & 24 998     & 25 000     \\
+            Totale lengte              & 420 544 aa & 420 423 aa & 373 633 aa & 316 114 aa & 366 894 aa & 430 674 aa \\
             Minimale peptidelengte     & 6 aa       & 6 aa       & 6 aa       & 6 aa       & 6 aa       & 6 aa       \\
             Maximale peptidelengte     & 50 aa      & 50 aa      & 47 aa      & 43 aa      & 50 aa      & 50 aa      \\
             Gemiddelde peptidelengte   & 16.82 aa   & 16.82 aa   & 15.30 aa   & 12.64 aa   & 14.68 aa   & 17.23 aa   \\
             Mediaan peptidelengte      & 15 aa      & 16 aa      & 14 aa      & 12 aa      & 14 aa      & 16 aa      \\
             Aantal vindbare peptiden   & 2570       & 2698       & 3652       & 4135       & 3792       & 2761       \\
-            Aantal tryptische peptiden & 17 263     & 162        & 152        & 207        & 155        & 242        \\
+            Aantal tryptische peptiden & 17 263     & 162        & 152        & 207        & 153        & 242        \\
             \hline
         \end{tabular}}
     \caption{Eigenschappen van de SIHUMIx peptidebestanden. Elke kolom stelt een staal voor met als bestandsnaam \texttt{S<XX>.txt}. Deze stalen kunnen teruggevonden worden in onze GitHub repository \protect\footnote{\url{https://github.com/BramDevlaminck/Thesis\_benchmarkdata}} onder de \texttt{SIHUMI}-folder.} % protect is needed to make footnote possible in a caption. This is combined with a minipage to place the footnote directly under the table
@@ -353,3 +353,9 @@ Al deze informatie, en ook over de andere machines gebruik door Unipept, kan ter
     \caption{Hardwarespecificaties van de fysieke server en virtuele machine die gebruikt worden tijdens het testen. Deze virtuele machine draait samen met nog enkele andere VMs op de server.}
     \label{tab:Matt_hardware}
 \end{table}
+
+Naast deze VM hebben we ook toegang tot enkele andere machines indien hier nood toe zou zijn.
+Het is mogelijk in het totaal 768 GiB aan RAM kunnen ter beschikking stellen op een Unipept machine door enkele VMs en Unipept applicaties te verdelen over andere machines.
+De HPC van UGent\footnote{https://docs.hpc.ugent.be/Linux/} biedt nodes aan die tot 940 GiB aan RAM hebben.
+Tot slot heeft de CompOmics\footnote{Computational Omics} onderzoeksgroep aan UGent ook enkele machines staan dit tot 2TiB aan geheugen hebben.
+Deze onderzoeksgroep werkt aan softwaretoepassingen voor het verwerken van proteomica-data, waar het onderzoeksgebied van de metaproteomica onder valt.
