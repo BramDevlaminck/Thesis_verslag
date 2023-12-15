@@ -322,7 +322,7 @@ De resultaten hiervan zijn terug te vinden in Figuur~\ref{fig:tree_building}.
     \subfloat[Tijd nodig om de suffixboom op te bouwen.]{\includegraphics[width=\linewidth]{building_tree_time}}\\[4ex] % [4ex] om wat extra vertical spacing in te voegen
 
     \subfloat[Maximaal gebruikt geheugen tijdens het opbouwen van de suffixboom.]{\includegraphics[width=\linewidth]{building_tree_memory}}
-    \caption{Vergelijking tusen C++ en Rust voor het opbouwen van de suffixboom a.d.h.v. het algoritme van Ukkonen. De tijd en het geheugengebruik zijn gemeten met het unix \texttt{time} commando. Als invoerbestand gebruiken we hier de Swiss-Prot of Human-Prot eiwitdatabank.}\label{fig:tree_building}
+    \caption{Vergelijking tusen C++ en Rust voor het opbouwen van de suffixboom a.d.h.v.~het algoritme van Ukkonen. De tijd en het geheugengebruik zijn gemeten met het unix \texttt{time} commando. Als invoerbestand gebruiken we hier de Swiss-Prot of Human-Prot eiwitdatabank.}\label{fig:tree_building}
 \end{figure}
 
 Uit deze grafieken vallen 2 duidelijke conclusies te trekken.
@@ -351,7 +351,7 @@ Dit laat toe om het zoekproces te stoppen zodra er een match is.
 De top waarin het zoeken stopt, zal de voorberekende LCA waarin we geïnteresseerd zijn bevatten.
 Dit is de LCA van de taxon IDs die horen bij de proteïnen waarvan de gezochte peptide een substring is.
 \\ \\
-Figuur~\ref{fig:performance_match_tree} toont de nodige tijd om alle peptiden van de gebruikte zoekbestanden éénmalig te zoeken totdat er een (mis)match was voor de peptide.
+Figuur~\ref{fig:performance_match_tree} toont de nodige tijd om alle peptiden van de gebruikte peptidebestanden éénmalig te zoeken totdat er een (mis)match was voor de peptide.
 De grafiek bevat de gemiddelde resultaten van 5000 uitvoeringen, maar zelfs dan bleven de resultaten wat schommelen.
 Doordat de te meten tijd zo klein is, kan de kleinste invloed van omgevingsfactoren al voor een zichtbaar verschil zorgen.
 Dit kan bv.~een achtergrondproces zijn, maar ook invloed van een andere VM die op de fysieke machine bezig is.
@@ -361,13 +361,13 @@ Toch kunnen we besluiten dat de C++ implementatie een beetje performanter is.
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{search_match_performance_tree}
-    \caption{Uitvoeringstijd in milliseconden voor het zoeken tot een match voor alle zoekbestanden. Deze resultaten zijn het gemiddelde van 5000 uitvoeringen. Eén iteratie wordt gezien als één maal elke peptide die deel is van het zoekbestand te zoeken in de suffixboom, en te stoppen wanneer er een (mis)match gevonden is. Het meten van de tijd is gebeurd in de code zelf.}
+    \caption{Uitvoeringstijd in milliseconden voor het zoeken tot een match voor alle peptidebestanden. Deze resultaten zijn het gemiddelde van 5000 uitvoeringen. Eén iteratie wordt gezien als één maal elke peptide die deel is van het peptidebestanden te zoeken in de suffixboom, en te stoppen wanneer er een (mis)match gevonden is. Het meten van de tijd is gebeurd in de code zelf.}
     \label{fig:performance_match_tree}
 \end{figure}
 
 Het verschil met de huidige implementatie van Unipept is aanzienlijk.
-Daar duurt het op dit moment 2 minuten en 12 seconden om alle peptiden van het Swiss-Prot zoekbestand zonder \textit{missed cleavages} te zoeken,
-en maar liefst 30 minuten en 37 seconden voor het zoekbestand met \textit{missed cleavages}.
+Daar duurt het op dit moment 2 minuten en 12 seconden om alle peptiden van het Swiss-Prot peptidebestand zonder \textit{missed cleavages} te zoeken,
+en maar liefst 30 minuten en 37 seconden voor het peptidebestand met \textit{missed cleavages}.
 Dit is resp.~$\frac{132 000}{152.98} = 857$ en $\frac{1 837 000}{140.64} = 13 000$ keer trager.
 Het gebruik van de suffixboom heeft echter ook nadelen ten opzichte van de huidige implementatie.
 Deze laatste gebruikt slechts 6.7 GiB geheugen, en dit kan zelfs nog naar beneden.
@@ -377,14 +377,14 @@ Dit is ongeveer 13 keer lager dan het geheugengebruik voor de suffixboom impleme
 Indien we alle proteïnen willen vinden waar een peptide mee matcht, dan moeten we de volledige subboom doorzoeken startende van de top waar de match eindigt.
 De reden hiervoor is dat alle bladeren in deze subboom de gematchte proteïnen en de bijbehorende taxonomische informatie bevatten.
 \\ \\
-Figuur~\ref{fig:performance_all-occurrences_tree} bevat een overzicht van de nodige zoektijd voor beide implementaties op alle zoekbestanden.
+Figuur~\ref{fig:performance_all-occurrences_tree} bevat een overzicht van de nodige zoektijd voor beide implementaties op alle peptidebestanden.
 We zien duidelijk dat er hier een significant verschil is tussen de C++ en Rust implementatie.
 Vermoedelijk komt dit door de andere \textit{memory layout} die ontstaat doordat de Rust implementatie 1 grote vector gebruikt, terwijl de C++ implementatie losse toppen gebruikt die verspreid liggen in het geheugen.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{search_all-occurrences_performance_tree}
-    \caption{Uitvoeringstijd inclusief het doorzoeken van de volledige subboom na match voor alle zoekbestanden. Deze resultaten zijn het gemiddelde van 10 uitvoeringen. Eén uitvoering wordt gezien als één keer elke peptide die deel is van het zoekbestand te zoeken in de suffixboom, en bij een match de volledige resterende subboom te doorzoeken. Dit toont de tijd die nodig is om informatie uit de bladeren op te halen voor alle proteïnen waar een peptide substring van is. Het meten van de tijd is gebeurd in de code zelf.}
+    \caption{Uitvoeringstijd inclusief het doorzoeken van de volledige subboom na match voor alle peptidebestanden. Deze resultaten zijn het gemiddelde van 10 uitvoeringen. Eén uitvoering wordt gezien als één keer elke peptide die deel is van het peptidebestand te zoeken in de suffixboom, en bij een match de volledige resterende subboom te doorzoeken. Dit toont de tijd die nodig is om informatie uit de bladeren op te halen voor alle proteïnen waar een peptide substring van is. Het meten van de tijd is gebeurd in de code zelf.}
     \label{fig:performance_all-occurrences_tree}
 \end{figure}
 
@@ -400,22 +400,24 @@ Eén van deze stukjes informatie is het Taxon ID\@.
 Unipept zal niet de lijst van alle mogelijke taxon IDs teruggeven omdat dit twee nadelen heeft.
 Ten eerste kan dit een erg grote lijst worden indien de peptide met erg veel proteïnen matcht.
 Ten tweede zou dit ook vereisen om altijd de volledige subboom na een match te overlopen.
-In de plaats gaan we via voorberekeningen de taxon IDs aggregeren gebruik makende van de NCBI taxonomy database~\cite{NCBI_original_article, NCBI_update}.
-Met andere woorden, we gaan dus op zoek naar de kleinste gemeenschappelijke voorouder van alle taxon IDs die in de bladeren van de subboom zitten van een bepaalde top.
-Hiervoor bestaan verschillende strategieën die al uitgewerkt zijn in UMGAP, en die hier herbruikbaar waren.
+In plaats daarvan gaan we via voorberekeningen de taxon IDs aggregeren gebruikmakende van de NCBI taxonomy\footnote{Dit is een boomstructuur die de evolutionaire relaties tussen organismen representeert. De laagste gemeenschappelijke voorouder van twee bladeren in deze boom representeert het evolutionair punt waarop deze twee organismen van elkaar afgesplitst zijn. Elke top in deze taxonomische boom heeft een uniek taxon ID, waarbij de root van de boom ID met waarde 1 heeft.} database~\cite{NCBI_original_article, NCBI_update}.
+Met andere woorden, we gaan op zoek naar de kleinste gemeenschappelijke voorouder van alle taxon IDs die in de bladeren van de subboom zitten van een bepaalde top.
+Hiervoor bestaan verschillende strategieën die al uitgewerkt zijn in UMGAP~\cite{UMGAP_paper, UMGAP_source}, en die hier herbruikbaar waren.
 \\ \\
-Origineel was het plan om LCA* \footnote{LCA = Lowest Common Ancester, Laagste Gemeenschappelijke Voorouder. De * wijst erop dat dit algoritme een variant is.} te gebruiken als aggregatie strategie.
+Origineel was het plan om LCA* \footnote{LCA = Lowest Common Ancester, Laagste Gemeenschappelijke Voorouder. De * wijst erop dat dit algoritme een variant is.} te gebruiken als aggregatiestrategie.
 Dit is een heuristiek gebaseerd op de LCA\footref{footnote:lca}.
-Bij LCA* zoeken we de meest specifieke taxon in de boom die ofwel een ouder of kind is van elke taxon in de boom.
-Anders gezegd is dit de LCA van een lijst taxa, nadat we alle taxa verwijderd hebben die ouder zijn van minstens één taxon in die lijst~\cite{UMGAP_paper}.
-Het voordeel hiervan is dat we iets langer exactere info kunnen behouden.
-Want bij LCA zelf zal het resultaat altijd één zijn vanaf een top in de deelboom dit als LCA heeft.
-Eén is namelijk ouder van alle andere taxa.
+Bij LCA* zoeken we het meest specifieke taxon in de boom die ofwel een ouder of kind is van elke taxon in de boom.
+Anders gezegd is dit de LCA van een verzameling taxa, nadat we alle taxa verwijderd hebben die ouder zijn van minstens één taxon in die verzameling~\cite{UMGAP_paper}.
+Het voordeel van LCA* ten opzichte van LCA is dat de resulterende data langer exact blijft.
+De LCA van een verzameling aan taxon IDs zal namelijk altijd als waarde 1 hebben, dus de root zijn, vanaf één element in de verzameling als root geannoteerd is.
+Dit gedrag willen we zo lang mogelijk vermijden.
 \\ \\
-Het idee was dat we niet elke keer naar de bladeren moeten gaan om het taxon ID te berekenen van één top.
-In de plaats zouden we gebruik maken van de directe kinderen van de top.
-Op deze manier gingen we met één bottom-up sweep van de boom alle taxon IDs kunnen berekenen.
-Dit bleek echter niet mogelijk omdat gebruik maken van de directe kinderen een ander resultaat geeft dan gebruik maken van de bladeren van de subboom.
+Om het taxon ID van elke interne top in de boomstructuur efficiënt voor te berekenen was het idee om dit op basis te doen van de directe kinderen van die top.
+Hiermee bedoelen we de eerstegraads kinderen.
+Deze liggen 1 niveau lager in de boomstructuur, en hebben als ouder allemaal dezelfde top waarvan we het taxon ID willen berekenen.
+De andere, tragere, optie is om dit te doen op basis van de bladeren van de subboom van de top.
+Door het te doen aan de hand van de directe kinderen van de top kunnen we in één bottom-up sweep van de boom alle taxon IDs berekenen.
+Dit bleek echter niet mogelijk in combinatie met LCA* omdat gebruik maken van de directe kinderen een ander resultaat geeft dan gebruik maken van de bladeren van de subboom.
 Figuur~\ref{fig:lca*_diff} toont een minimaal voorbeeld uitgewerkt voor beide strategieën.
 De licht grijze toppen zijn ingevuld aan de hand van aggregatie, terwijl de zwarte toppen gegeven zijn.
 
@@ -441,7 +443,7 @@ De licht grijze toppen zijn ingevuld aan de hand van aggregatie, terwijl de zwar
             };
         \end{tikzpicture}
     }
-    \caption{Minimaal voorbeeld van de 2 aggregatie manieren gebruik makende van LCA*. De grijze toppen zijn berekend aan de hand van een LCA*, terwijl de zwarte toppen gegeven zijn.}\label{fig:lca*_diff}
+    \caption{Minimaal voorbeeld van de 2 aggregatie manieren gebruikmakende van LCA*. De grijze toppen zijn berekend aan de hand van een LCA*, terwijl de zwarte toppen gegeven zijn. In de NCBI databank stelt organisme met ID 10566 het Human papillomavirus voor, organisme met ID 9606 de Homo Sapiens en taxon ID 1 is een representatie van de root van de volledige NCBI taxonomy boomstructuur.}\label{fig:lca*_diff}
 \end{figure}
 
 Onderstaande uitleg behandelt de werkwijze voor bovenstaande figuren.
@@ -450,34 +452,37 @@ Onderstaande uitleg behandelt de werkwijze voor bovenstaande figuren.
     9606 en 10566 zijn geen ouder of kind van elkaar, dus zal LCA* hetzelfde doen als LCA\@.
     De kleinste gemeenschappelijke ouder van deze 2 taxons is 1.
     \item Het toepassen van LCA* op basis van de directe kinderen geeft als resultaat 9606.
-    Dit val simpel te verklaren aangezien de LCA* van de linker subboom 1 is.
-    Als we daarna dan de LCA* van \{1, 9606\} nemen wordt 1 verwijderd aangezien dit een ouder is van 9606.
-    De LCA van 9606 is natuurlijk gewoon zichzelf!
+    Dit valt simpel te verklaren aangezien de LCA* van de linker subboom 1 is.
+    Als we daarna dan de LCA* van \{1, 9606\} nemen wordt 1 verwijderd, aangezien dit een ouder is van 9606.
+    De LCA van 9606 is gewoon zichzelf.
 \end{itemize}
 
 Het berekenen van de LCA* op de eerste manier is echter niet schaalbaar voor de volledige suffixboom.
-Om een idee van grootorde te geven: de suffixboom voor de Swiss-Prot dataset bevat 328 922 516 toppen in het totaal, waarvan 206 523 693 bladeren.
+Om een idee van grootorde te geven: de suffixboom voor de Swiss-Prot dataset bevat in totaal 328 922 516 toppen, waarvan 206 523 693 bladeren.
 \\ \\
-Daarom hebben we uiteindelijk toch voor de standaard LCA aggregatie manier gekozen.
+Daarom hebben we voorlopig toch voor de standaard LCA aggregatiemanier gekozen.
 Deze laat wel toe de toppen op deze efficiëntere manier te aggregeren.
-UMGAP biedt 2 manieren aan om LCA te doen.
-Gebruik makende van RMQs\footnote{Range Minimum Queries} of een boomstructuur.
-Zelf maak ik gebruik van de RMQ implementatie aangezien deze significant sneller is (8 min 58 sec vs 20 min en 25 sec voor de Swiss-Prot databank) in mijn toepassing.
-Tot slot heb ik ook eens vergeleken hoe groot de behaalde tijdswinst is bij het gebruik kunnen maken van de directe aggregatie op de kinderen, vergeleken met aggregatie op basis van de bladeren.
+UMGAP biedt 2 implementaties aan om de LCA te berekenen voor een gegeven lijst van taxa.
+Gebruikmakende van RMQs\footnote{Range Minimum Queries} of een boomstructuur.
+Mijn implementatie maakt gebruik van de RMQ implementatie aangezien deze significant sneller is (8 min 58 sec vs 20 min en 25 sec voor de Swiss-Prot databank) in mijn toepassing.
+Tot slot heb ik voor Swiss-Prot ook eens vergeleken hoe groot de behaalde tijdswinst is als we de LCAs aggregeren aan de hand van de directe kinderen, vergeleken met aggregatie op basis van de bladeren.
 Bij het aggregeren op basis van de bladeren met de RMQ implementatie was de uitvoeringstijd maar liefst 12 uur, 19 minuten en 16 seconden.
 Dit is dus een extreem groot verschil.
 
 \section{Conclusie}\label{sec:conclusie-suffix-bomen}
-Het is duidelijk dat suffixbomen erg performant zijn voor dit scenario.
-Zowel het opbouwen als zoeken is snel.
+Het is duidelijk dat suffixbomen erg performant zijn voor het zoeken van willekeurige peptiden in een grote verzameling van proteïnes.
+Zelfs als we alle bladeren willen afgaan valt dit mee.
+Bovendien is ook het opbouwen van de indexstructuur iets wat relatief snel gaat.
 \\ \\
-Door de eigen implementatie in Rust kunnen we ook wat tijd besparen ten opzichte van een equivalente C++ implementatie.
-Een deel van de winst zit tijdens het opbouwen van de boom, maar vooral tijdens het zoeken wanneer informatie uit de bladeren gehaald moet worden.
+Door de eigen implementatie in Rust, kunnen we ook wat tijd besparen ten opzichte van een equivalente C++ implementatie.
+Een deel van de tijdswinst zit in het opbouwen van de boom, maar vooral tijdens het zoeken wanneer informatie uit de bladeren gehaald moet worden.
 Vermoedelijk ligt de andere geheugenstructuur hiervoor aan de basis.
 \\ \\
 Ondanks de veelbelovende resultaten op vlak van snelheid is er een keerzijde aan de medaille.
-Het geheugengebruik is zo groot dat we op zoek moeten naar een andere datastructuur.
-Voor de Swiss-Prot databank gaat het geheugenverbruik al boven 80 GB, terwijl ons einddoel is om dit te gebruiken op de TrEMBL dataset.
-Dit wilt zeggen dat als we alles \textit{slechts} $\pm$ 500 maal kunnen opschalen het doel bereikt is.
-Dit zou echter vereisen dat we een server hebben met ongeveer 50 TB aan RAM geheugen.
-Dit is niet mogelijk, we moeten daarom op zoek naar een andere datastructuur die minder geheugen vereist.
+Het geheugengebruik is zo groot dat we op zoek moeten naar een andere indexstructuur.
+Voor de Swiss-Prot databank gaat het geheugenverbruik al boven 85 GB als we ook de taxon IDs voorberekenen, terwijl ons einddoel is om dit toe te passen op de volledige UniprotKB databank.
+Dit wil zeggen dat alles nog $\pm$ 500 maal opgeschaald moet worden.
+Dit zou echter
+Dit zou echter vereisen dat we een server hebben met ongeveer 45 TB aan RAM geheugen.
+We hebben echter geen dergelijke machine ter beschikking.
+Daarom moeten we op zoek naar andere indexstructuren die minder geheugen vereisen.

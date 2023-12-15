@@ -260,13 +260,13 @@ Zo staat ``X'' voor elk mogelijk aminozuur, ``Z'' voor ``Q'' of ``E'',\ldots
 Verder valt ook te zien dat de verdeling van de proteïnelengtes in de UniProtKB, Swiss-Prot en Human-Prot datasets vergelijkbaar zijn.
 Dit laat ons toe om gebruik te maken van de Swiss-Prot en Human-Prot eiwitdatabanken en later de resultaten te veralgemenen naar UniProtKB\@.
 
-\subsection{Peptide zoekbestanden}\label{subsec:peptide-zoek-bestanden}
+\subsection{Peptidebestanden}\label{subsec:peptide-zoek-bestanden}
 De zoekperformantie van onze indexstructuur is een erg belangrijk aspect.
 Om dit te meten hebben we bij elke eiwitdatabank een lijst aan peptiden die we proberen te zoeken.
 Voor beide databanken zijn enkele datasets opgesteld.
 
 \subsubsection{Swiss-Prot}
-Voor deze databank hebben we enkele zoekbestanden voorzien.
+Voor deze proteïnedatabank hebben we enkele peptidebestanden voorzien.
 Twee bestanden die gesampled zijn en een reeks aan real-life stalen.
 De twee artificiële bestanden zijn zo gekozen dat de ene enkel tryptische peptiden bevat, terwijl de andere ook peptiden bevat met \textit{missed cleavages}.
 De eerste kan dus op dit moment al efficiënt door Unipept verwerkt worden, terwijl dit voor de tweede niet mogelijk is.
@@ -289,15 +289,15 @@ Tabel~\ref{tab:artifiele_bestanden_statistieken} bevat in kolom twee en drie een
         Aantal tryptische peptiden & 100 000         & 4107          & 102 659          \\
         \hline
     \end{tabular}
-    \caption{Eigenschappen van de verschillende zoekbestanden. \textit{Swiss-Prot-NOMC} bevat de statistieken voor het Swiss-Prot zoekbestand zonder \textit{missed cleavages}, terwijl \textit{Swiss-Prot-MC} net wel \textit{missed cleavages} bevat. De laatste kolom bevat de statistieken voor het zoekbestand dat hoort bij de Human-Prot eiwitdatabank.}
+    \caption{Eigenschappen van de verschillende peptidebestanden. \textit{Swiss-Prot-NOMC} bevat de statistieken voor het Swiss-Prot peptidebestanden zonder \textit{missed cleavages}, terwijl \textit{Swiss-Prot-MC} net wel \textit{missed cleavages} bevat. De laatste kolom bevat de statistieken voor het peptidebestand dat hoort bij de Human-Prot eiwitdatabank.}
     \label{tab:artifiele_bestanden_statistieken}
 \end{table}
 
 \paragraph{Experimentele stalen}
 Om de performantie beter te beoordelen, gebruiken we ook enkele stalen uit experimenten met een kleine micro-organisme gemeenschap, namelijk SIHUMIx\footnote{Simplified human intestinal microbiota}~\cite{SIHUMI_first_introduction, SIHUMI_frequently_used}.
 Aangezien dit effectieve stalen zijn, bevatten deze \textit{missed cleavages} die natuurlijk ontstaan zijn.
-Tabel~\ref{tab:sihumi_zoekbestanden} bevat de belangrijkste statistieken voor elk zoekbestand.
-Deze zoekbestanden worden in combinatie met de Swiss-Prot databank gebruikt tijdens het testen.
+Tabel~\ref{tab:sihumi_zoekbestanden} bevat de belangrijkste statistieken voor elk peptidebestand.
+Deze peptidebestanden worden in combinatie met de Swiss-Prot proteïnedatabank gebruikt tijdens het testen.
 
 \begin{table}[ht]
     \begin{minipage}{\linewidth}
@@ -316,22 +316,22 @@ Deze zoekbestanden worden in combinatie met de Swiss-Prot databank gebruikt tijd
             Aantal tryptische peptiden & 17 263     & 162        & 152        & 207        & 155        & 242        \\
             \hline
         \end{tabular}}
-    \caption{Eigenschappen van de SIHUMIx zoekbestanden. Elke kolom stelt een staal voor met als bestandsnaam \texttt{S<XX>.txt}. Deze stalen kunnen teruggevonden worden in onze GitHub repository \protect\footnote{\url{https://github.com/BramDevlaminck/Thesis\_benchmarkdata}} onder de \texttt{SIHUMI}-folder.} % protect is needed to make footnote possible in a caption. This is combined with a minipage to place the footnote directly under the table
+    \caption{Eigenschappen van de SIHUMIx peptidebestanden. Elke kolom stelt een staal voor met als bestandsnaam \texttt{S<XX>.txt}. Deze stalen kunnen teruggevonden worden in onze GitHub repository \protect\footnote{\url{https://github.com/BramDevlaminck/Thesis\_benchmarkdata}} onder de \texttt{SIHUMI}-folder.} % protect is needed to make footnote possible in a caption. This is combined with a minipage to place the footnote directly under the table
     \label{tab:sihumi_zoekbestanden}
     \end{minipage}
 \end{table}
 
 
 \subsubsection{Human-Prot}
-Voor deze databank hebben we één zoekbestand bestaande uit HLA-peptiden.
+Voor deze databank hebben we één peptidebestand bestaande uit HLA-peptiden.
 Dit zijn korte, niet-tryptische peptiden uit het immunopeptidomics onderzoeksveld.
 Hierdoor kan Unipept op dit moment niet gebruikt worden om dit soort stalen te analyseren.
-Elke peptide in dit zoekbestand is een sample van een proteïne uit de Human-Prot databank.
+Elke peptide in dit peptidebestand is een sample van een proteïne uit de Human-Prot databank.
 Hierdoor zijn alle peptiden die we zoeken effectief vindbaar in de dataset.
 Een kort overzicht van enkele eigenschappen is terug te vinden in de laatste kolom van tabel~\ref{tab:artifiele_bestanden_statistieken}.
 \\ \\
-Appendix~\ref{ch:appendix-statistieken-zoekbestanden} bevat aanvullende grafieken over bovenstaande zoekbestanden.
-Deze tonen voor elk zoekbestand de distributie van de aminozuren en de distributie van de peptidelengte.
+Appendix~\ref{ch:appendix-statistieken-zoekbestanden} bevat aanvullende grafieken over bovenstaande peptidebestanden.
+Deze tonen voor elk peptidebestand de distributie van de aminozuren en de distributie van de peptidelengte.
 
 
 \section{Benchmark hardware}\label{sec:benchmark-hardware}
