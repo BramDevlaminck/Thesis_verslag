@@ -374,5 +374,98 @@
     howpublished = {\url{https://doc.rust-lang.org/std/primitive.usize.html}}
 }
 
+@article{knuth-morris-pratt,
+    author = {Knuth, Donald E. and Morris, Jr., James H. and Pratt, Vaughan R.},
+    title = {Fast Pattern Matching in Strings},
+    journal = {SIAM Journal on Computing},
+    volume = {6},
+    number = {2},
+    pages = {323-350},
+    year = {1977},
+    doi = {10.1137/0206024},
+    URL = {https://doi.org/10.1137/0206024},
+    eprint = {https://doi.org/10.1137/0206024},
+    abstract = { An algorithm is presented which finds all occurrences of one given string within another, in running time proportional to the sum of the lengths of the strings. The constant of proportionality is low enough to make this algorithm of practical use, and the procedure can also be extended to deal with some more general pattern-matching problems. A theoretical application of the algorithm shows that the set of concatenations of even palindromes, i.e., the language \$\{\alpha \alpha ^R\}^*\$, can be recognized in linear time. Other algorithms which run even faster on the average are also considered. }
+}
 
+@article{boyer-moore-horspool,
+    author = {Horspool, R. Nigel},
+    title = {Practical fast searching in strings},
+    journal = {Software: Practice and Experience},
+    volume = {10},
+    number = {6},
+    pages = {501-506},
+    keywords = {String searching, Pattern matching, Text editing, Bibliographic search},
+    doi = {https://doi.org/10.1002/spe.4380100608},
+    url = {https://onlinelibrary.wiley.com/doi/abs/10.1002/spe.4380100608},
+    eprint = {https://onlinelibrary.wiley.com/doi/pdf/10.1002/spe.4380100608},
+    abstract = {Abstract The problem of searching through text to find a specified substring is considered in a practical setting. It is discovered that a method developed by Boyer and Moore can outperform even special-purpose search instructions that may be built into the computer hardware. For very short substrings however, these special purpose instructions are fastest—provided that they are used in an optimal way.},
+    year = {1980}
+}
 
+@article{shift-and,
+    author = {Bálint Dömölki},
+    title = {An algorithm for syntactical analysis},
+    journal = {Computational Linguistics 3},
+    year = {1964},
+    institution = {Hungarian Academy of Science},
+    pages = {29-46},
+}
+
+@INPROCEEDINGS{fm_index,
+    author={Ferragina, P. and Manzini, G.},
+    booktitle={Proceedings 41st Annual Symposium on Foundations of Computer Science},
+    title={Opportunistic data structures with applications},
+    year={2000},
+    volume={},
+    number={},
+    pages={390-398},
+    abstract={We address the issue of compressing and indexing data. We devise a data structure whose space occupancy is a function of the entropy of the underlying data set. We call the data structure opportunistic since its space occupancy is decreased when the input is compressible and this space reduction is achieved at no significant slowdown in the query performance. More precisely, its space occupancy is optimal in an information-content sense because text T[1,u] is stored using O(H/sub k/(T))+o(1) bits per input symbol in the worst case, where H/sub k/(T) is the kth order empirical entropy of T (the bound holds for any fixed k). Given an arbitrary string P[1,p], the opportunistic data structure allows to search for the occurrences of P in T in O(p+occlog/sup /spl epsiv//u) time (for any fixed /spl epsiv/>0). If data are uncompressible we achieve the best space bound currently known (Grossi and Vitter, 2000); on compressible data our solution improves the succinct suffix array of (Grossi and Vitter, 2000) and the classical suffix tree and suffix array data structures either in space or in query time or both. We also study our opportunistic data structure in a dynamic setting and devise a variant achieving effective search and update time bounds. Finally, we show how to plug our opportunistic data structure into the Glimpse tool (Manber and Wu, 1994). The result is an indexing tool which achieves sublinear space and sublinear query time complexity.},
+    keywords={},
+    doi={10.1109/SFCS.2000.892127},
+    ISSN={0272-5428},
+    month=nov
+}
+
+@article{mcCreight_first_suffixtree,
+    author = {McCreight, Edward M.},
+    title = {A Space-Economical Suffix Tree Construction Algorithm},
+    year = {1976},
+    issue_date = {April 1976},
+    publisher = {Association for Computing Machinery},
+    address = {New York, NY, USA},
+    volume = {23},
+    number = {2},
+    issn = {0004-5411},
+    url = {https://doi.org/10.1145/321941.321946},
+    doi = {10.1145/321941.321946},
+    abstract = {A new algorithm is presented for constructing auxiliary digital search trees to aid in exact-match substring searching. This algorithm has the same asymptotic running time bound as previously published algorithms, but is more economical in space. Some implementation considerations are discussed, and new work on the modification of these search trees in response to incremental changes in the strings they index (the update problem) is presented.},
+    journal = {J. ACM},
+    month = {apr},
+    pages = {262–272},
+    numpages = {11}
+}
+
+@inproceedings{suffix_array_first_mention,
+    author = {Manber, Udi and Myers, Gene},
+    title = {Suffix Arrays: A New Method for on-Line String Searches},
+    year = {1990},
+    isbn = {0898712513},
+    publisher = {Society for Industrial and Applied Mathematics},
+    address = {USA},
+    booktitle = {Proceedings of the First Annual ACM-SIAM Symposium on Discrete Algorithms},
+    pages = {319–327},
+    numpages = {9},
+    location = {San Francisco, California, USA},
+    series = {SODA '90}
+}
+
+@INPROCEEDINGS{bi-directional_fm_index,
+    author={Lam, T. W. and Li, Ruiqiang and Tam, Alan and Wong, Simon and Wu, Edward and Yiu, S. M.},
+    booktitle={2009 IEEE International Conference on Bioinformatics and Biomedicine},
+    title={High Throughput Short Read Alignment via Bi-directional BWT},
+    year={2009},
+    volume={},
+    number={},
+    pages={31-36},
+    doi={10.1109/BIBM.2009.42}}

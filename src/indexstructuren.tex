@@ -1,0 +1,31 @@
+\chapter{Indexstructuren}\label{ch:indexstructuren}
+Indexstructuren zijn een verzamelterm voor verschillende gestructureerde verzamelingen die toelaten bepaalde zoekoperaties doorheen je data efficiënter uit te voeren.
+Bij indexstructuren voor strings bestaan er twee strategieën.
+\begin{enumerate}
+    \item Voorverwerk de korte zoekstring (van lengte $n$) zoals in het algroritme van Knuth-Morris-Pratt~\cite{knuth-morris-pratt}, Boyer-Moore-Horspool~\cite{boyer-moore-horspool} en het shift-AND-algoritme~\cite{shift-and}.
+    \item Voorverwerk de lange tekst (van lengte $m$) zoals bij suffixbomen~\cite{mcCreight_first_suffixtree}, suffix arrays~\cite{suffix_array_first_mention} en (bidirectionele) FM-indexen~\cite{fm_index, bi-directional_fm_index}.
+\end{enumerate}
+Voor beide aanpakken bestaan er algoritmes die lineair in de tijd de indexstructuur op te bouwen en te zoeken.
+Er is echter een belangrijk detail.
+Bij de strategie waar de korte zoekstring indexeren is het opbouwen in $O(n)$ tijd, en het zoeken in $O(m)$ tijd.
+Hierbij is het zoeken dus lineair in de tijd van de totale tekst.
+Dit is nadelig wanneer er veel korte strings zijn, waarvoor elke keer de index gebouwd moet worden, en daarna moeten we nog zoeken lineair in de lengte van de lange tekst.
+Indien we de lange tekst indexeren kan het opbouwen in $O(m)$ tijd, en het zoeken in $O(n)$.
+Hierbij is het mogelijk om één keer de indexstructuur te bouwen voor de lange tekst, waarna elke korte string gezocht kan worden lineair in de tijd ten opzicht van zijn eigen lengte.
+Het nadeel is echter dat het opbouwen van de indexstructuur voor een grote tekst traag kan worden.
+\\ \\
+Ons probleem komt net heel hard overeen met de tweede aanpak, waardoor we die aanpak zullen verkennen in deze masterproef.
+We hebben een grote databank met erg veel proteïnes (een lange tekst) waarin we erg veel peptides (korte strings) zoeken.
+Meer specifiek willen we op 2 manieren kunnen zoeken:
+\begin{enumerate}
+    \item Zoek of er een match is.
+    \item Zoek alle matches.
+\end{enumerate}
+In de eerste plaats voor exacte matches, maar later ook naar inexacte matches waarbij op voorhad het maximum aantal mismatches vas gelegd is.
+\\ \\
+Aangezien de indexstructuur slechts eenmalig voor een bepaalde proteïnendatabank opgebouwd moet worden ligt de primaire restrictie bij het geheugenvebruik.
+Het blijft echter steeds belangrijk dat deze indexstructuur in een redelijke tijd opgebouwd kan worden. % TODO: wat is "een redelijke tijd"?
+In de volgende hoofdstukken verkennen we verschillende indexstructuren om een proteïnendatabank te indexeren.
+De hoofdfocus ligt elke keer primair op de indexstructuur volledig in RAM geheugen kunnen houden tijdens het opbouwen, waarna we de zoekperformantie testen.
+
+

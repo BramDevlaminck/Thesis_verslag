@@ -138,9 +138,8 @@ UniProt zelf bestaat uit twee onderdelen (gegeven statistieken zijn voor release
     \item TrEMBL: Deze dataset bevat 251 600 768 sequenties en is dus veel groter dan Swiss-Prot.
     Een bijkomend verschil is dat deze dataset \textbf{niet} manueel gecureerd is, maar algoritmisch geannoteerd werd.
 \end{enumerate}
-Het einddoel van deze masterproef is om een index op te bouwen voor UniProtKB\@.
-Daarmee bedoelen we de unie van Swiss-Prot en TrEMBL\@.
-Dit is echter veel te groot om mee te werken tijdens het testen.
+Uiteindelijk is het doel om een indexstructuur voor UniProtKB op te bouwen waarbij de probleemstelling opgelost is.
+UniProtKB is echter veel te groot om mee te werken tijdens het testen.
 In de plaats gebruiken we tijdens het ontwikkelen twee kleinere subsets van UniProtKB\@.
 Eerst wordt een overzicht gegeven van de belangrijkste eigenschappen van UniProtKB, om daarna dieper in te gaan op de twee gebruikte subsets tijdens het testen.
 
@@ -166,6 +165,27 @@ Dit ondersteunt onmiddellijk de keuze om gebruik te maken van kleinere datasets 
     \caption{Eigenschappen van de volledige UniProtKB 2023\_04 databank. De afkorting \textit{aa} staat voor \textit{amino acids}.}
     \label{tab:uniprotKB_eigenschappen}
 \end{table}
+
+In Figuur~\ref{fig:uniprot_aminozuur} en~\ref{fig:uniprot_length} bevatten een gedetailleerder overzicht van de aminozuurdistributie en verdeling van de proteïnelengtes.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\linewidth]{uniprotKB_aminozuur_voorkomens}
+    \caption{Aantal voorkomens per aminozuur voor alle proteïnen in de UniProtKB databank uit UniProt 2023\_04.}
+    \label{fig:uniprot_aminozuur}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.95\linewidth]{uniprotKB_length_distribution_large}
+    \makebox[0pt][r]{% Similar to \llap
+        \raisebox{2.2em}{%
+            \includegraphics[width=0.65\linewidth]{uniprotKB_length_distribution_small}% Inserted image/inset
+        }\hspace*{2em}%
+    }%
+    \caption{Lengtedistributie van de proteïnen in de UniProtKB databank. De kleinere grafiek bevat een gedetailleerder overzicht van de distributie in het interval $[0, 1000[$.}\label{fig:uniprot_length}
+\end{figure}
+
 
 \paragraph{Swiss-Prot} Deze databank is één van de twee standaard onderdelen van UniProt.
 Een kort overzicht van alle statistieken is terug te vinden in Tabel~\ref{tab:swissprot_eigenschappen}.
@@ -258,6 +278,7 @@ Dit komt doordat sommige letters eigenlijk een soort wildcard voorstellen.
 Zo staat ``X'' voor elk mogelijk aminozuur, ``Z'' voor ``Q'' of ``E'',\ldots
 \\ \\
 Verder valt ook te zien dat de verdeling van de proteïnelengtes in de UniProtKB, Swiss-Prot en Human-Prot datasets vergelijkbaar zijn.
+Met andere woorden: Swiss-Prot en Human-Prot zijn een representatieve kleinere voorstelling van UniProtKB\@.
 Dit laat ons toe om gebruik te maken van de Swiss-Prot en Human-Prot eiwitdatabanken en later de resultaten te veralgemenen naar UniProtKB\@.
 
 \subsection{Peptidebestanden}\label{subsec:peptide-zoek-bestanden}
@@ -330,15 +351,15 @@ Elke peptide in dit peptidebestand is een sample van een proteïne uit de Human-
 Hierdoor zijn alle peptiden die we zoeken effectief vindbaar in de dataset.
 Een kort overzicht van enkele eigenschappen is terug te vinden in de laatste kolom van tabel~\ref{tab:artifiele_bestanden_statistieken}.
 \\ \\
-Appendix~\ref{ch:appendix-statistieken-zoekbestanden} bevat aanvullende grafieken over bovenstaande peptidebestanden.
+Appendix~\ref{ch:appendix-statistieken-peptidebestanden} bevat aanvullende grafieken over bovenstaande peptidebestanden.
 Deze tonen voor elk peptidebestand de distributie van de aminozuren en de distributie van de peptidelengte.
-
+% TODO: hier ergens vermelden als apart onderdeeltje hoeveel geheugen nodig is op dit moment voor swissprot in unipept om index op te bouwen, hoe lang dit duurt, en hoe lang het zoeken tot match duurt voor swissprot met en zonder missed cleavage
 
 \section{Benchmark hardware}\label{sec:benchmark-hardware}
 Alle benchmarks werden uitgevoerd op een virtuele machine van team Unipept.
 Tabel~\ref{tab:Matt_hardware} bevat een overzicht van de hardware van de fysieke machine en hoeveel toegekend is aan de VM\@.
 Al deze informatie, en ook over de andere machines gebruik door Unipept, kan teruggevonden worden op de Unipept GitHub wiki~\cite{unipept_infrastructure}.
-
+\\
 \begin{table}[h!]
     \centering
     \begin{tabular}{p{0.20\linewidth}p{0.45\linewidth}p{0.25\linewidth}}
