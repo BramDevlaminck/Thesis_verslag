@@ -468,4 +468,66 @@
     volume={},
     number={},
     pages={31-36},
-    doi={10.1109/BIBM.2009.42}}
+    doi={10.1109/BIBM.2009.42}
+}
+
+@misc{libdivsufsort,
+    author = {Yuta Mori},
+    howpublished = {\url{https://github.com/y-256/libdivsufsort}},
+    title = {Libdivsufsort},
+    note = {Geraadpleegd: 22 november 2023}
+}
+
+@misc{dark_archon,
+    author = {Kvark},
+    howpublished = {\url{https://github.com/kvark/dark-archon}},
+    title = {Archon},
+    note = {Geraadpleegd: 22 november 2023}
+}
+
+@article{ko_alura,
+    title = {Space efficient linear time construction of suffix arrays},
+    journal = {Journal of Discrete Algorithms},
+    volume = {3},
+    number = {2},
+    pages = {143-156},
+    year = {2005},
+    note = {Combinatorial Pattern Matching (CPM) Special Issue},
+    issn = {1570-8667},
+    doi = {https://doi.org/10.1016/j.jda.2004.08.002},
+    url = {https://www.sciencedirect.com/science/article/pii/S1570866704000498},
+    author = {Pang Ko and Srinivas Aluru},
+    keywords = {Computational biology, Pattern matching, String algorithms, Suffix array, Suffix sorting},
+    abstract = {We present a linear time algorithm to sort all the suffixes of a string over a large alphabet of integers. The sorted order of suffixes of a string is also called suffix array, a data structure introduced by Manber and Myers that has numerous applications in pattern matching, string processing, and computational biology. Though the suffix tree of a string can be constructed in linear time and the sorted order of suffixes derived from it, a direct algorithm for suffix sorting is of great interest due to the space requirements of suffix trees. Our result is one of the first linear time suffix array construction algorithms, which improve upon the previously known O(nlogn) time direct algorithms for suffix sorting. It can also be used to derive a different linear time construction algorithm for suffix trees. Apart from being simple and applicable for alphabets not necessarily of fixed size, this method of constructing suffix trees is more space efficient.}
+}
+
+@inproceedings{sais,
+    author = {Nong, Ge and Zhang, Sen and Chan, Daricks Wai Hong},
+    year = {2009},
+    month = {03},
+    pages = {193-202},
+    title = {Linear Suffix Array Construction by Almost Pure Induced-Sorting},
+    journal = {Proceedings of the Data Compression Conference},
+    doi = {10.1109/DCC.2009.42}
+}
+
+@article{radixSA,
+    title = {An elegant algorithm for the construction of suffix arrays},
+    journal = {Journal of Discrete Algorithms},
+    volume = {27},
+    pages = {21-28},
+    year = {2014},
+    issn = {1570-8667},
+    doi = {https://doi.org/10.1016/j.jda.2014.03.001},
+    url = {https://www.sciencedirect.com/science/article/pii/S1570866714000173},
+    author = {Sanguthevar Rajasekaran and Marius Nicolae},
+    keywords = {Suffix array construction algorithm, Parallel algorithm, High probability bounds},
+    abstract = {The suffix array is a data structure that finds numerous applications in string processing problems for both linguistic texts and biological data. It has been introduced as a memory efficient alternative for suffix trees. The suffix array consists of the sorted suffixes of a string. There are several linear time suffix array construction algorithms (SACAs) known in the literature. However, one of the fastest algorithms in practice has a worst case run time of O(n2). The problem of designing practically and theoretically efficient techniques remains open. In this paper we present an elegant algorithm for suffix array construction which takes linear time with high probability; the probability is on the space of all possible inputs. Our algorithm is one of the simplest of the known SACAs and it opens up a new dimension of suffix array construction that has not been explored until now. Our algorithm is easily parallelizable. We offer parallel implementations on various parallel models of computing. We prove a lemma on the ℓ-mers of a random string which might find independent applications. We also present another algorithm that utilizes the above algorithm. This algorithm is called RadixSA and has a worst case run time of O(nlogn). RadixSA introduces an idea that may find independent applications as a speedup technique for other SACAs. An empirical comparison of RadixSA with other algorithms on various datasets reveals that our algorithm is one of the fastest algorithms to date. The C++ source code is freely available at http://www.engr.uconn.edu/~man09004/radixSA.zip.}
+}
+
+@misc{mergeSort,
+    author = {John Von Neumann},
+    title = {First Draft of a Report on the EDVAC},
+    year = {1945},
+    howpublished = {\url{https://web.mit.edu/STS.035/www/PDFs/edvac.pdf}}
+}
