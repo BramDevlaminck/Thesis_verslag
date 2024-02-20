@@ -6,7 +6,7 @@ We kiezen voor deze datastructuur verder te besturderen omdat ze geheugeneffici�
 \section{Wat zijn suffix arrays?}\label{sec:wat-zijn-suffix-arrays?}
 Suffix arrays zijn een geheugenefficiëntere voorstelling van suffixbomen.
 In plaats van een boomstructuur maken we hier gebruik van een array die de volgnummers van elke suffix in de originele string bevat.
-Deze indexen worden lexicografisch gesorteerd.
+Deze volgnummers worden lexicografisch gesorteerd op basis van de overeenkomstige suffix.
 Figuur~\ref{fig:suffixtree_vs_suffixarray} geeft een voorbeeld van een suffixboom en suffix array opgebouwd over de tekst \texttt{acacgt\$}.
 
 \begin{center}
@@ -86,7 +86,7 @@ Hierbij worden naast de suffix array nog 3 extra tabellen bijgehouden.
 Deze worden de LCP, Child en suffix link table genoemd.
 
 
-\section{Complixiteit}\label{sec:complixiteit}
+\section{Complexiteit}\label{sec:complexiteit}
 Naïef kan het opbouwen van een suffix array in $O(n \log n)$ tijd en $O(n^2)$ geheugen gebeuren waarbij $n$ de lengte van de tekst is, dit aan de hand van traditionele sorteeralgoritmes zoals merge sort~\cite{mergeSort}.
 Ondertussen bestaan er echter verschillende algoritmes die een tijdscomplexiteit van $O(n)$ bereiken~\cite{sais, ko_alura, radixSA, dark_archon, libdivsufsort}.
 Bovendien vereisen deze veel minder geheugen dan een equivalente suffixboom.
@@ -94,41 +94,43 @@ Sommige implementaties vereisen slechts $5n + O(1)$ geheugen~\cite{dark_archon, 
 
 
 \section{Bestaande implementaties}\label{sec:bestaande-implementaties}
-Aangezien er meerdere erg geoptimaliseerde implementaties bestaan voor het opbouwen van een suffix array bekijken we eerst de performantie van deze implementaties.
+Aangezien er meerdere erg geoptimaliseerde implementaties bestaan voor het opbouwen van een suffix array vergelijken we eerst performantie van deze implementaties.
+Op basis hiervan kan daarna beslist worden welke implementatie gebruikt wordt.
 
-% TODO: uitgevoerd op mac lokaal, vermeld dit nog ergens en voeg mac specs toe in de inleiding
 \begin{table}[H]
-    \centering
-    \resizebox{\textwidth}{!}{
-        \begin{tabular}{l l S[table-format=-2.2] S[table-format=-2.2] S[table-format=-1.2] S[table-format=-1.2]}
-            Algoritme & Programmeertaal & \multicolumn{2}{c}{Tijd (in sec)} & \multicolumn{2}{c}{Geheugen (in GB)} \\
-            \hline\hline
-            &                      & {32 bit} & {64 bit} & {32 bit} & {64 bit} \\
-            \cline{3-6}
-            libdivsufsort  & C                    & 15.01    & 15.97    & 1.03     & 1.86     \\
-            libdivsufsort  & Rust + bindings to C & 16.00    & 15.52    & 1.03     & 1.86     \\
-            libdivsufsort  & Rust                 & 20.23    & {-}      & 1.03     & {-}      \\
-            dark archon a4 & C                    & 39.34    & {-}      & 1.09     & {-}      \\
-            libsais        & C                    & 6.38     & 6.46     & 1.03     & 1.86     \\
-            radixSA        & C++                  & 9.74     & 11.26    & 2.11     & 3.52     \\
-            \hline % TODO: de 2 gewone sais implementaties zijn hier nog niet vermeld, maar is ook niet direct een meerwaarde waarschijnlijk?
-        \end{tabular}
-    }
-    \caption{}
-    \label{tab:sa_building}
+    \begin{minipage}{\linewidth}
+        \centering
+        \resizebox{\textwidth}{!}{
+            \begin{tabular}{l l S[table-format=-2.2] S[table-format=-2.2] S[table-format=-1.2] S[table-format=-1.2]}
+                Algoritme & Programmeertaal & \multicolumn{2}{c}{Tijd (in sec)} & \multicolumn{2}{c}{Geheugen (in GB)} \\
+                \hline\hline
+                &                      & {32 bit} & {64 bit} & {32 bit} & {64 bit} \\
+                \cline{3-6}
+                libdivsufsort\footnote{\url{https://github.com/y-256/libdivsufsort}}                                       & C                    & 15.01    & 15.97    & 1.03     & 1.86     \\
+                libdivsufsort\footnote{\url{https://github.com/baku4/libdivsufsort-rs}}                                    & Rust + bindings to C & 16.00    & 15.52    & 1.03     & 1.86     \\
+                libdivsufsort\footnote{\url{https://github.com/fasterthanlime/stringsearch/tree/master/crates/divsufsort}}  & Rust                 & 20.23    & {-}      & 1.03     & {-}      \\
+                dark archon a4\footnote{\url{https://github.com/kvark/dark-archon}}                                        & C                    & 39.34    & {-}      & 1.09     & {-}      \\
+                libsais\footnote{\url{https://github.com/IlyaGrebnov/libsais}}                                             & C                    & 6.38     & 6.46     & 1.03     & 1.86     \\
+                radixSA\footnote{\url{https://github.com/mariusmni/radixSA64}}                                             & C++                  & 9.74     & 11.26    & 2.11     & 3.52     \\
+                \hline % TODO: de 2 gewone sais implementaties zijn hier nog niet vermeld, maar is ook niet direct een meerwaarde waarschijnlijk?
+            \end{tabular}
+        }
+        \caption{Uitvoeringstijden en maximaal geheugenverbruik voor het opbouwen van een suffix array aan de hand van verschillende algoritmes voor de Swiss-Prot eiwitdatabank.
+        Indien er een 32 bit en 64 bit integer implementatie beschikbaar was werden deze allebei getest. Een - staat voor niet getest. Deze testen werden lokaal uitgevoerd op een laptop. De specificaties hiervan zijn terug te vinden in tabel~\ref{tab:macbook_hardware}.}
+        \label{tab:sa_building}
+    \end{minipage}
 \end{table}
 
-Aan de hand van bovenstaande tabel kunnen we concluderen dat de meest performante algoritmes op vlak van geheugengebruik libdivsufsort en libsais zijn.
+Aan de hand van tabel~\ref{tab:sa_building} kunnen we concluderen dat de meest performante algoritmes op vlak van geheugengebruik libdivsufsort en libsais zijn.
 Hierbij is er amper verschil in uitvoeringstijd tussen de 32 en 64 bit versies.
 In het algemeen zijn de 64 bit versies een fractie trager.
 Bovendien valt ook te zien dat het verschil tussen de C versie en Rust versie die bindings heeft naar de C code klein is.
-De gemeten verschillen zijn namelijk eens in het voordeel van enkel de C code, en eens in het voordeel van de Rust code gebruik makende van C bindings.
-Het verschil valt dus te verklaren door achtergrondprocessen.
+De overhead van het oproepen van de C code uit Rust is dus minimaal.
 Tot slot is libsais voor ons geval het algemeen beste algoritme.
 Het geheugengebruik is minimaal en het is bovendien duidelijk het snelste algoritme.
-Verder bevat het ook een implementatie dat gebruik maakt van 64 bit integers.
-Dit is erg belangrijk voor onze usecase aangezien omdat de totale tekst die we willen indexeren (UniProtKB)langer is dan de maximale 32 bit integer.
-Dit zorgt ervoor dat alle 32 bit integer implementaties onbruikbaar zijn voor ons einddoel.
+Bovendien bevat het ook een implementatie dat gebruik maakt van 64 bit integers.
+Dit is erg belangrijk voor het indexeren van UniprotKB aangezien omdat de totale tekst langer is dan de maximale 32 bit integer.
+Dit zorgt ervoor dat alle 32 bit integer implementaties onbruikbaar zijn voor dit einddoel.
 
 \section{Toepassen van suffix arrays op een eiwitdatabank}\label{sec:toepassen-van-suffix-arrays-op-een-eiwitdatabank}
 Het moeilijkste stuk van onze probleemstelling is het opbouwen van de suffix array.
@@ -137,7 +139,7 @@ Eens we die suffix array opgebouwd hebben blijft er echter nog een stuk van ons 
 Om te beginnen moeten we nog een mapping maken van de gevonden suffixen naar de bijbehorende proteïnes.
 Op basis daarvan wordt daarna de LCA gezocht.
 
-\subsection{Bouwen van de suffix array}
+\subsection{Bouwen van de suffix array}\label{subsec:bouwen-van-de-suffix-array}
 Zoals in de inleiding in sectie~\ref{sec:probleemstelling} willen we gebruik maken van Rust vanwege de combinatie van \textit{memory safety} en hoge performantie.
 We willen echter gebruik maken van de hoge performantie die al verkregen is in sterk geoptimaliseerde, bestaande implementaties van algoritmes op een suffix array op te bouwen.
 Daarom hebben we gekozen om gebruik te maken van de interoperabiliteit die bestaat tussen Rust en C/C++ code.
@@ -155,7 +157,7 @@ Bovendien zijn we ook zeker dat als een geheugenfout gebeurd dat dit aan de basi
 Dit is dus een afweging tussen optimale performantie (waar het wiel niet heruitgevonden wordt), en garantie van \textit{memory safety}.
 
 \subsection{Mapping van suffix naar proteïne}\label{subsec:mapping-van-suffix-naar-proteine}
-Deze mapping kan op 2 manieren gebeuren.
+Deze mapping kan op twee manieren gebeuren.
 Een eerste optie is om expliciet voor elke suffix bij te houden bij welke proteïne die hoort.
 Dit kan aan de hand van een array die even lang is als het aantal suffixen.
 Het voordeel van deze aanpak is dat het vinden van de bijbehorende proteïne in $O(1)$ tijd kan.
@@ -173,7 +175,39 @@ In de plaats is dit nu iets dat \textit{on the fly} moet gebeuren tijdens het zo
 % TODO: we kunnen ook gebruik maken van enhanded suffix arrays en dat dan wel proberen doen, maar haalbaarheid daarvan is nog uit te zoeken.
 
 
-\section{Sparse/Sampled suffix arrays}\label{sec:sparse/sampled-suffix-arrays}
+\section{Sparse en compressed suffix arrays}\label{sec:sparse-en-compressed-suffix-arrays}
+Om het geheugenverbruik van suffix arrays verder te verkleinen kan er gebruik gemaakt worden van sparse of compressed suffix arrays.
+Allebei doen ze in principe hetzelfde, er wordt namelijk slechts een stuk van de originele suffix array wordt bijgehouden.
+Het verschil zit in welk stuk bijgehouden wordt.
+\\ \\
+Sparse suffix arrays (SSAs) bouwen een suffix array op basis van elke k-de suffix van de input tekst.
+Bij compressed suffix arrays (CSAs) wordt daarentegen slechts elke k-de waarde van de SA bijgehouden.
+Voor beide opties is de populairste manier om het samplen uit te voeren na het opbouwen van de volledige SA.
+Hierdoor blijft het maximale geheugenverbruik tijdens het opbouwen identiek aan het gebruik van de volledige SA\@.
+Dit is net het punt waar wij ons geheugenverbruik verder willen verlagen.
+Gelukkig heeft het gebruik hiervan nog altijd het voordeel dat de uiteindelijke machine die de index zal hosten lagere geheugenvereisten zal hebben.
+\\ \\
+Het samplen is de meest gebruikte methode omdat er tot op vandaag vanwege de sterk bestaande geoptimaliseerde klassieke SA constructie algoritmes.
+Bij sparse suffix arrays is het beste tot nu toe een Monte Carlo algoritme dat $O(n)$ tijd en $O(b)$ geheugen nodig heeft en een Las Vegas algoritme dat $O(n \sqrt{\log b})$ tijd en $O(b)$ geheugen verbruikt.
+Hierbij is $n$ de lengte van de tekst, en $b$ het aantal effectief gebruikte suffixes in de sparse SA~\cite{building_sparse_sa}.
+Merk op dat er dus wel een lineair Monte Carlo algoritme bestaat.
+Hierbij is het dus mogelijk dat we afhankelijk van het gekozen algoritme een foutief resultaat hebben, of geen resultaat hebben.
+Voor compressed suffix arrays bestaat er een algoritme dat een tijdscomplexiteit van $o(n)$ heeft in combinatie met $O(n \log \sigma)$ bits aan geheugen~\cite{building_compressed_sa}.
+Hierbij is $n$ de tekstlengte en $\sigma$ de alfabetgrootte.
+\\ \\
+Het grootste nadeel aan deze algoritmes in context van deze thesis is dat er nog geen sterk geoptimaliseerde implementaties bestaan.
+Bovendien zal de factor van ingevoegde sparseness in ons geval altijd vrij klein zijn om de zoektijden beperkt te houden (aangezien we werken met een erg grote dataset en vrij korte strings).
+Wat de winst in geheugenverbruik net volledig teniet zou kunnen doen.
+Er wordt niet beschreven wat de constante factor is in het geheugenverbruik.
+Bovendien laat een CSA niet toe om rechtstreeks gebruik makende van de CSA te zoeken, er zijn nog extra hulp structuren nodig.
+Wat opnieuw extra geheugen vraagt.
+Daarom zijn SSAs interessanter.
+Deze laten toe om enkel met behulp van de tekst en de SSA te zoeken.
 
-
-
+\subsection{Zoeken in sparse suffix arrays}
+Het zoeken in een SSA is erg gelijkaardig aan het zoeken in een volledige SA\@.
+Een belangrijke restrictie is echter dat in de SSA geen strings gezocht kunnen worden die kleiner dan of gelijk zijn aan de sparseness factor.
+Bovendien heeft deze sparseness factor ook een erg belangrijke impact op de zoekperformantie.
+Bij het zoeken met sparseness factor $k$ moeten we namelijk alle suffixen zoeken die matchen met de gezochte string waarbij we eerst $p \in [0, k-1]$ tekens overslaan.
+Voor elke matchende suffix moet daarna gecontroleerd worden als de overgeslagen prefix van $p$ tekens matcht met de $p$ tekens voor gematchte suffix (stel dat dit suffix $s$ is).
+Als dit zo is, dan matcht suffix $s-p$ met de gezochte string.

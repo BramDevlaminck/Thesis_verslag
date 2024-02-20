@@ -119,6 +119,7 @@ Het gebruik van Rust laat ons toe om extreem hoge performantie te verkrijgen (ve
 Bovendien zijn sommige delen van Unipept al geschreven in Rust (zie UMGAP~\cite{UMGAP_paper, UMGAP_source}).
 Dit laat toe om waar mogelijk bestaande code te hergebruiken.
 
+
 \section{Benchmarkdatasets}\label{sec:datasets}
 We gebruiken \textbf{twee soorten benchmarkbestanden}.
 De eerste soort zijn de \textbf{proteïnedatabanken} waarmee we de indexstuctuur opbouwen.
@@ -186,7 +187,6 @@ In Figuur~\ref{fig:uniprot_aminozuur} en~\ref{fig:uniprot_length} is een gedetai
     }%
     \caption{Lengtedistributie van de proteïnen in de UniProtKB (2023\_04) databank. De kleinere grafiek bevat een gedetailleerder overzicht van de distributie in het interval $[0, 1000[$.}\label{fig:uniprot_length}
 \end{figure}
-
 
 \paragraph{Swiss-Prot} Deze databank is één van de twee standaard onderdelen van UniProt.
 Een kort overzicht van alle statistieken is terug te vinden in Tabel~\ref{tab:swissprot_eigenschappen}.
@@ -325,24 +325,23 @@ Deze peptidebestanden worden in combinatie met de Swiss-Prot proteïnedatabank g
     \begin{minipage}{\linewidth}
         \centering
         \resizebox{\textwidth}{!}{ % use resizebox to textwidth since this needs to be scaled down in size a bit because otherwise it does not fit on the width of the screen
-        \begin{tabular}{ l l l l l l l }
-            Metriek                    & SIHUMI 03  & SIHUMI 05  & SIHUMI 05  & SIHUMI 08  & SIHUMI 11  & SIHUMI 14  \\
-            \hline\hline
-            Totaal aantal sequenties   & 25 000     & 25 000     & 24 424     & 25 000     & 24 998     & 25 000     \\
-            Totale lengte              & 420 544 aa & 420 423 aa & 373 633 aa & 316 114 aa & 366 894 aa & 430 674 aa \\
-            Minimale peptidelengte     & 6 aa       & 6 aa       & 6 aa       & 6 aa       & 6 aa       & 6 aa       \\
-            Maximale peptidelengte     & 50 aa      & 50 aa      & 47 aa      & 43 aa      & 50 aa      & 50 aa      \\
-            Gemiddelde peptidelengte   & 16.82 aa   & 16.82 aa   & 15.30 aa   & 12.64 aa   & 14.68 aa   & 17.23 aa   \\
-            Mediaan peptidelengte      & 15 aa      & 16 aa      & 14 aa      & 12 aa      & 14 aa      & 16 aa      \\
-            Aantal vindbare peptiden   & 2570       & 2698       & 3652       & 4135       & 3792       & 2761       \\
-            Aantal tryptische peptiden & 17 263     & 162        & 152        & 207        & 153        & 242        \\
-            \hline
-        \end{tabular}}
-    \caption{Eigenschappen van de SIHUMIx peptidebestanden. Elke kolom stelt een staal voor met als bestandsnaam \texttt{S<XX>.txt}. Deze stalen kunnen teruggevonden worden in onze GitHub repository \protect\footnote{\url{https://github.com/BramDevlaminck/Thesis\_benchmarkdata}} onder de \texttt{SIHUMI}-folder.} % protect is needed to make footnote possible in a caption. This is combined with a minipage to place the footnote directly under the table
-    \label{tab:sihumi_zoekbestanden}
+            \begin{tabular}{ l l l l l l l }
+                Metriek                    & SIHUMI 03  & SIHUMI 05  & SIHUMI 05  & SIHUMI 08  & SIHUMI 11  & SIHUMI 14  \\
+                \hline\hline
+                Totaal aantal sequenties   & 25 000     & 25 000     & 24 424     & 25 000     & 24 998     & 25 000     \\
+                Totale lengte              & 420 544 aa & 420 423 aa & 373 633 aa & 316 114 aa & 366 894 aa & 430 674 aa \\
+                Minimale peptidelengte     & 6 aa       & 6 aa       & 6 aa       & 6 aa       & 6 aa       & 6 aa       \\
+                Maximale peptidelengte     & 50 aa      & 50 aa      & 47 aa      & 43 aa      & 50 aa      & 50 aa      \\
+                Gemiddelde peptidelengte   & 16.82 aa   & 16.82 aa   & 15.30 aa   & 12.64 aa   & 14.68 aa   & 17.23 aa   \\
+                Mediaan peptidelengte      & 15 aa      & 16 aa      & 14 aa      & 12 aa      & 14 aa      & 16 aa      \\
+                Aantal vindbare peptiden   & 2570       & 2698       & 3652       & 4135       & 3792       & 2761       \\
+                Aantal tryptische peptiden & 17 263     & 162        & 152        & 207        & 153        & 242        \\
+                \hline
+            \end{tabular}}
+        \caption{Eigenschappen van de SIHUMIx peptidebestanden. Elke kolom stelt een staal voor met als bestandsnaam \texttt{S<XX>.txt}. Deze stalen kunnen teruggevonden worden in onze GitHub repository \protect\footnote{\url{https://github.com/BramDevlaminck/Thesis\_benchmarkdata}} onder de \texttt{SIHUMI}-folder.} % protect is needed to make footnote possible in a caption. This is combined with a minipage to place the footnote directly under the table
+        \label{tab:sihumi_zoekbestanden}
     \end{minipage}
 \end{table}
-
 
 \subsubsection{Human-Prot}
 Voor deze databank hebben we één peptidebestand bestaande uit HLA-peptiden.
@@ -356,8 +355,9 @@ Appendix~\ref{ch:appendix-statistieken-peptidebestanden} bevat aanvullende grafi
 Deze tonen voor elk bestand de distributie van de aminozuren en de distributie van de peptidelengte.
 % TODO: hier ergens vermelden als apart onderdeeltje hoeveel geheugen nodig is op dit moment voor swissprot in unipept om index op te bouwen, hoe lang dit duurt, en hoe lang het zoeken tot match duurt voor swissprot met en zonder missed cleavage
 
+
 \section{Benchmark hardware}\label{sec:benchmark-hardware}
-Alle benchmarks werden uitgevoerd op een virtuele machine van team Unipept.
+Alle benchmarks werden uitgevoerd op een virtuele machine van team Unipept tenzij anders vermeld.
 Tabel~\ref{tab:Matt_hardware} bevat een overzicht van de hardware van de fysieke machine en hoeveel toegekend is aan de VM\@.
 Al deze informatie, en ook over de andere machines gebruik door Unipept, kan teruggevonden worden op de Unipept GitHub wiki~\cite{unipept_infrastructure}.
 \\
@@ -376,7 +376,28 @@ Al deze informatie, en ook over de andere machines gebruik door Unipept, kan ter
     \label{tab:Matt_hardware}
 \end{table}
 
-Naast deze VM hebben we ook toegang tot enkele andere machines indien hier nood toe zou zijn.
+Een deel van de kleinere testen werd ook uitgevoerd lokaal op een laptop.
+Dit wordt elke keer expliciet vermeld indien dit het geval was.
+De gebruikte laptop is een M1 pro MacBook Pro (14 inch) uit 2021.
+Tabel~\ref{tab:macbook_hardware} bevat de exacte specificaties van deze laptop.
+\\
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{p{0.20\linewidth}p{0.54\linewidth}}
+        Onderdeel         & hardware                                               \\
+        \hline\hline
+        Model             & MacBook Pro (14 inch, 2021)                            \\
+        CPU               & 8-core M1 pro, 6 performance cores, 2 efficiency cores \\
+        RAM               & 16 GB (LPDDR5)                                         \\
+        Opslag            & 512 GB SSD                                             \\
+        Besturingssysteem & MacOS (14) Sonoma                                      \\
+        \hline
+    \end{tabular}
+    \caption{Hardwarespecificaties van de gebruikte laptop voor kleinere testen. Elke keer testen op dit toestel uitgevoerd zijn wordt dit expliciet vermeld.}
+    \label{tab:macbook_hardware}
+\end{table}
+
+Naast een VM en eigen laptop hebben we ook toegang tot enkele andere machines indien hier nood toe zou zijn.
 Het is mogelijk in het totaal 768 GiB aan RAM kunnen ter beschikking stellen op een Unipept machine door enkele VMs en Unipept applicaties te verdelen over andere machines.
 De HPC van UGent\footnote{\url{https://docs.hpc.ugent.be/}} biedt nodes aan die tot 940 GiB aan RAM hebben.
 Tot slot heeft de CompOmics\footnote{Computational Omics} onderzoeksgroep aan UGent ook enkele machines staan dit tot 2TiB aan geheugen hebben.
