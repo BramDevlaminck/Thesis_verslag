@@ -191,17 +191,19 @@ Het samplen is de meest gebruikte methode omdat er tot op vandaag vanwege de ste
 Bij sparse suffix arrays is het beste tot nu toe een Monte Carlo algoritme dat $O(n)$ tijd en $O(b)$ geheugen nodig heeft en een Las Vegas algoritme dat $O(n \sqrt{\log b})$ tijd en $O(b)$ geheugen verbruikt.
 Hierbij is $n$ de lengte van de tekst, en $b$ het aantal effectief gebruikte suffixes in de sparse SA~\cite{building_sparse_sa}.
 Merk op dat er dus wel een lineair Monte Carlo algoritme bestaat.
-Hierbij is het dus mogelijk dat we afhankelijk van het gekozen algoritme een foutief resultaat hebben, of geen resultaat hebben.
+Van dit algoritme is er een bestaand implementatie\footnote{\url{https://github.com/lorrainea/SSA/tree/main/MA}}.
+Wanneer we op deze manier een SSA met sparseness factor 3 opbouwen blijkt dit niet alleen trager ($\pm$ 10 minuten) te zijn.
+Ook het geheugengebruik ligt merkelijk hoger ($\pm$ 10 GB).
+Terwijl we slechts een tiental seconden nodig hebben om de volledige SA op te bouwen in combinatie met 1.8 GB RAM\@.
 Voor compressed suffix arrays bestaat er een algoritme dat een tijdscomplexiteit van $o(n)$ heeft in combinatie met $O(n \log \sigma)$ bits aan geheugen~\cite{building_compressed_sa}.
 Hierbij is $n$ de tekstlengte en $\sigma$ de alfabetgrootte.
 \\ \\
-Het grootste nadeel aan deze algoritmes in context van deze thesis is dat er nog geen sterk geoptimaliseerde implementaties bestaan.
+Het grootste nadeel aan deze algoritmes in context van deze thesis is dat er nog geen (sterk geoptimaliseerde) implementaties bestaan.
 Bovendien zal de factor van ingevoegde sparseness in ons geval altijd vrij klein zijn om de zoektijden beperkt te houden (aangezien we werken met een erg grote dataset en vrij korte strings).
 Wat de winst in geheugenverbruik net volledig teniet zou kunnen doen.
 Er wordt niet beschreven wat de constante factor is in het geheugenverbruik.
-Bovendien laat een CSA niet toe om rechtstreeks gebruik makende van de CSA te zoeken, er zijn nog extra hulp structuren nodig.
-Wat opnieuw extra geheugen vraagt.
-Daarom zijn SSAs interessanter.
+Bovendien laat een CSA niet toe om rechtstreeks gebruik makende van de CSA te zoeken, er zijn nog extra hulp structuren nodig, wat opnieuw extra geheugen vraagt.
+Daarom zijn SSAs interessanter in ons geval aangezien wij enkel matches willen zoeken.
 Deze laten toe om enkel met behulp van de tekst en de SSA te zoeken.
 
 \subsection{Zoeken in sparse suffix arrays}
@@ -211,3 +213,52 @@ Bovendien heeft deze sparseness factor ook een erg belangrijke impact op de zoek
 Bij het zoeken met sparseness factor $k$ moeten we namelijk alle suffixen zoeken die matchen met de gezochte string waarbij we eerst $p \in [0, k-1]$ tekens overslaan.
 Voor elke matchende suffix moet daarna gecontroleerd worden als de overgeslagen prefix van $p$ tekens matcht met de $p$ tekens voor gematchte suffix (stel dat dit suffix $s$ is).
 Als dit zo is, dan matcht suffix $s-p$ met de gezochte string.
+
+\section{Parallellisatie}\label{sec:parallellisatie}
+Om het zoeken nog verder te versnellen kan gebruik gemaakt worden van parallelisatie over meerdere threads.
+We hebben namelijk een groot aantal peptides waarvoor we elke keer dezelfde statische indexstructuur moeten doorzoeken.
+Rust maakt dit proces vrij simpel omdat het ownership systeem dataraces voorkomt (behalve wanneer gebruik gemaakt wordt van unsafe code of het interior mutability patroon)\cite{rust_data_races}.
+Om een eigen datatype te gebruiken van uit meerdere threads moeten deze de \texttt{Sync} en \texttt{Send} trait implementeren.
+Deze traits worden door het typesysteem automatisch afgeleid als alle onderdelen van je type aan de \texttt{Sync} en \texttt{Send} trait voldoen, dan voldoet je nieuwe type ook automatisch. % TODO: vermelden dat er een erg kleine aanpassing in umgap nodig is geweest of niet?
+\\ \\
+Aan de hand hiervan zijn we aan de slag gegaan om twee alternatieve versies te implementeren.
+In de eerste implementatie wordt alles volledig zelf beheerd.
+Hierbij verdelen we zelf welke data naar welke thread gaat, worden de threads manueel opgestart en sluiten we zelf de threads af.
+In de tweede implementatie wordt gebruik gemaakt van de Rayon crate\cite{rayon}.
+Deze laat toe om met erg weinig code iteraties over een variabele te parallelliseren.
+In ons geval was het omzetten van een sequentiële implementatie (nadat alle types voldeden aan de \texttt{Sync} en \texttt{Send} trait) zo simpel als het vervangen van `.iter()` foor `.par\_iter()`.
+Bovendien is het instellen van het gebruikte aantal threads erg simpel.
+Standaard is dit het aantal logische cores beschikbaar op de machine, maar het instellen van een ander aantal kan aan de hand van één lijntje code.
+
+\begin{minted}{Rust}
+// Sequentiel
+let results = peptides
+    .iter()
+    .map(|peptide| search_peptide(peptide))
+    .collect();
+
+// Parallel
+let results = peptides
+    .par_iter()
+    .map(|peptide| search_peptide(peptide))
+    .collect();
+\end{minted}
+
+\subsection{Manueel threaden vs Rayon}\label{subsec:manueel-threaden-vs-rayon}
+Aangezien we twee verschillende implementaties hebben is het interessant om na te gaan hoe deze allebei presteren.
+Figuur~\ref{fig:threading_default_vs_rayon} toont de evolutie van de zoektijden voor een verschillend aantal threads.
+We zien duidelijk dat de versie die gebruikt maakt van Rayon net iets performanter is, en ook $\pm$ lineair schaalt.
+Dit verschil valt mogelijks te verklaren aan de manier waarop de data verdeeld wordt over de threads.
+In de eigen implementatie kreeg elke thread simpelweg $\frac{1}{x}$ van alle peptides toegekend, met $x$ het aantal threads.
+Terwijl Rayon gebruik maakt van een ingewikkelder systeem aan de hand van \textit{work stealing}\cite{rayon_stealing}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{threading_default_vs_rayon}
+    \caption{Tijd nodig om het Swiss-Prot peptidebestand zonder missed cleavages te zoeken in een index met sparseness factor 3 ter grootte van 5\% van UniProtKB.}.
+    \label{fig:threading_default_vs_rayon}
+\end{figure}
+
+Bovendien heeft het gebruik maken van Rayon ook nog andere voordelen.
+De code is namelijk een hoop simpeler en daarom ook beter te onderhouden.
+Dit maakt de keuze om Rayon te gebruiken dus erg simpel.
