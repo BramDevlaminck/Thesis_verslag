@@ -136,6 +136,7 @@ Een ander voordeel dat libsais en libdivsufsort hebben (naast hun minimale geheu
 Dit is erg belangrijk voor het indexeren van UniprotKB aangezien omdat de totale tekst langer is dan de maximale 32 bit integer.
 Dit zorgt ervoor dat alle 32 bit integer implementaties onbruikbaar zijn voor dit einddoel.
 
+
 \section{Toepassen van suffix arrays op een eiwitdatabank}\label{sec:toepassen-van-suffix-arrays-op-een-eiwitdatabank}
 Het moeilijkste stuk van onze probleemstelling is het opbouwen van de suffix array.
 Dit stuk kunnen we oplossen aan de hand van de algoritmes beschreven in sectie~\ref{sec:bestaande-implementaties}.
@@ -223,19 +224,63 @@ Bovendien heeft deze sparseness factor ook een erg belangrijke impact op de zoek
 Bij het zoeken met sparseness factor $k$ moeten we namelijk alle suffixen zoeken die matchen met de gezochte string waarbij de eerste $p \in [0, k-1]$ tekens overgeslagen worden.
 Voor elke matchende suffix moet daarna gecontroleerd worden als de overgeslagen prefix van $p$ tekens matcht met de $p$ tekens voor gematchte suffix (stel dat dit suffix $s$ is).
 Als dit zo is, dan matcht suffix $s - p$ met de gezochte string.
+Om alles iets duidelijker te maken volgt een klein voorbeeld waarin we de peptide \texttt{acg} in de tekst \texttt{acacgt\$} zoeken.
+De index die gebruikt wordt om te zoeken is een SSA met sparseness factor 3.
+Deze valt terug te vinden in figuur~\ref{fig:sparse_sa}.
 
-% TODO: add example of searching with skipping x characters
+\begin{center}
+    \texttt{tekst: a|c|a|c|g|t|\$\\index: 0|1|2|3|4|5|6}
+\end{center}
+\begin{figure}[H]
+    \hfill
+    \begin{subfigure}[t]{0.45\linewidth}
+        \centering
+        \begin{tikzpicture}[thick,scale=.6]
+            \draw (0,0) grid (7,1);
+            \path (.5,.5) node{$6$} foreach \i in {0,2,1,3,4,5} {++(1,0) node{$\i$}};
+        \end{tikzpicture}
+        \caption{Suffix array}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.45\linewidth}
+        \centering
+        \begin{tikzpicture}[thick,scale=.6]
+            \draw (0,0) grid (3,1);
+            \path (.5,.5) node{$6$} foreach \i in {0,3} {++(1,0) node{$\i$}};
+        \end{tikzpicture}
+        \caption{Sparse suffix array met sparseness factor 3.}
+    \end{subfigure}
+    \hfill
+    \caption{SA en SSA voor de tekst \texttt{acacgt\$}.}
+    \label{fig:sparse_sa}
+\end{figure}
 
+\begin{enumerate}
+    \item Sla 0 tekens over.
+    Zoek \texttt{acg} in de SSA. Deze valt niet te vinden.
+    \item Sla 1 teken over.
+    Dit wil zeggen dat we \texttt{cg} zoeken.
+    Dit levert een match op met suffix 3 (op index 1 in de SSA).
+    \begin{enumerate}
+        \item Controleer als de suffix die deels gematcht is ook volledig matcht met onze zoekstring.
+        Dit wil zeggen dat we de overgeslagen prefix van $p = 1$ tekens (in dit geval de letter \texttt{a}) moeten kunnen matchen met de eerste $p$ tekens van suffix $3 - 1 = 2$.
+        \item We zien dat het eerste teken van suffix 2 inderdaad een \texttt{a} is.
+        Hiervoor is de SA zelf niet nodig, dit kan rechtstreeks via de inputtekst gecontroleerd worden aan de hand van $p$ karakters die vergeleken moeten worden.
+        Suffix 2 is dus een match voor de zoekstring \texttt{acg}.
+    \end{enumerate}
+    \item Sla 2 tekens over.
+    Zoek \texttt{g} in de SSA. Dit valt niet te vinden.
+\end{enumerate}
 
 \section{Parallellisatie}\label{sec:parallellisatie}
 Om het zoeken nog verder te versnellen kan gebruik gemaakt worden van parallellisatie.
 We hebben namelijk een groot aantal peptides waarvoor we elke keer dezelfde statische indexstructuur moeten doorzoeken.
 Rust maakt dit proces vrij simpel omdat het ownership systeem dataraces voorkomt (behalve wanneer gebruik gemaakt wordt van unsafe code of het interior mutability patroon)\cite{rust_data_races}.
-Om een eigen datatype te gebruiken van uit meerdere threads moeten deze de \texttt{Sync} en \texttt{Send} trait implementeren.
-Deze traits worden door het typesysteem automatisch afgeleid als alle onderdelen van je type aan de \texttt{Sync} en \texttt{Send} trait voldoen, dan voldoet je nieuwe type ook automatisch. % TODO: vermelden dat er een erg kleine aanpassing in umgap nodig is geweest of niet?
+Om een datatype te gebruiken bij tijdens multithreading moet deze de \texttt{Sync} en \texttt{Send} trait implementeren.
+Deze traits worden door het typesysteem automatisch afgeleid als alle componenten van een type aan de \texttt{Sync} en \texttt{Send} trait voldoen, dan voldoet je nieuwe type ook automatisch. % TODO: vermelden dat er een erg kleine aanpassing in umgap nodig is geweest of niet?
 \\ \\
-Aan de hand hiervan zijn we aan de slag gegaan om twee alternatieve versies te implementeren.
-In de eerste implementatie wordt alles volledig zelf beheerd.
+Uiteindelijk hebben we twee geparallelliseerde implementaties gemaakt.
+In de eerste wordt alles volledig zelf beheerd.
 Hierbij verdelen we zelf welke data naar welke thread gaat, worden de threads manueel opgestart en sluiten we zelf de threads af.
 In de tweede implementatie wordt gebruik gemaakt van de Rayon crate\cite{rayon}.
 Deze laat toe om op een simpele manier een sequentiële lus over een variabele te parallelliseren.
@@ -244,7 +289,7 @@ Ook in deze implementatie is het mogelijk om manueel een specifiek aantal thread
 Standaard gebruikt Rayen het aantal beschikbare logische cores op de machine, maar het instellen van een ander aantal kan aan de hand van één lijntje code.
 
 \begin{minted}{Rust}
-// Sequentiel
+// Sequentieel
 let results = peptides
     .iter()
     .map(|peptide| search_peptide(peptide))
@@ -260,13 +305,13 @@ let results = peptides
 \subsection{Manueel threaden vs Rayon}\label{subsec:manueel-threaden-vs-rayon}
 Aangezien we twee verschillende implementaties hebben is het interessant om na te gaan hoe deze allebei presteren.
 Figuur~\ref{fig:threading_default_vs_rayon} toont de evolutie van de zoektijden voor een verschillend aantal threads.
-We zien duidelijk dat de versie die gebruikt maakt van Rayon net iets performanter is en bovendien $\pm$ lineair schaalt.
+We zien duidelijk dat de versie die gebruikt maakt van Rayon net iets sneller is en dat beide implementaties $\pm$ lineair schalen.
 Dit verschil valt mogelijks te verklaren aan de manier waarop de data verdeeld wordt over de threads in combinatie met een efficiëntere manier om de resultaten uit de threads te verwerken.
 In de eigen implementatie kreeg elke thread simpelweg $\frac{1}{x}$ van alle peptides toegekend, met $x$ het aantal threads.
 De resultaten moeten daarna aan de hand van enkele stappen uit de thread-scope gehaald worden zodat deze terug beschikbaar zijn voor de rest van het programma.
 Rayon maakt gebruik van een ingewikkelder systeem aan de hand van \textit{work stealing}\cite{rayon_stealing} om de data over de threads te verdelen.
-Verder is het ophalen van de resultaten hier veel simpeler.
-Deze resultaten worden rechtstreeks ter beschikking gesteld alsof ze sequentieel uitgevoerd waren.
+Verder is het ophalen van de resultaten ook veel simpeler.
+Deze worden rechtstreeks ter beschikking gesteld alsof er geen parallellisme was.
 
 \begin{figure}[H]
     \centering
@@ -278,5 +323,6 @@ Deze resultaten worden rechtstreeks ter beschikking gesteld alsof ze sequentieel
 Bovendien heeft het gebruik maken van Rayon ook nog andere voordelen.
 De code is namelijk een hoop simpeler en daarom ook beter te onderhouden.
 Dit motiveert onze keuze om finaal gebruik te maken van Rayon.
+
 
 \section{Grotere proteïnedatabanken}
