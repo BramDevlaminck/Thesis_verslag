@@ -1,8 +1,5 @@
 \chapter{Suffix arrays}\label{ch:suffix-arrays}
-Een tweede datastructuur die we in meer detail bekijken zijn suffix arrays.
-We kiezen ervoor om deze datastructuur verder te bestuderen omdat ze geheugenefficiënter is dan een suffixboom.
-Zoals vastgesteld in sectie~\ref{sec:conclusie-suffix-bomen} was net het geheugengebruik de primaire restrictie.
-
+Een tweede datastructuur die we in meer detail bekijken zijn suffix arrays, dit omwille van de lagere geheugenvereisten vergeleken met suffixbomen.
 
 \section{Wat zijn suffix arrays?}\label{sec:wat-zijn-suffix-arrays?}
 Suffix arrays zijn een geheugenefficiëntere voorstelling van suffixbomen.
@@ -83,7 +80,7 @@ Dit is dan ook de link tussen deze twee datastructuren.
 Onmiddellijk valt ook te zien dat een suffix array minder data bevat.
 De interne knopen en suffix links uit de suffixboom ontbreken.
 Indien deze informatie ook nodig is kan gebruik maakt worden van zogenaamde Enhanced Suffix Arrays (ESAs).
-Hierbij worden naast de suffix array nog 3 extra tabellen bijgehouden.
+Hierbij worden naast de suffix array nog drie extra tabellen bijgehouden.
 Deze worden de LCP, Child en suffix link table genoemd.
 
 
@@ -124,7 +121,7 @@ Tabel~\ref{tab:sa_building} bevat een overzicht van verschillende algoritmes waa
     \end{minipage}
 \end{table}
 
-We kunnen concluderen dat libsais duidelijk de snelste implementatie is om swissprot te indexeren.
+We kunnen concluderen dat libsais duidelijk de snelste implementatie is om Swiss-Prot te indexeren.
 Samen met libdivsufsort gebruikt het de kleinste hoeveelheid geheugen.
 Dit maakt libsais het beste algoritme om onze eiwitdatabanken te indexeren.
 Bovendien zien we dat als we de 32 bit en 64 bit implementatie vergelijken van eenzelfde algoritme dat de uitvoeringstijden erg gelijkaardig zijn.
@@ -132,35 +129,34 @@ In het algemeen zijn de 64 bit versies een fractie trager.
 Verder valt ook te zien dat het verschil tussen de C versie en Rust versie die bindings heeft naar de C code klein is.
 De overhead van het oproepen van de C code uit Rust is dus minimaal.
 Een ander voordeel dat libsais en libdivsufsort hebben (naast hun minimale geheugenverbruik) is dat ze allebei een 64 bit integer implementatie hebben.
-Dit is erg belangrijk voor het indexeren van UniprotKB omdat de totale tekst langer is dan de maximale 32 bit integer.
+Dit is belangrijk voor het indexeren van UniprotKB omdat de totale tekst langer is dan de maximale 32 bit integer.
 Dit zorgt ervoor dat alle 32 bit integer implementaties onbruikbaar zijn voor dit einddoel.
 
 
 \section{Toepassen van suffix arrays op een eiwitdatabank}\label{sec:toepassen-van-suffix-arrays-op-een-eiwitdatabank}
 Het moeilijkste stuk van onze probleemstelling is het opbouwen van de suffix array.
-Dit stuk kunnen we oplossen aan de hand van de algoritmes beschreven in sectie~\ref{sec:bestaande-implementaties}.
+Dit stuk kunnen we oplossen aan de hand van de algoritmes uit sectie~\ref{sec:bestaande-implementaties}.
 Eens we die suffix array opgebouwd hebben blijft er echter nog een stuk van ons probleem over.
-Om te beginnen moeten we nog een mapping maken van de gevonden suffixen naar de bijbehorende proteïnes.
-Op deze manier kan de link gelegd worden van het vinden van een matchende suffix, naar een matchend eiwit.
+Om te beginnen moeten we nog een mapping maken van de gevonden suffixen naar het bijbehorende eiwit.
 Op basis van dit eiwit wordt daarna de LCA gezocht.
 
 \subsection{Bouwen van de suffix array}\label{subsec:bouwen-van-de-suffix-array}
-Zoals in de inleiding in sectie~\ref{sec:probleemstelling} willen we gebruik maken van Rust vanwege de combinatie van \textit{memory safety} en hoge performantie.
-We willen echter gebruik maken van de hoge performantie die al verkregen is in sterk geoptimaliseerde, bestaande implementaties van algoritmes op een suffix array op te bouwen.
-Daarom hebben we gekozen om gebruik te maken van de interoperabiliteit die bestaat tussen Rust en C/C++.
-Om het ontwikkelen te beginnen hebben we er voor gekozen om gebruik te maken van bestaande Rust bindings\footnote{\url{https://crates.io/crates/libdivsufsort-rs}} naar de originele C implementatie van libdivsufsort~\cite{libdivsufsort}.
-Ook al bleek uit het testen dat dit algoritme voor het opbouwen van de indexstructuur over een eiwitdatabank niet het snelste was, het geheugengebruik is wel minimaal.
-Dit liet toe om te experimenteren met het opbouwen van een SA zonder al te veel extra werk, en al onmiddellijk te zien hoe het geheugengebruik evolueert.
+Zoals in de inleiding van sectie~\ref{sec:probleemstelling} willen we gebruik maken van Rust vanwege de combinatie van \textit{memory safety} en hoge performantie.
+We willen echter gebruik maken van de al bestaande geoptimaliseerde implementaties van algoritmes om een suffix array op te bouwen.
+Om beide doelen te bereiken maken we gebruik van interoperabiliteit tussen Rust en C/C++.
+Zo bestaan er al bindings\footnote{\url{https://crates.io/crates/libdivsufsort-rs}} van Rust naar de originele implementatie van libdivsufsort\cite{libdivsufsort} (in C).
+Ook al blijkt uit het testen dat dit algoritme voor het opbouwen van de indexstructuur over een eiwitdatabank niet het snelste is, het geheugengebruik is wel minimaal.
+Dit laat toe om te experimenteren met het opbouwen van een SA zonder al te veel extra werk, en al onmiddellijk te zien hoe het geheugengebruik evolueert.
 \\ \\
-Als tweede optie is er voor gekozen om zelf ook een simple Rust wrapper te schrijven rond de libsais C code.
+Later is er voor gekozen om zelf nog een simple Rust wrapper te schrijven rond de libsais C code.
 Dit gebruik makende van het \texttt{bindgen}\footnote{\url{https://crates.io/crates/bindgen}} crate.
 Op deze manier is het ook mogelijk om gebruik te maken van de snellere libsais algoritme eens we wisten dat SAs een efficiënte en schaalbare oplossing waren voor de probleemstelling
 \\ \\
 Het nadeel van het gebruiken van deze bindings naar C code is dat het oproepen van de effectieve C code gebeurd in een \texttt{unsafe} blok.
 Hierbij is het dus mogelijk dat er geheugenfouten in het programma sluipen.
 Dit risico is echter miniem aangezien dit bestaande, geteste bibliotheken zijn.
-Bovendien zijn we ook zeker dat als een geheugenfout gebeurt dat dit aan de basis ervan zal liggen.
-Dit is dus een afweging tussen optimale performantie (waar het wiel niet heruitgevonden wordt), en garantie van \textit{memory safety}.
+Bovendien zijn we ook zeker dat eventuele geheugenfouten enkel hierdoor kunnen ontstaan.
+Dit is dus een afweging tussen optimale performantie (waarbij we het wiel niet hoeven heruit te vinden), en garantie van \textit{memory safety}.
 
 \subsection{Mapping van suffix naar proteïne}\label{subsec:mapping-van-suffix-naar-proteine}
 Deze mapping kan op twee manieren gebeuren.
@@ -169,11 +165,10 @@ Dit kan aan de hand van een array die even lang is als het aantal suffixen.
 Het voordeel van deze aanpak is dat het vinden van de bijbehorende proteïne in $O(1)$ tijd kan, hiervoor is echter wel $O(m)$ geheugen nodig, met $m$ de lengte van de totale tekst.
 \\ \\
 De tweede optie is om enkel de eerste of laatste suffix per proteïne bij te houden.
-Het voordeel van deze aanpak is dat er minder geheugen nodig is.
-Er is hier $O(n)$ geheugen nodig met $n$ het aantal proteïnen.
-Het nadeel is dan weer dat het vinden van de mapping trager is.
-Zoeken neemt $O(\log n)$ tijd in beslag gebruik makende van binair zoeken.
-Hierbij is $n$ het aantal proteïnes is.
+Het voordeel van deze aanpak is dat er minder geheugen nodig is, meer precies $O(n)$ geheugen met $n$ het aantal proteïnen.
+Het nadeel is dan weer dat het vinden van de bijbehorende proteïne trager is.
+Zoeken neemt $O(\log n)$ tijd in beslag aan de hand van binair zoeken.
+Hierbij is $n$ het aantal proteïnes.
 \\ \\
 In figuur~\ref{fig:dense_vs_sparse} wordt de uitvoeringstijd voor beide implementaties vergeleken.
 Standaard (en in alle komende testen) zullen wij gebruik maken van de sparse versie aangezien de performantie impact in de praktijk erg beperkt is, en er een significante hoeveelheid geheugengebruik uitgespaard kan worden.
@@ -192,15 +187,15 @@ Dit zal op zijn beurt ook de overhead van de sparse mapping beperkt houden.
 Zoals eerder vermeld bevat een suffix array geen informatie over de interne toppen die voorkomen bij een suffixboom.
 Dit zorgt ervoor dat het niet mogelijk is om op basis hiervan de LCA van de organismen voor te berekenen voor al deze interne toppen.
 In de plaats is dit nu iets dat \textit{on the fly} moet gebeuren tijdens het zoekproces zelf.
-Aangezien dit nu niet meer voorberekend wordt is er ook geen reden om LCA te verkiezen boven LCA*.
-LCA* was namelijk onze eerste keuze, maar bij suffixbomen zijn we daarvan afgestapt om het voorberekenen efficiënter te kunnen doen.
+Aangezien dit nu niet meer op voorhand berekend wordt, is er geen reden om LCA te verkiezen boven LCA*.
+LCA* was namelijk onze eerste keuze, maar bij suffixbomen zijn we daarvan afgestapt om het voorberekenen efficiënter te maken.
 
 % TODO: we kunnen ook gebruik maken van enhanded suffix arrays en dat dan wel proberen doen, maar haalbaarheid daarvan is nog uit te zoeken.
 
 
 \section{Sparse en compressed suffix arrays}\label{sec:sparse-en-compressed-suffix-arrays}
 Om het geheugenverbruik van suffix arrays verder te verkleinen kan er gebruik gemaakt worden van sparse of compressed suffix arrays.
-In principe doen ze allebei hetzelfde, er wordt namelijk slechts een stuk van de originele suffix array wordt bijgehouden.
+In principe doen ze allebei hetzelfde, er wordt namelijk slechts een stuk van de originele suffix array bijgehouden.
 Het verschil zit in welk stuk bijgehouden wordt.
 \\ \\
 Sparse suffix arrays (SSAs) bouwen een suffix array op basis van elke k-de suffix van de input tekst.
@@ -210,12 +205,11 @@ Hierdoor blijft het maximale geheugenverbruik tijdens het opbouwen identiek aan 
 Dit is net het punt waar wij ons geheugenverbruik verder willen verlagen.
 Gelukkig heeft het gebruik hiervan nog altijd het voordeel dat de uiteindelijke machine die de index zal hosten lagere geheugenvereisten zal hebben.
 \\ \\
-Het samplen is de meest gebruikte methode omdat er tot op vandaag vanwege de sterk bestaande geoptimaliseerde klassieke SA constructie algoritmes.
-Bij sparse suffix arrays is het beste tot nu toe een Monte Carlo algoritme dat $O(n)$ tijd en $O(b)$ geheugen nodig heeft en een Las Vegas algoritme dat $O(n \sqrt{\log b})$ tijd en $O(b)$ geheugen verbruikt.
+Het samplen is de meest gebruikte methode tot op vandaag vanwege de bestaande sterk geoptimaliseerde implementaties van de klassieke SA constructie algoritmes.
+Bij sparse suffix arrays is het beste algoritme qua tijdscomplexiteit tot nu toe een Monte Carlo algoritme dat $O(n)$ tijd en $O(b)$ geheugen nodig heeft en een Las Vegas algoritme dat $O(n \sqrt{\log b})$ tijd en $O(b)$ geheugen verbruikt.
 Hierbij is $n$ de lengte van de tekst, en $b$ het aantal effectief gebruikte suffixes in de sparse SA~\cite{building_sparse_sa}.
-Merk op dat er dus wel een lineair Monte Carlo algoritme bestaat.
-Van dit algoritme is er een bestaand implementatie\footnote{\url{https://github.com/lorrainea/SSA/tree/main/MA}}.
-Wanneer we op deze manier een SSA met sparseness factor 3 opbouwen blijkt dit niet alleen trager ($\pm$ 10 minuten) te zijn.
+Van het Monte-Carlo algoritme is er een bestaand implementatie\footnote{\url{https://github.com/lorrainea/SSA/tree/main/MA}}.
+Wanneer we aan de hand hiervan een SSA met sparseness factor 3 voor Swiss-Prot opbouwen blijkt dit niet alleen trager ($\pm$ 10 minuten) te zijn.
 Ook het geheugengebruik ligt merkelijk hoger ($\pm$ 10 GB).
 Terwijl we slechts een tiental seconden nodig hebben om de standaard SA op te bouwen in combinatie met 1.8 GB RAM\@.
 Voor compressed suffix arrays bestaat er een algoritme dat een tijdscomplexiteit van $o(n)$ heeft in combinatie met $O(n \log \sigma)$ bits aan geheugen~\cite{building_compressed_sa}.
@@ -223,10 +217,9 @@ Hierbij is $n$ de tekstlengte en $\sigma$ de alfabetgrootte.
 \\ \\
 Het grootste nadeel aan deze algoritmes in context van deze thesis is dat er nog geen (sterk geoptimaliseerde) implementaties bestaan.
 Bovendien zal de factor van ingevoegde sparseness in ons geval altijd vrij klein zijn om de zoektijden beperkt te houden (aangezien we werken met een erg grote dataset en vrij korte strings).
-Wat de winst in geheugenverbruik net volledig teniet zou kunnen doen.
-Er wordt niet beschreven wat de constante factor is in het geheugenverbruik.
-Bovendien laat een CSA niet toe om rechtstreeks gebruik makende van de CSA te zoeken, er zijn nog extra hulp structuren nodig, wat opnieuw extra geheugen vraagt.
-Daarom zijn SSAs interessanter in ons geval aangezien wij enkel matches willen zoeken.
+Indien we dus een implementatie hebben om rechtstreeks een CSA of SSA te bouwen, maar met een grotere constante qua geheugengebruik zal vanwege de kleine sparseness factor de winst snel verloren gaan.
+Bovendien laat een CSA niet toe om rechtstreeks gebruik makende van de CSA te zoeken, er zijn nog extra hulp structuren nodig, wat opnieuw extra geheugen vraagt. % TODO: vraag eens aan peter hoe dat werkt, of dubbel check nog eens online, maar is weinig van te vinden
+Daarom zijn SSAs interessanter in ons geval aangezien wij matches willen zoeken.
 Deze laten toe om enkel met behulp van de tekst en de SSA te zoeken.
 
 \subsection{Zoeken in sparse suffix arrays}\label{subsec:zoeken-in-sparse-suffix-arrays}
@@ -234,7 +227,7 @@ Het zoeken in een SSA is erg gelijkaardig aan het zoeken in een volledige SA\@.
 Een belangrijke restrictie is echter dat in de SSA geen strings gezocht kunnen worden die kleiner dan of gelijk zijn aan de sparseness factor.
 Bovendien heeft deze sparseness factor ook een erg belangrijke impact op de zoekperformantie.
 Bij het zoeken met sparseness factor $k$ moeten we namelijk alle suffixen zoeken die matchen met de gezochte string waarbij de eerste $p \in [0, k-1]$ tekens overgeslagen worden.
-Voor elke matchende suffix moet daarna gecontroleerd worden als de overgeslagen prefix van $p$ tekens matcht met de $p$ tekens voor gematchte suffix (stel dat dit suffix $s$ is).
+Voor elke matchende suffix (stel dat dit suffix $s$ is) moet daarna gecontroleerd worden als de overgeslagen prefix van $p$ matcht met de $p$ tekens die op posities $[s - p, p[$ in de geïndexeerde tekst staan.
 Als dit zo is, dan matcht suffix $s - p$ met de gezochte string.
 Om alles iets duidelijker te maken volgt een klein voorbeeld waarin we de peptide \texttt{acg} in de tekst \texttt{acacgt\$} zoeken.
 De index die gebruikt wordt om te zoeken is een SSA met sparseness factor 3.
@@ -269,45 +262,59 @@ Deze valt terug te vinden in figuur~\ref{fig:sparse_sa}.
 
 \begin{enumerate}
     \item Sla 0 tekens over.
-    Zoek \texttt{acg} in de SSA. Deze valt niet te vinden.
+    Zoek \texttt{acg} in de SSA\@.
+    We vinden geen matches.
     \item Sla 1 teken over.
-    Dit wil zeggen dat we \texttt{cg} zoeken.
+    Dit wil zeggen dat we \texttt{cg} zoeken in de SSA\@.
     Dit levert een match op met suffix 3 (op index 1 in de SSA).
     \begin{enumerate}
         \item Controleer als de suffix die deels gematcht is ook volledig matcht met onze zoekstring.
         Dit wil zeggen dat we de overgeslagen prefix van $p = 1$ tekens (in dit geval de letter \texttt{a}) moeten kunnen matchen met de eerste $p$ tekens van suffix $3 - 1 = 2$.
         \item We zien dat het eerste teken van suffix 2 inderdaad een \texttt{a} is.
-        Hiervoor is de SA zelf niet nodig, dit kan rechtstreeks via de inputtekst gecontroleerd worden aan de hand van $p$ karakters die vergeleken moeten worden.
+        Hiervoor is de SA zelf niet nodig, dit kan rechtstreeks via tekst gecontroleerd worden aan de hand van $p$ karakters die vergeleken moeten worden.
         Suffix 2 is dus een match voor de zoekstring \texttt{acg}.
     \end{enumerate}
     \item Sla 2 tekens over.
-    Zoek \texttt{g} in de SSA. Dit valt niet te vinden.
+    Zoek \texttt{g} in de SSA\@.
+    We vinden geen matches.
+    \item We concluderen dat enkel suffix 2 matcht met de gezochte string \textit{acg}.
 \end{enumerate}
 
-Om de impact op de zoektijd beter te visualiseren toont figuur~\ref{fig:search_sparseness} de zoektijd van het Swiss-Prot zoekbestand met en zonder missed cleavages.
+\subsubsection{Performantie en indexgrootte}
+Afhankelijk van de sparseness factor vraagt het zoeken meer iteraties.
+Bovendien zal een grotere sparseness factor impliceren dat we iteraties zullen hebben waarbij de overgeslagen prefix langer is.
+Dit op zijn beurt zorgt ervoor dat er kortere stukken in de SSA gezocht zullen worden, die in het algemeen meer matches zullen opleveren.
+Voor al deze matches moeten we controleren als de tekens die ervoor komen matchen met de overgeslagen prefix.
+Figuur~\ref{fig:search_sparseness} (a) visualiseert de impact hiervan op de zoektijd van het Swiss-Prot zoekbestand met en zonder missed cleavages.
 Deze bestanden worden hiervoor gebruikt omdat de kortste sequentie die ze bevatten 5 aminozuren lang is.
 Hierdoor blijft voor het gebruikte interval nog steeds elke peptide zoekbaar.
+Zoals eerder al aangehaald kunnen peptides die minder lang zijn dan de sparseness factor niet meer gezocht worden.
 Indien we het zoekbestand voor Human-Prot zouden gebruiken zou de evolutie van de zoektijd minder representatief zijn.
-Dit omdat er een deel van de peptides korter zijn dan 5 aminozuren lang, deze zouden dus niet meer gezocht kunnen worden.
+Dit omdat er een deel van de peptides korter zijn dan 5 aminozuren lang, deze zouden dus overgeslagen moeten worden.
+\\
+\begin{figure}[h]
+    \centering
+    \subfloat[Zoektijd voor het Swiss-Prot zoekbestand met en zonder missed cleavages in een sparse suffix array gebouwd aan de hand van de Swiss-Prot eiwitdatabank.]{\includegraphics[width=\linewidth]{swissprot_searchtime_sparseness}}\\[4ex] % [4ex] om wat extra vertical spacing in te voegen
 
-\begin{figure}[H]
-    \center
-    \includegraphics[width=\linewidth]{swissprot_searchtime_sparseness}
-    \caption{Zoektijd voor het Swiss-Prot zoekbestand met en zonder missed cleavages in een sparse suffix array gebouwd aan de hand van de Swiss-Prot eiwitdatabank.}
-    \label{fig:search_sparseness}
+    \subfloat[Grootte van de volledige index en SSA voor de Swiss-Prot databank gebruik makende van verschillende sparseness factors.]{\includegraphics[width=0.8\linewidth]{index_size_SSA}}
+    \caption{Zoektijd en indexgrootte voor Swiss-Prot.}\label{fig:search_sparseness}
 \end{figure}
 
-% TODO: grafiek die SSA size toont voor swissprot met verschillende sparseness factors
-
 De reden dat de zoektijd zo explodeert wanneer we de sparseness factor verhogen is omdat er een deel van de gezochte peptides bestaat uit 5 aminozuren.
-Wanneer we deze proberen zoeken in een SSA een sparseness factor die slechts een beetje kleiner is of gelijk is hieraan zorgt dit er voor dat het grootste deel van de peptide overgeslagen kan worden als prefix.
-Wat op zijn beurt impliceert dat de gezochte suffix extreem kort is, en bijgevolg erg veel matches heeft.
-Voor elk van deze matches moeten we controleren als de prefix matcht of niet, wat veel tijd kost.
+Wanneer we deze proberen zoeken in een SSA een sparseness factor 5, zoeken we eigenlijk enkel één letter in de SSA (de laatste van de peptide).
+Deze zal erg veel matches opleveren, en op zijn beurt erg veel werk vragen om alle prefixen hiervan te controleren.
+\\ \\
+Anderzijds zal het verhogen van de sparseness factor de indexgrootte verkleinen.
+Hierbij is het belangrijk dat enkel de SA mee verkleint.
+Er blijft altijd een vaste hoeveelheid geheugen nodig om de tekst zelf nog op te slaan.
+Figuur~\ref{fig:search_sparseness} (b) toont dit.
+Er is duidelijk te zien dat voor dit geval de overgang van sparseness factor 4 naar 5 erg weinig winst heeft in opslag, maar een grote impact heeft op de performantie.
 \\ \\
 Er zijn dus twee erg belangrijke bevindingen over sparse suffix arrays, en de manier waarop wij ze opbouwen
 \begin{enumerate}
-    \item Probeer de sparseness factor zo laag mogelijk te houden zodat de zoektijd voor korte peptides beperkt blijft.
+    \item Probeer de sparseness factor zo laag mogelijk te houden, zo blijft ook de zoektijd voor kortere peptiden beperkt.
     \item Het maximale geheugenverbruik blijft constant onafhankelijk van de sparseness factor.
+    De hoeveelheid geheugen om ze nadien te gebruiken kunnen we wel verkleinen, hierdoor kan de index op lichtere machines gebruikt worden na het opbouwen.
 \end{enumerate}
 
 Dit impliceert dat we de factor enkel moeten verhogen om het geheugenverbruik te beperken bij een al opgebouwde indexstructuur.
@@ -317,13 +324,14 @@ In het perfecte geval wordt de sparseness factor zo gekozen zodat de SSA samen m
 \section{Parallellisatie}\label{sec:parallellisatie}
 Om het zoeken nog verder te versnellen kan gebruik gemaakt worden van parallellisatie.
 We hebben namelijk een groot aantal peptides waarvoor we elke keer dezelfde statische indexstructuur moeten doorzoeken.
-Rust maakt dit proces vrij simpel omdat het ownership systeem dataraces voorkomt (behalve wanneer gebruik gemaakt wordt van unsafe code of het interior mutability patroon)\cite{rust_data_races}.
-Om een datatype te gebruiken bij tijdens multithreading moet deze de \texttt{Sync} en \texttt{Send} trait implementeren.
-Deze traits worden door het typesysteem automatisch afgeleid als alle componenten van een type aan de \texttt{Sync} en \texttt{Send} trait voldoen, dan voldoet je nieuwe type ook automatisch. % TODO: vermelden dat er een erg kleine aanpassing in umgap nodig is geweest of niet?
+Rust maakt dit proces vrij simpel omdat het \textit{ownership} systeem dataraces voorkomt (behalve wanneer gebruik gemaakt wordt van \textit{unsafe} code of het \textit{interior mutability} patroon)\cite{rust_data_races}.
+Om een datatype te gebruiken in combinatie met multithreading moet deze de \texttt{Sync} en \texttt{Send} trait implementeren.
+Deze traits worden door het typesysteem automatisch afgeleid.
+Als namelijk alle componenten van een type aan de \texttt{Sync} en \texttt{Send} trait voldoen, dan voldoet je nieuwe type ook automatisch.
 \\ \\
 Uiteindelijk hebben we twee geparallelliseerde implementaties gemaakt.
 In de eerste wordt alles volledig zelf beheerd.
-Hierbij verdelen we zelf welke data naar welke thread gaat, worden de threads manueel opgestart en sluiten we zelf de threads af.
+Hierbij verdelen we zelf welke data naar welke thread gaat, worden de threads manueel opgestart en sluiten we ze ook zelf af.
 In de tweede implementatie wordt gebruik gemaakt van de Rayon crate\cite{rayon}.
 Deze laat toe om op een simpele manier een sequentiële lus over een variabele te parallelliseren.
 In ons geval was het omzetten van een sequentiële implementatie (nadat alle types voldeden aan de \texttt{Sync} en \texttt{Send} trait) zo simpel als het vervangen van \texttt{.iter()} door \texttt{.par\_iter()}.
@@ -356,21 +364,21 @@ Rayon maakt gebruik van een ingewikkelder systeem aan de hand van \textit{work s
 Verder is het ophalen van de resultaten ook veel simpeler.
 Deze worden rechtstreeks ter beschikking gesteld alsof er geen parallellisme was.
 
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
-    \subfloat[Absolute uitvoeringstijd voor een verschillend aantal cores]{\includegraphics[width=0.7\linewidth]{threading_default_vs_rayon}}\\[4ex] % [4ex] om wat extra vertical spacing in te voegen
+    \subfloat[Absolute uitvoeringstijd voor een verschillend aantal cores.]{\includegraphics[width=0.7\linewidth]{threading_default_vs_rayon}}\\[4ex] % [4ex] om wat extra vertical spacing in te voegen
 
     \subfloat[Relatieve versnelling ten opzichte van uitvoering op 1 thread.]{\includegraphics[width=0.7\linewidth]{threading_default_vs_rayon_relative}}
     \caption{Tijdsmeting om het Swiss-Prot peptidebestand zonder missed cleavages te zoeken in een index met sparseness factor 3 ter grootte van 5\% van UniProtKB.}\label{fig:threading_default_vs_rayon}
 \end{figure}
 
-Bovendien heeft het gebruik maken van Rayon ook nog andere voordelen.
+Naast het verschil in performantie zijn er nog andere voordelen verbonden aan het gebruik van Rayon.
 De code is namelijk veel simpeler en daarom ook beter te onderhouden.
 Dit motiveert onze keuze om finaal gebruik te maken van Rayon.
 
 \section{Performantie}\label{sec:performantie}
 Nu we verschillende manier verkend hebben om suffix arrays op te bouwen is het interessant om onze implementatie te vergelijken met suffixbomen.
-Op basis hiervan kunnen we daarna vaststellen welke verbeteringen we gemaakt hebben, als deze indexstructuur goed genoeg schaalt om toepasbaar te zijn op de volledige UniProtKB en in welke tijd de peptides gezocht kunnen worden.
+Op basis hiervan kunnen we daarna vaststellen welke verbeteringen we gemaakt hebben, als deze indexstructuur goed genoeg schaalt om toepasbaar te zijn op de volledige UniProtKB databank en in welke tijd de peptides gezocht kunnen worden.
 
 \subsection{Opbouwen}
 Figuur~\ref{fig:array_building} visualiseert de tijd nodig om de indexstructuur op te bouwen in combinatie met het geheugenverbruik.
@@ -381,9 +389,9 @@ Een veel belangrijkere vaststelling is het maximale geheugenverbruik tijdens opb
 Ook deze is drastisch gedaald.
 Dit is exact de reden dat we deze indexstuctuur gekozen hebben.
 Wanneer we het resultaat voor Swiss-Prot extrapoleren naar UniProtKB gebruikmakende van de assumptie dat UniProtKB $\pm$ 500x groter is dan is de verwachting dat er ongeveer 1.2 TB RAM nodig is.
-Dit is nog steeds een grote hoeveelheid, maar dit wordt al praktisch mogelijk op een krachtige server gericht op memory intensive tasks.
+Dit is nog steeds een grote hoeveelheid, maar dit wordt al praktisch mogelijk op een server gericht op het uitvoeren van geheugenintensieve taken.
 
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
     \subfloat[Tijd nodig om de index op te bouwen.]{\includegraphics[width=\linewidth]{building_array_libsais_time}}\\[4ex] % [4ex] om wat extra vertical spacing in te voegen
 
@@ -398,7 +406,7 @@ De enige manier van zoeken waarin we geïnteresseerd zijn is het zoeken van alle
 \subsection{Maximaal aantal matches}\label{subsec:maximaal-aantal-matches}
 
 
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
     \subfloat[Bereken alle LCAs.]{\includegraphics[width=0.7\linewidth]{no_cutoff_humanprot_search}}\\[4ex] % [4ex] om wat extra vertical spacing in te voegen
 
@@ -429,7 +437,7 @@ Dit blijkt ook het geval te zijn.
 Figuur~\ref{fig:build_uniprot} toont de nodige hoeveelheid geheugen en tijd.
 Opvallend hierbij is dat het Libsais algoritme hier trager is dan libdivsufsort, terwijl dit voor alle kleinere datasets net omgekeerd was.
 
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
     \subfloat[Tijd nodig om een index voor UniProtKB te bouwen.]{\includegraphics[width=\linewidth]{build_uniprot_time}}\\[4ex] % [4ex] om wat extra vertical spacing in te voegen
 
@@ -442,6 +450,7 @@ Zoals eerder aangegeven in de conclusie van sectie~\ref{subsec:zoeken-in-sparse-
 De beschikbare machines die UniPept hosten hebben elk $pm$ 0.5 TB RAM ter beschikking.
 Dit wil zeggen dat we de resulterende index hierin moeten krijgen, en ook nog genoeg overhead moeten laten zodat de machine zeker niet out-of-memory gaat tijdens het hosten van de index en het verwerken van meerdere requests.
 Praktisch gezien komt dit er op neer dat we gebruik maken van sparseness factor 3.
-Dit resulteert in een SA van TODO GB.
-In combinatie met de tekst resulteert dit in een totale indexgrootte van TODO GB, wat comfortabel in de 0.5 TB past.
-Indien we sparseness factor 2 zouden gebruiken is dit niet meer het geval. Dan komt de totale indexgrootte op $\pm$ 0.5 TB uit, wat te dicht ligt bij de grens.
+Dit resulteert in een SA van 231.81 GB.
+In combinatie met de tekst (86.93 GB) resulteert dit in een totale indexgrootte van 318,74 GB, wat comfortabel in de 0.5 TB past.
+Indien we sparseness factor 2 zouden gebruiken is dit niet meer het geval. % TODO: zou er wel in kunnen, ongeveer 440 GB in het totaal nodig, maar is dit nog "oké?"
+Dan komt de totale indexgrootte op $\pm$ 450 GB uit, wat te dicht ligt bij de grens.
