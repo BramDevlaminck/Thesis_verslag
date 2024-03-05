@@ -400,42 +400,53 @@ Dit is nog steeds een grote hoeveelheid, maar dit wordt al praktisch mogelijk op
 \end{figure}
 
 \subsection{Zoeken}
-Aangezien er geen voorberekening gebeurd van LCA's is er bij het meten van de zoekperformantie geen reden om twee gevallen zoals bij suffixbomen te bekijken.
-De enige manier van zoeken waarin we geïnteresseerd zijn is het zoeken van alle matchende proteïnes en dan als resultaat de LCA (of in ons geval de LCA*) als output krijgen.
+Aangezien er geen voorberekening gebeurd van LCA's is het enkel nuttig om de zoektijd inclusief het berekenen van de LCA te bekijken.
+De tijd tot een match levert ons nog niet alle nodige informatie op (zoals bij de suffixboom).
 
-\subsection{Maximaal aantal matches}\label{subsec:maximaal-aantal-matches}
-
-
+\subsection{Beperken van het maximaal aantal matches}\label{subsec:maximaal-aantal-matches}
+Op het eerste zicht leek de performantie voor sommige bestanden dramatisch veel slechter.
+Dit is zichtbaar voor het Human-Prot zoekbestand in~\ref{fig:cutoff_humanprot} (a).
+Na wat onderzoek bleek dat het berekenen van de LCA* erg traag werd indien er een groot aantal matches was.
+Daarom is er besloten om een cut-off in te stellen.
+Indien een peptide meer dan dat aantal matches heeft wordt verondersteld dat de root de kleinste gemeenschappelijke voorouder is van alle matches.
+Uit onderzoek~\cite{unipept_cutoff} blijkt dat dit in de praktijk in de overgrote meerderheid van de gevallen ook effectief het geval is.
+Zo zijn er slechts $\pm$ 13000 peptides met meer dan 10000 eiwiten matchen.
+Hiervan was voor 95\% van de peptides de LCA de root en slechts voor 200 peptides een resultaat op \textit{species} niveau.
+\\
 \begin{figure}[h]
     \centering
-    \subfloat[Bereken alle LCAs.]{\includegraphics[width=0.7\linewidth]{no_cutoff_humanprot_search}}\\[4ex] % [4ex] om wat extra vertical spacing in te voegen
+    \subfloat[Bereken de LCA* voor alle matches.]{\includegraphics[width=0.7\linewidth]{no_cutoff_humanprot_search}}\\[4ex] % [4ex] om wat extra vertical spacing in te voegen
 
-    \subfloat[Bereken de LCA als er minder dan 10000 matches zijn, geef anders root terug als antwoord.]{\includegraphics[width=0.7\linewidth]{cutoff_humanprot_search}}
-    \caption{cut-off en geen cut-off op Human-Prot bij het zoeken naar de LCA voor alle peptides}\label{fig:cutoff_humanprot}
+    \subfloat[Bereken de LCA* als er minder dan 10000 matches zijn.]{\includegraphics[width=0.7\linewidth]{cutoff_humanprot_search}}
+    \caption{Berekenen van de LCA* (inclusief zoeken) voor alle peptiden in Human-Prot zonder en met cut-off.}\label{fig:cutoff_humanprot}
 \end{figure}
 
-Zoals in figuur~\ref{fig:cutoff_humanprot} duidelijk te zien valt is er een gigantisch verschil tussen het gebruikmaken van een cut-off of geen cut-off.
-Hierbij worden alle peptides die meer dan $x$ matches hebben verondersteld als LCA de root te hebben.
-We doen dit omdat blijkt dat peptides met erg veel matches voor een sterke meerderheid van de gevallen een erg algemeen resultaat opleveren\cite{unipept_cutoff}.
-Langs de andere kanten is het berekenen van de LCA net erg traag voor deze gevallen.
+In figuur~\ref{fig:cutoff_humanprot} duidelijk te zien dat de uitvoeringstijd drastisch daalt wanneer de cut-off op 10000 matches geplaatst wordt.
 Als we dit specifiek bekijken voor de Human-Prot peptidebestanden en eiwitdatabank is de uitvoeringstijd maar liefst een goede 300x sneller.
 Bovendien is ook hier het informatieverlies minimaal.
-Van de 100000 peptides zijn er 12 peptides die een ander resultaat verkrijgen in de output.
-Deze 12 entries zijn echter slechts 2 verschillende peptides (die gewoon meerdere malen voorkomen in het peptidebestand).
+Van de 250000 peptides zijn er 12 peptides die een ander resultaat verkrijgen in de output.
+Deze 12 entries zijn echter slechts twee verschillende peptides (die gewoon meerdere malen voorkomen in het peptidebestand).
 Dit zijn de peptide \texttt{EKP} en de peptide \texttt{SKE}.
 Indien we de LCA* effectief berekenen is het resultaat in beide gevallen 9606, terwijl we met een cut-off de root (1) terug geven.
 \\ \\
-Indien we het gebruik van de cut-off nu vergelijken met de performantie de we verkregen hadden tijdens het zoeken in de suffixboom zien we dat dit terug in elkaars buurt komt.
-Terwijl we in de suffixboom de LCA al voorberekend hadden.
+Nu we het zoeken in de suffix array afgesteld hebben aan de hand van een cut-off is het interessant om te kijken hoe de zoekperformantie zich verhoudt ten opzichte van het zoeken in een suffixboom.
+Bij een 1 op 1 vergelijking is het zoeken in de suffixboom duidelijk sneller.
+Dit is ook exact wat we verwacht hadden.
+In de praktijk is het zoeken in een suffix array 5 tot 10 maal trager voor onze testbestanden.
+Een deel van deze extra zoektijd kan opgevangen worden door gebruik te maken van parallel zoeken.
+Indien we hier gebruik van maken neemt het zoeken opnieuw de orde van enkele tientallen tot honderden milliseconden voor 100000 peptides te zoeken.
+Dit is echter ook iets dat mogelijk is in een suffixboom, alleen zal de verkregen tijdswinst in absolute tijd daar nog kleiner zijn.
 
 \section{UniProtKB}
-Zoals eerder vermeld levert een ruwe extrapolatie op dat we geschat 1.2 TB aan geheugen nodig zou hebben.
-Hierbij werd echter uitgegaan van het feit dat UniProtKB 500x meer eiwitten dan Swiss-Prot bevat.
-Dit is een overschatting van de realiteit waar UniProt \textit{slechts} $\pm$ 440 keer groter is. % TODO: check deze factor.
+Zoals eerder vermeld levert een ruwe extrapolatie op dat we geschat 1.2 TB aan geheugen nodig zou hebben om een index voor UniProtKB op te bouwen.
+Hierbij werd er echter van uitgegaan dat UniProtKB 500x meer eiwitten dan Swiss-Prot bevat.
+Dit is een overschatting van de realiteit waar UniProt op dit moment \textit{slechts} $\pm$ 440 keer groter is.
 Dit zorgt ervoor dat het opbouwen mogelijks al haalbaar is op HPC van UGent waar nodes beschikbaar zijn die ongeveer 940 GB aan beschikbaar geheugen hebben.
-Dit blijkt ook het geval te zijn.
-Figuur~\ref{fig:build_uniprot} toont de nodige hoeveelheid geheugen en tijd.
+Na dit te proberen bleek dit ook effectief al haalbaar.
+Figuur~\ref{fig:build_uniprot} toont de nodige tijd en hoeveelheid geheugen om dit te realiseren.
 Opvallend hierbij is dat het Libsais algoritme hier trager is dan libdivsufsort, terwijl dit voor alle kleinere datasets net omgekeerd was.
+Afhankelijk van je dataset is het ene algoritme dus sneller dan het andere.
+Het geheugengebruik van beide algoritmes blijft echter erg gelijkaardig, wat het belangrijkste is voor ons.
 
 \begin{figure}[h]
     \centering
@@ -445,11 +456,11 @@ Opvallend hierbij is dat het Libsais algoritme hier trager is dan libdivsufsort,
     \caption{Statistieken voor het opbouwen van een SA voor UniProtKB}\label{fig:build_uniprot}
 \end{figure}
 
-Nu we wisten dat het haalbaar was om een suffix array op te bouwen voor de volledige uniProt databank was een volgende stap het kiezen van de sparseness factor.
+Een volgende stap na het opbouwen van de volledige SA was het beslissen van de sparseness factor.
 Zoals eerder aangegeven in de conclusie van sectie~\ref{subsec:zoeken-in-sparse-suffix-arrays} willen we deze sparseness factor zo laag mogelijk kiezen, met als restrictie dat de SSA nog steeds in het geheugen moet kunnen gehouden worden.
 De beschikbare machines die UniPept hosten hebben elk $pm$ 0.5 TB RAM ter beschikking.
 Dit wil zeggen dat we de resulterende index hierin moeten krijgen, en ook nog genoeg overhead moeten laten zodat de machine zeker niet out-of-memory gaat tijdens het hosten van de index en het verwerken van meerdere requests.
-Praktisch gezien komt dit er op neer dat we gebruik maken van sparseness factor 3.
+Praktisch gezien komt dit er op neer dat we gebruik maken van sparseness factor 3. % TODO: of 2, moeten we eens testen
 Dit resulteert in een SA van 231.81 GB.
 In combinatie met de tekst (86.93 GB) resulteert dit in een totale indexgrootte van 318,74 GB, wat comfortabel in de 0.5 TB past.
 Indien we sparseness factor 2 zouden gebruiken is dit niet meer het geval. % TODO: zou er wel in kunnen, ongeveer 440 GB in het totaal nodig, maar is dit nog "oké?"
