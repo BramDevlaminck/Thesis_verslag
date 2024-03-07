@@ -35,7 +35,7 @@ Merk op dat we \texttt{\$} als uniek eindteken gebruiken.
             edge from parent node [above] {\texttt{\$}}
         }
         child {
-            node[draw, circle] {}
+            node[draw, circle] (Start) {}
             child {
                 node[draw, rounded corners] {\texttt{acacgt\$}}
                 edge from parent node [left] {\texttt{acgt\$}}
@@ -47,7 +47,7 @@ Merk op dat we \texttt{\$} als uniek eindteken gebruiken.
             edge from parent node [below] {\texttt{ac}}
         }
         child {
-            node[draw, circle] {}
+            node[draw, circle] (End) {}
             child {
                 node[draw, rounded corners] {\texttt{cacgt\$}}
                 edge from parent node [left] {\texttt{acgt\$}}
@@ -67,6 +67,7 @@ Merk op dat we \texttt{\$} als uniek eindteken gebruiken.
             edge from parent node [above] {\texttt{t\$}}
         }
         ;
+        \draw[dashed, ->] (Start) to[out=-20,in=200] (End);
     \end{tikzpicture}
     \caption{Suffixboom voor de string \texttt{acacgt\$}.}\label{fig:suffix_tree_example}
 
@@ -103,7 +104,7 @@ Een boog met waarde \texttt{1,3} stelt dus de substring \texttt{ca} voor uit het
             edge from parent node [above] {6,7}
         }
         child {
-            node[draw, circle] {}
+            node[draw, circle] (Start) {}
             child {
                 [fill] circle (2pt)
                 edge from parent node [left] {2,7}
@@ -115,7 +116,7 @@ Een boog met waarde \texttt{1,3} stelt dus de substring \texttt{ca} voor uit het
             edge from parent node [below] {0,2}
         }
         child {
-            node[draw, circle] {}
+            node[draw, circle] (End) {}
             child {
                 [fill] circle (2pt)
                 edge from parent node [left] {2,7}
@@ -135,6 +136,7 @@ Een boog met waarde \texttt{1,3} stelt dus de substring \texttt{ca} voor uit het
             edge from parent node [above] {5,7}
         }
         ;
+        \draw[dashed, ->] (Start) to[out=-20,in=200] (End);
     \end{tikzpicture}
     \caption{Suffixboom voor de string \texttt{acacgt\$}, gebruik makende van indices.}\label{fig:suffix_tree_example_indices}
 

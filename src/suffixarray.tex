@@ -1,5 +1,6 @@
 \chapter{Suffix arrays}\label{ch:suffix-arrays}
-Een tweede datastructuur die we in meer detail bekijken zijn suffix arrays, dit omwille van de lagere geheugenvereisten vergeleken met suffixbomen.
+Een tweede datastructuur die we in meer detail bekijken zijn suffix arrays.
+Dit doen we omwille van de lagere geheugenvereisten in vergelijking met suffixbomen.
 
 \section{Wat zijn suffix arrays?}\label{sec:wat-zijn-suffix-arrays?}
 Suffix arrays zijn een geheugenefficiëntere voorstelling van suffixbomen.
@@ -26,7 +27,7 @@ Figuur~\ref{fig:suffixtree_vs_suffixarray} geeft een voorbeeld van een suffixboo
                     edge from parent node [above] {6,7}
                 }
                 child {
-                    node[draw, circle] {}
+                    node[draw, circle] (Start) {}
                     child {
                         [fill] circle (2pt)
                         edge from parent node [left] {2,7}
@@ -38,7 +39,7 @@ Figuur~\ref{fig:suffixtree_vs_suffixarray} geeft een voorbeeld van een suffixboo
                     edge from parent node [below] {0,2}
                 }
                 child {
-                    node[draw, circle] {}
+                    node[draw, circle] (End) {}
                     child {
                         [fill] circle (2pt)
                         edge from parent node [left] {2,7}
@@ -58,6 +59,7 @@ Figuur~\ref{fig:suffixtree_vs_suffixarray} geeft een voorbeeld van een suffixboo
                     edge from parent node [above] {5,7}
                 }
                 ;
+                \draw[dashed, ->] (Start) to[out=-20,in=200] (End);
             \end{tikzpicture}
         }
         \caption{Suffixboom}
@@ -292,7 +294,7 @@ Zoals eerder al aangehaald kunnen peptides die minder lang zijn dan de sparsenes
 Indien we het zoekbestand voor Human-Prot zouden gebruiken zou de evolutie van de zoektijd minder representatief zijn.
 Dit omdat er een deel van de peptides korter zijn dan 5 aminozuren lang, deze zouden dus overgeslagen moeten worden.
 \\
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \subfloat[Zoektijd voor het Swiss-Prot zoekbestand met en zonder missed cleavages in een sparse suffix array gebouwd aan de hand van de Swiss-Prot eiwitdatabank.]{\includegraphics[width=\linewidth]{swissprot_searchtime_sparseness}}\\[4ex] % [4ex] om wat extra vertical spacing in te voegen
 
@@ -364,7 +366,7 @@ Rayon maakt gebruik van een ingewikkelder systeem aan de hand van \textit{work s
 Verder is het ophalen van de resultaten ook veel simpeler.
 Deze worden rechtstreeks ter beschikking gesteld alsof er geen parallellisme was.
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \subfloat[Absolute uitvoeringstijd voor een verschillend aantal cores.]{\includegraphics[width=0.7\linewidth]{threading_default_vs_rayon}}\\[4ex] % [4ex] om wat extra vertical spacing in te voegen
 
@@ -391,12 +393,12 @@ Dit is exact de reden dat we deze indexstuctuur gekozen hebben.
 Wanneer we het resultaat voor Swiss-Prot extrapoleren naar UniProtKB gebruikmakende van de assumptie dat UniProtKB $\pm$ 500x groter is dan is de verwachting dat er ongeveer 1.2 TB RAM nodig is.
 Dit is nog steeds een grote hoeveelheid, maar dit wordt al praktisch mogelijk op een server gericht op het uitvoeren van geheugenintensieve taken.
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \subfloat[Tijd nodig om de index op te bouwen.]{\includegraphics[width=\linewidth]{building_array_libsais_time}}\\[4ex] % [4ex] om wat extra vertical spacing in te voegen
 
     \subfloat[Maximaal gebruikt geheugen tijdens het opbouwen van de suffixboom.]{\includegraphics[width=\linewidth]{building_array_libsais_memory}}
-    \caption{Vergelijking tussen de nodige tijd en hoeveelheid geheugen om een suffix array met LibSais op te bouwen of een Suffixboom in onze eigen Rust implementatie. De tijd en het geheugengebruik zijn gemeten met het unix \texttt{time} commando. Als invoerbestand gebruiken we hier de Swiss-Prot of Human-Prot eiwitdatabank.}\label{fig:array_building}
+    \caption{Vergelijking tussen de nodige tijd en hoeveelheid geheugen om een suffix array met LibSais op te bouwen of een suffixboom in onze eigen Rust implementatie. De tijd en het geheugengebruik zijn gemeten met het unix \texttt{time} commando. Als invoerbestand gebruiken we hier de Swiss-Prot of Human-Prot eiwitdatabank.}\label{fig:array_building}
 \end{figure}
 
 \subsection{Zoeken}
@@ -413,7 +415,7 @@ Uit onderzoek~\cite{unipept_cutoff} blijkt dat dit in de praktijk in de overgrot
 Zo zijn er slechts $\pm$ 13000 peptides met meer dan 10000 eiwiten matchen.
 Hiervan was voor 95\% van de peptides de LCA de root en slechts voor 200 peptides een resultaat op \textit{species} niveau.
 \\
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \subfloat[Bereken de LCA* voor alle matches.]{\includegraphics[width=0.7\linewidth]{no_cutoff_humanprot_search}}\\[4ex] % [4ex] om wat extra vertical spacing in te voegen
 
@@ -448,7 +450,7 @@ Opvallend hierbij is dat het Libsais algoritme hier trager is dan libdivsufsort,
 Afhankelijk van je dataset is het ene algoritme dus sneller dan het andere.
 Het geheugengebruik van beide algoritmes blijft echter erg gelijkaardig, wat het belangrijkste is voor ons.
 \\
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \subfloat[Tijd nodig om een index voor UniProtKB te bouwen.]{\includegraphics[width=\linewidth]{build_uniprot_time}}\\[4ex] % [4ex] om wat extra vertical spacing in te voegen
 
