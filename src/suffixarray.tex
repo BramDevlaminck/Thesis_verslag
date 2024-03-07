@@ -96,7 +96,7 @@ Sommige implementaties vereisen slechts $5n + O(1)$ geheugen~\cite{dark_archon, 
 
 \section{Bestaande implementaties}\label{sec:bestaande-implementaties}
 Aangezien er meerdere sterk geoptimaliseerde implementaties bestaan voor het opbouwen van een suffix array vergelijken we eerst de performantie van deze implementaties.
-Op basis hiervan kan daarna beslist worden welke implementatie gebruikt wordt.
+Hieruit kunnen we nadien een algoritmes en implementaties selecteren die geheugenefficiënt zijn.
 Tabel~\ref{tab:sa_building} bevat een overzicht van verschillende algoritmes waarbij voor sommige algoritmes verschillende implementaties getest zijn.
 
 \begin{table}[H]
@@ -124,16 +124,12 @@ Tabel~\ref{tab:sa_building} bevat een overzicht van verschillende algoritmes waa
 \end{table}
 
 We kunnen concluderen dat libsais duidelijk de snelste implementatie is om Swiss-Prot te indexeren.
-Samen met libdivsufsort gebruikt het de kleinste hoeveelheid geheugen.
-Dit maakt libsais het beste algoritme om onze eiwitdatabanken te indexeren.
-Bovendien zien we dat als we de 32 bit en 64 bit implementatie vergelijken van eenzelfde algoritme dat de uitvoeringstijden erg gelijkaardig zijn.
-In het algemeen zijn de 64 bit versies een fractie trager.
-Verder valt ook te zien dat het verschil tussen de C versie en Rust versie die bindings heeft naar de C code klein is.
-De overhead van het oproepen van de C code uit Rust is dus minimaal.
+Samen met libdivsufsort gebruikt het de kleinste hoeveelheid geheugen, wat libdivsufsort ook interessant maakt.
 Een ander voordeel dat libsais en libdivsufsort hebben (naast hun minimale geheugenverbruik) is dat ze allebei een 64 bit integer implementatie hebben.
 Dit is belangrijk voor het indexeren van UniprotKB omdat de totale tekst langer is dan de maximale 32 bit integer.
 Dit zorgt ervoor dat alle 32 bit integer implementaties onbruikbaar zijn voor dit einddoel.
-
+Tot slot valt ook te zien dat het verschil tussen de C versie en Rust versie die bindings heeft naar de C code klein is.
+De overhead van het oproepen van de C code uit Rust is dus minimaal.
 
 \section{Toepassen van suffix arrays op een eiwitdatabank}\label{sec:toepassen-van-suffix-arrays-op-een-eiwitdatabank}
 Het moeilijkste stuk van onze probleemstelling is het opbouwen van de suffix array.
@@ -147,21 +143,21 @@ Zoals in de inleiding van sectie~\ref{sec:probleemstelling} willen we gebruik ma
 We willen echter gebruik maken van de al bestaande geoptimaliseerde implementaties van algoritmes om een suffix array op te bouwen.
 Om beide doelen te bereiken maken we gebruik van interoperabiliteit tussen Rust en C/C++.
 Zo bestaan er al bindings\footnote{\url{https://crates.io/crates/libdivsufsort-rs}} van Rust naar de originele implementatie van libdivsufsort\cite{libdivsufsort} (in C).
-Ook al blijkt uit het testen dat dit algoritme voor het opbouwen van de indexstructuur over een eiwitdatabank niet het snelste is, het geheugengebruik is wel minimaal.
+Ook al blijkt uit het testen dat dit algoritme voor het opbouwen van de indexstructuur over een kleinere eiwitdatabank niet het snelste is, het geheugengebruik is wel minimaal.
 Dit laat toe om te experimenteren met het opbouwen van een SA zonder al te veel extra werk, en al onmiddellijk te zien hoe het geheugengebruik evolueert.
 \\ \\
-Later is er voor gekozen om zelf nog een simple Rust wrapper te schrijven rond de libsais C code.
+Later hebben we beslist om zelf nog een simple Rust wrapper te schrijven rond de libsais C code.
 Dit gebruik makende van het \texttt{bindgen}\footnote{\url{https://crates.io/crates/bindgen}} crate.
-Op deze manier is het ook mogelijk om gebruik te maken van de snellere libsais algoritme eens we wisten dat SAs een efficiënte en schaalbare oplossing waren voor de probleemstelling
+Op deze manier is het ook mogelijk om gebruik te maken van de snellere libsais algoritme eens we wisten dat SAs een efficiënte en schaalbare oplossing waren voor de probleemstelling.
 \\ \\
-Het nadeel van het gebruiken van deze bindings naar C code is dat het oproepen van de effectieve C code gebeurd in een \texttt{unsafe} blok.
+Het nadeel van het gebruiken van deze bindings naar C code is dat het oproepen van de effectieve C code gebeurt in een \texttt{unsafe} blok.
 Hierbij is het dus mogelijk dat er geheugenfouten in het programma sluipen.
 Dit risico is echter miniem aangezien dit bestaande, geteste bibliotheken zijn.
 Bovendien zijn we ook zeker dat eventuele geheugenfouten enkel hierdoor kunnen ontstaan.
 Dit is dus een afweging tussen optimale performantie (waarbij we het wiel niet hoeven heruit te vinden), en garantie van \textit{memory safety}.
 
 \subsection{Mapping van suffix naar proteïne}\label{subsec:mapping-van-suffix-naar-proteine}
-Deze mapping kan op twee manieren gebeuren.
+Bepalen welke proteïne hoort bij een bepaalde suffix kan op twee manieren.
 Een eerste optie is om expliciet voor elke suffix bij te houden bij welke proteïne die hoort.
 Dit kan aan de hand van een array die even lang is als het aantal suffixen.
 Het voordeel van deze aanpak is dat het vinden van de bijbehorende proteïne in $O(1)$ tijd kan, hiervoor is echter wel $O(m)$ geheugen nodig, met $m$ de lengte van de totale tekst.
@@ -169,13 +165,13 @@ Het voordeel van deze aanpak is dat het vinden van de bijbehorende proteïne in 
 De tweede optie is om enkel de eerste of laatste suffix per proteïne bij te houden.
 Het voordeel van deze aanpak is dat er minder geheugen nodig is, meer precies $O(n)$ geheugen met $n$ het aantal proteïnen.
 Het nadeel is dan weer dat het vinden van de bijbehorende proteïne trager is.
-Zoeken neemt $O(\log n)$ tijd in beslag aan de hand van binair zoeken.
+Dit neemt $O(\log n)$ tijd in beslag aan de hand van binair zoeken.
 Hierbij is $n$ het aantal proteïnes.
 \\ \\
-In figuur~\ref{fig:dense_vs_sparse} wordt de uitvoeringstijd voor beide implementaties vergeleken.
-Standaard (en in alle komende testen) zullen wij gebruik maken van de sparse versie aangezien de performantie impact in de praktijk erg beperkt is, en er een significante hoeveelheid geheugengebruik uitgespaard kan worden.
-Het grote verschil bij het Human-Prot zoekbestand valt te verklaren vanwege het extreem hoog aantal matches dat daar te vinden is voor de korte peptides.
-In de praktijk zullen we dit maximaal aantal matches echter beperken (zie sectie~\ref{subsec:maximaal-aantal-matches}).
+In Figuur~\ref{fig:dense_vs_sparse} wordt de uitvoeringstijd voor beide implementaties vergeleken.
+Standaard (en in alle komende testen) zullen wij gebruik maken van de sparse versie aangezien de performantie impact in de praktijk beperkt is, en er een significante hoeveelheid geheugengebruik uitgespaard kan worden.
+Het grote verschil bij het Human-Prot peptidebestand valt te verklaren vanwege het extreem hoog aantal matches dat daar te vinden is voor de korte peptides.
+In de praktijk zullen we dit maximaal aantal matches echter limiteren (zie sectie~\ref{subsec:maximaal-aantal-matches}).
 Dit zal op zijn beurt ook de overhead van de sparse mapping beperkt houden.
 \begin{figure}[H]
     \centering
@@ -188,7 +184,7 @@ Dit zal op zijn beurt ook de overhead van de sparse mapping beperkt houden.
 \subsection{Berekenen van de LCA}\label{subsec:berekenen-van-de-lca}
 Zoals eerder vermeld bevat een suffix array geen informatie over de interne toppen die voorkomen bij een suffixboom.
 Dit zorgt ervoor dat het niet mogelijk is om op basis hiervan de LCA van de organismen voor te berekenen voor al deze interne toppen.
-In de plaats is dit nu iets dat \textit{on the fly} moet gebeuren tijdens het zoekproces zelf.
+In de plaats moet dit nu \textit{on the fly} gebeuren tijdens het zoekproces zelf.
 Aangezien dit nu niet meer op voorhand berekend wordt, is er geen reden om LCA te verkiezen boven LCA*.
 LCA* was namelijk onze eerste keuze, maar bij suffixbomen zijn we daarvan afgestapt om het voorberekenen efficiënter te maken.
 
@@ -229,7 +225,7 @@ Het zoeken in een SSA is erg gelijkaardig aan het zoeken in een volledige SA\@.
 Een belangrijke restrictie is echter dat in de SSA geen strings gezocht kunnen worden die kleiner dan of gelijk zijn aan de sparseness factor.
 Bovendien heeft deze sparseness factor ook een erg belangrijke impact op de zoekperformantie.
 Bij het zoeken met sparseness factor $k$ moeten we namelijk alle suffixen zoeken die matchen met de gezochte string waarbij de eerste $p \in [0, k-1]$ tekens overgeslagen worden.
-Voor elke matchende suffix (stel dat dit suffix $s$ is) moet daarna gecontroleerd worden als de overgeslagen prefix van $p$ matcht met de $p$ tekens die op posities $[s - p, p[$ in de geïndexeerde tekst staan.
+Voor elke matchende suffix (stel dat dit suffix $s$ is) moet daarna gecontroleerd worden als de overgeslagen prefix van $p$ tekens matcht met de $p$ tekens die op posities $[s - p, p[$ in de geïndexeerde tekst staan.
 Als dit zo is, dan matcht suffix $s - p$ met de gezochte string.
 Om alles iets duidelijker te maken volgt een klein voorbeeld waarin we de peptide \texttt{acg} in de tekst \texttt{acacgt\$} zoeken.
 De index die gebruikt wordt om te zoeken is een SSA met sparseness factor 3.
@@ -283,36 +279,36 @@ Deze valt terug te vinden in figuur~\ref{fig:sparse_sa}.
 \end{enumerate}
 
 \subsubsection{Performantie en indexgrootte}
-Afhankelijk van de sparseness factor vraagt het zoeken meer iteraties.
-Bovendien zal een grotere sparseness factor impliceren dat we iteraties zullen hebben waarbij de overgeslagen prefix langer is.
-Dit op zijn beurt zorgt ervoor dat er kortere stukken in de SSA gezocht zullen worden, die in het algemeen meer matches zullen opleveren.
+Zoals eerder vermeldt heeft de sparseness factor een invloed op zowel de zoekperformantie als de indexgrootte.
+Zo zal een grotere sparseness factor niet alleen meer iteraties vragen.
+Deze extra iteraties zullen er op hun beurt ook voor zorgen dat er kortere stukken in de SSA gezocht zullen worden, die in het algemeen meer matches zullen opleveren.
 Voor al deze matches moeten we controleren als de tekens die ervoor komen matchen met de overgeslagen prefix.
-Figuur~\ref{fig:search_sparseness} (a) visualiseert de impact hiervan op de zoektijd van het Swiss-Prot zoekbestand met en zonder missed cleavages.
+Figuur~\ref{fig:search_sparseness}~(a) visualiseert de impact hiervan op de zoektijd van het Swiss-Prot peptidebestand met en zonder \textit{missed cleavages}.
 Deze bestanden worden hiervoor gebruikt omdat de kortste sequentie die ze bevatten 5 aminozuren lang is.
 Hierdoor blijft voor het gebruikte interval nog steeds elke peptide zoekbaar.
 Zoals eerder al aangehaald kunnen peptides die minder lang zijn dan de sparseness factor niet meer gezocht worden.
-Indien we het zoekbestand voor Human-Prot zouden gebruiken zou de evolutie van de zoektijd minder representatief zijn.
+Indien we het peptidebestand voor Human-Prot zouden gebruiken zou de evolutie van de zoektijd minder representatief zijn.
 Dit omdat er een deel van de peptides korter zijn dan 5 aminozuren lang, deze zouden dus overgeslagen moeten worden.
 \\
 \begin{figure}[H]
     \centering
-    \subfloat[Zoektijd voor het Swiss-Prot zoekbestand met en zonder missed cleavages in een sparse suffix array gebouwd aan de hand van de Swiss-Prot eiwitdatabank.]{\includegraphics[width=\linewidth]{swissprot_searchtime_sparseness}}\\[4ex] % [4ex] om wat extra vertical spacing in te voegen
+    \subfloat[Zoektijd voor het Swiss-Prot peptidebestand met en zonder missed cleavages in een sparse suffix array gebouwd aan de hand van de Swiss-Prot eiwitdatabank.]{\includegraphics[width=\linewidth]{swissprot_searchtime_sparseness}}\\[4ex] % [4ex] om wat extra vertical spacing in te voegen
 
     \subfloat[Grootte van de volledige index en SSA voor de Swiss-Prot databank gebruik makende van verschillende sparseness factors.]{\includegraphics[width=0.8\linewidth]{index_size_SSA}}
     \caption{Zoektijd en indexgrootte voor Swiss-Prot.}\label{fig:search_sparseness}
 \end{figure}
 
-De reden dat de zoektijd zo explodeert wanneer we de sparseness factor verhogen is omdat er een deel van de gezochte peptides bestaat uit 5 aminozuren.
+De zoektijd explodeert wanneer we de sparseness factor verhogen omdat er een deel van de gezochte peptides bestaat uit 5 aminozuren.
 Wanneer we deze proberen zoeken in een SSA een sparseness factor 5, zoeken we eigenlijk enkel één letter in de SSA (de laatste van de peptide).
 Deze zal erg veel matches opleveren, en op zijn beurt erg veel werk vragen om alle prefixen hiervan te controleren.
 \\ \\
 Anderzijds zal het verhogen van de sparseness factor de indexgrootte verkleinen.
 Hierbij is het belangrijk dat enkel de SA mee verkleint.
 Er blijft altijd een vaste hoeveelheid geheugen nodig om de tekst zelf nog op te slaan.
-Figuur~\ref{fig:search_sparseness} (b) toont dit.
+Figuur~\ref{fig:search_sparseness}~(b) toont dit.
 Er is duidelijk te zien dat voor dit geval de overgang van sparseness factor 4 naar 5 erg weinig winst heeft in opslag, maar een grote impact heeft op de performantie.
 \\ \\
-Er zijn dus twee erg belangrijke bevindingen over sparse suffix arrays, en de manier waarop wij ze opbouwen
+Er zijn dus twee erg belangrijke bevindingen over sparse suffix arrays, en de manier waarop wij ze opbouwen.
 \begin{enumerate}
     \item Probeer de sparseness factor zo laag mogelijk te houden, zo blijft ook de zoektijd voor kortere peptiden beperkt.
     \item Het maximale geheugenverbruik blijft constant onafhankelijk van de sparseness factor.
@@ -385,7 +381,7 @@ Op basis hiervan kunnen we daarna vaststellen welke verbeteringen we gemaakt heb
 \subsection{Opbouwen}
 Figuur~\ref{fig:array_building} visualiseert de tijd nodig om de indexstructuur op te bouwen in combinatie met het geheugenverbruik.
 Er is duidelijk een mooie tijdswinst verkregen, wat een bonus is voor het lokaal opbouwen van indexen.
-Voor het opbouwen van de index op UniProt is dit echter minder van belang aangezien dit proces slechts een 4 tal keren per jaar moet gebeuren.
+Voor het opbouwen van de index op UniProt is dit echter minder van belang aangezien dit proces slechts een vier tal keren per jaar moet gebeuren.
 Zolang de nodige CPU tijd hiervoor niet langer is dan enkele dagen is dit acceptabel.
 Een veel belangrijkere vaststelling is het maximale geheugenverbruik tijdens opbouwen.
 Ook deze is drastisch gedaald.
@@ -397,23 +393,23 @@ Dit is nog steeds een grote hoeveelheid, maar dit wordt al praktisch mogelijk op
     \centering
     \subfloat[Tijd nodig om de index op te bouwen.]{\includegraphics[width=\linewidth]{building_array_libsais_time}}\\[4ex] % [4ex] om wat extra vertical spacing in te voegen
 
-    \subfloat[Maximaal gebruikt geheugen tijdens het opbouwen van de suffixboom.]{\includegraphics[width=\linewidth]{building_array_libsais_memory}}
+    \subfloat[Maximaal geheugengebruik tijdens het opbouwen van de suffixboom.]{\includegraphics[width=\linewidth]{building_array_libsais_memory}}
     \caption{Vergelijking tussen de nodige tijd en hoeveelheid geheugen om een suffix array met LibSais op te bouwen of een suffixboom in onze eigen Rust implementatie. De tijd en het geheugengebruik zijn gemeten met het unix \texttt{time} commando. Als invoerbestand gebruiken we hier de Swiss-Prot of Human-Prot eiwitdatabank.}\label{fig:array_building}
 \end{figure}
 
 \subsection{Zoeken}
-Aangezien er geen voorberekening gebeurd van LCA's is het enkel nuttig om de zoektijd inclusief het berekenen van de LCA te bekijken.
-De tijd tot een match levert ons nog niet alle nodige informatie op (zoals bij de suffixboom).
+Aangezien er geen voorberekening gebeurt van LCA's is het enkel nuttig om de zoektijd inclusief het berekenen van de LCA te bekijken.
+De tijd tot een match levert ons nog niet alle nodige informatie op (zoals dit het geval was bij de suffixboom).
 
 \subsection{Beperken van het maximaal aantal matches}\label{subsec:maximaal-aantal-matches}
 Op het eerste zicht leek de performantie voor sommige bestanden dramatisch veel slechter.
-Dit is zichtbaar voor het Human-Prot zoekbestand in~\ref{fig:cutoff_humanprot} (a).
-Na wat onderzoek bleek dat het berekenen van de LCA* erg traag werd indien er een groot aantal matches was.
+Dit is zichtbaar voor het Human-Prot peptidebestand in~\ref{fig:cutoff_humanprot}~(a).
+Na wat onderzoek bleek dat het berekenen van de LCA* erg traag werd indien er een groot aantal matches waren.
 Daarom is er besloten om een cut-off in te stellen.
 Indien een peptide meer dan dat aantal matches heeft wordt verondersteld dat de root de kleinste gemeenschappelijke voorouder is van alle matches.
 Uit onderzoek~\cite{unipept_cutoff} blijkt dat dit in de praktijk in de overgrote meerderheid van de gevallen ook effectief het geval is.
-Zo zijn er slechts $\pm$ 13000 peptides met meer dan 10000 eiwiten matchen.
-Hiervan was voor 95\% van de peptides de LCA de root en slechts voor 200 peptides een resultaat op \textit{species} niveau.
+Zo zijn er slechts $\pm$ 13000 peptides met meer dan 10000 eiwitten matchen.
+Hierbij was voor 95\% van de peptides de LCA de root en slechts voor 200 peptides een resultaat op \textit{species} niveau.
 \\
 \begin{figure}[H]
     \centering
@@ -423,12 +419,12 @@ Hiervan was voor 95\% van de peptides de LCA de root en slechts voor 200 peptide
     \caption{Berekenen van de LCA* (inclusief zoeken) voor alle peptiden in Human-Prot zonder en met cut-off.}\label{fig:cutoff_humanprot}
 \end{figure}
 
-In figuur~\ref{fig:cutoff_humanprot} duidelijk te zien dat de uitvoeringstijd drastisch daalt wanneer de cut-off op 10000 matches geplaatst wordt.
-Als we dit specifiek bekijken voor de Human-Prot peptidebestanden en eiwitdatabank is de uitvoeringstijd maar liefst een goede 300x sneller.
+In Figuur~\ref{fig:cutoff_humanprot} is duidelijk te zien dat de uitvoeringstijd drastisch daalt wanneer de cut-off op 10000 matches geplaatst wordt.
+Als we dit specifiek bekijken voor de Human-Prot peptidebestanden en eiwitdatabank is de uitvoeringstijd maar liefst een 300x sneller.
 Bovendien is ook hier het informatieverlies minimaal.
 Van de 250000 peptides zijn er 12 peptides die een ander resultaat verkrijgen in de output.
 Deze 12 entries zijn echter slechts twee verschillende peptides (die gewoon meerdere malen voorkomen in het peptidebestand).
-Dit zijn de peptide \texttt{EKP} en de peptide \texttt{SKE}.
+Dit zijn de peptides \texttt{EKP} en \texttt{SKE}.
 Indien we de LCA* effectief berekenen is het resultaat in beide gevallen 9606, terwijl we met een cut-off de root (1) terug geven.
 \\ \\
 Nu we het zoeken in de suffix array afgesteld hebben aan de hand van een cut-off is het interessant om te kijken hoe de zoekperformantie zich verhoudt ten opzichte van het zoeken in een suffixboom.
@@ -436,11 +432,12 @@ Bij een 1 op 1 vergelijking is het zoeken in de suffixboom duidelijk sneller.
 Dit is ook exact wat we verwacht hadden.
 In de praktijk is het zoeken in een suffix array 5 tot 10 maal trager voor onze testbestanden.
 Een deel van deze extra zoektijd kan opgevangen worden door gebruik te maken van parallel zoeken.
-Indien we hier gebruik van maken neemt het zoeken opnieuw de orde van enkele tientallen tot honderden milliseconden voor 100000 peptides te zoeken.
-Dit is echter ook iets dat mogelijk is in een suffixboom, alleen zal de verkregen tijdswinst in absolute tijd daar nog kleiner zijn.
+Indien we hier gebruik van maken duurt het zoeken van 100000 peptides opnieuw enkele tientallen tot honderden milliseconden voor 100000.
+Natuurlijk zouden we ook het zoeken in een suffixboom kunnen parallelliseren.
+Daarbij zal de absolute tijdswinst echter veel kleiner zijn doordat dit al zo snel is.
 
 \section{UniProtKB}
-Zoals eerder vermeld levert een ruwe extrapolatie op dat we geschat 1.2 TB aan geheugen nodig zou hebben om een index voor UniProtKB op te bouwen.
+Zoals eerder vermeld levert een ruwe extrapolatie op dat we $\pm$ 1.2 TB aan geheugen nodig zou hebben om een index voor UniProtKB op te bouwen.
 Hierbij werd er echter van uitgegaan dat UniProtKB 500x meer eiwitten dan Swiss-Prot bevat.
 Dit is een overschatting van de realiteit waar UniProt op dit moment \textit{slechts} $\pm$ 440 keer groter is.
 Dit zorgt ervoor dat het opbouwen mogelijks al haalbaar is op HPC van UGent waar nodes beschikbaar zijn die ongeveer 940 GB aan beschikbaar geheugen hebben.
