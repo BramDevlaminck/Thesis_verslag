@@ -21,13 +21,13 @@ Figuur~\ref{fig:suffixtree_vs_suffixarray} geeft een voorbeeld van een suffixboo
                 level 2/.style = {sibling distance = 1cm}
             ]
 
-                \node[draw, circle] {}
+                \node[draw, circle] (End2) {}
                 child {
                     [fill] circle (2pt)
                     edge from parent node [above] {6,7}
                 }
                 child {
-                    node[draw, circle] (Start) {}
+                    node[draw, circle] (Start1) {}
                     child {
                         [fill] circle (2pt)
                         edge from parent node [left] {2,7}
@@ -39,7 +39,7 @@ Figuur~\ref{fig:suffixtree_vs_suffixarray} geeft een voorbeeld van een suffixboo
                     edge from parent node [below] {0,2}
                 }
                 child {
-                    node[draw, circle] (End) {}
+                    node[draw, circle] (End1) {}
                     child {
                         [fill] circle (2pt)
                         edge from parent node [left] {2,7}
@@ -48,7 +48,7 @@ Figuur~\ref{fig:suffixtree_vs_suffixarray} geeft een voorbeeld van een suffixboo
                         [fill] circle (2pt)
                         edge from parent node [right] {4,7}
                     }
-                    edge from parent node [right] {1,2}
+                    edge from parent node [left] {1,2}
                 }
                 child {
                     [fill] circle (2pt)
@@ -59,7 +59,8 @@ Figuur~\ref{fig:suffixtree_vs_suffixarray} geeft een voorbeeld van een suffixboo
                     edge from parent node [above] {5,7}
                 }
                 ;
-                \draw[dashed, ->] (Start) to[out=-20,in=200] (End);
+                \draw[dashed, ->] (Start1) to[out=-20,in=200] (End1);
+                \draw[dashed, ->] (End1) to[out=60,in=-60] (End2);
             \end{tikzpicture}
         }
         \caption{Suffixboom}
