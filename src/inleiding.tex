@@ -205,7 +205,7 @@ Figuur~\ref{fig:swissprot_aminozuur} en Figuur~\ref{fig:swissprot_length} geven 
         Mediaan proteïnelengte    & 295 aa         \\
         \hline
     \end{tabular}
-    \caption{Eigenschappen van de Swiss-Prot databank (UniProt 2023\_04).}
+    \caption{Eigenschappen van de Swiss-Prot databank (UniProt 2023\_04). De afkorting \textit{aa} staat voor \textit{amino acids}.}
     \label{tab:swissprot_eigenschappen}
 \end{table}
 
@@ -239,7 +239,7 @@ Deze Human-Prot databank is kleiner dan Swiss-Prot, waardoor het testen tijdens 
 Tabel~\ref{tab:humanprot_eigenschappen} somt enkele belangrijke metrieken op over deze dataset.
 Figuur~\ref{fig:humanprot_aminozuur} en~\ref{fig:humanprot_length} gaan dieper in op een aantal details.
 
-\begin{table}[h!]
+\begin{table}[ht]
     \centering
     \begin{tabular}{ l l }
         Metriek                   & Waarde        \\
@@ -252,18 +252,18 @@ Figuur~\ref{fig:humanprot_aminozuur} en~\ref{fig:humanprot_length} gaan dieper i
         Mediaan proteïnelengte    & 204 aa        \\
         \hline
     \end{tabular}
-    \caption{Eigenschappen van de Human-Prot databank (UniProt 2023\_04).}
+    \caption{Eigenschappen van de Human-Prot databank (UniProt 2023\_04). De afkorting \textit{aa} staat voor \textit{amino acids}.}
     \label{tab:humanprot_eigenschappen}
 \end{table}
 
-\begin{figure}[H]
+\begin{figure}[ht]
     \centering
     \includegraphics[width=0.7\linewidth]{humanprot_aminozuur_voorkomens}
     \caption{Aantal voorkomens per aminozuur voor alle proteïnen in de Human-Prot databank.}
     \label{fig:humanprot_aminozuur}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
     \includegraphics[width=0.95\linewidth]{humanprot_length_distribution_large}
     \makebox[0pt][r]{% Similar to \llap
@@ -311,7 +311,7 @@ Tabel~\ref{tab:artifiele_bestanden_statistieken} bevat in kolom twee en drie een
         Aantal tryptische peptiden & 100 000         & 4107          & 102 659          \\
         \hline
     \end{tabular}
-    \caption{Eigenschappen van de verschillende peptidebestanden. \textit{Swiss-Prot-NOMC} bevat de statistieken voor het Swiss-Prot peptidebestanden zonder \textit{missed cleavages}, terwijl \textit{Swiss-Prot-MC} net wel \textit{missed cleavages} bevat. De laatste kolom bevat de statistieken voor het peptidebestand dat hoort bij de Human-Prot eiwitdatabank.}
+    \caption{Eigenschappen van de verschillende peptidebestanden. \textit{Swiss-Prot-NOMC} bevat de statistieken voor het Swiss-Prot peptidebestanden zonder \textit{missed cleavages}, terwijl \textit{Swiss-Prot-MC} net wel \textit{missed cleavages} bevat. De laatste kolom bevat de statistieken voor het peptidebestand dat hoort bij de Human-Prot eiwitdatabank. De afkorting \textit{aa} staat voor \textit{amino acids}.}
     \label{tab:artifiele_bestanden_statistieken}
 \end{table}
 
@@ -321,7 +321,7 @@ Aangezien dit effectieve stalen zijn, bevatten deze \textit{missed cleavages} di
 Tabel~\ref{tab:sihumi_zoekbestanden} bevat de belangrijkste statistieken voor elk peptidebestand.
 Deze peptidebestanden worden in combinatie met de Swiss-Prot proteïnedatabank gebruikt tijdens het testen.
 
-\begin{table}[ht]
+\begin{table}[H]
     \begin{minipage}{\linewidth}
         \centering
         \resizebox{\textwidth}{!}{ % use resizebox to textwidth since this needs to be scaled down in size a bit because otherwise it does not fit on the width of the screen
@@ -338,7 +338,7 @@ Deze peptidebestanden worden in combinatie met de Swiss-Prot proteïnedatabank g
                 Aantal tryptische peptiden & 17 263     & 162        & 152        & 207        & 153        & 242        \\
                 \hline
             \end{tabular}}
-        \caption{Eigenschappen van de SIHUMIx peptidebestanden. Elke kolom stelt een staal voor met als bestandsnaam \texttt{S<XX>.txt}. Deze stalen kunnen teruggevonden worden in onze GitHub repository \protect\footnote{\url{https://github.com/BramDevlaminck/Thesis\_benchmarkdata}} onder de \texttt{SIHUMI}-folder.} % protect is needed to make footnote possible in a caption. This is combined with a minipage to place the footnote directly under the table
+        \caption{Eigenschappen van de SIHUMIx peptidebestanden. Elke kolom stelt een staal voor met als bestandsnaam \texttt{S<XX>.txt}. Deze stalen kunnen teruggevonden worden in onze GitHub repository \protect\footnote{\url{https://github.com/BramDevlaminck/Thesis\_benchmarkdata}} onder de \texttt{SIHUMI}-folder. De afkorting \textit{aa} staat voor \textit{amino acids}.} % protect is needed to make footnote possible in a caption. This is combined with a minipage to place the footnote directly under the table
         \label{tab:sihumi_zoekbestanden}
     \end{minipage}
 \end{table}
@@ -359,9 +359,22 @@ Deze tonen voor elk bestand de distributie van de aminozuren en de distributie v
 \section{Benchmark hardware}\label{sec:benchmark-hardware}
 Alle benchmarks werden uitgevoerd op een virtuele machine van team Unipept tenzij anders vermeld.
 Tabel~\ref{tab:Matt_hardware} bevat een overzicht van de hardware van de fysieke machine en hoeveel toegekend is aan de VM\@.
-Al deze informatie, en ook over de andere machines gebruik door Unipept, kan teruggevonden worden op de Unipept GitHub wiki~\cite{unipept_infrastructure}.
-\\
-\begin{table}[h!]
+Alle informatie omtrent Unipept infrastructuur kan teruggevonden worden op de Unipept GitHub wiki~\cite{unipept_infrastructure}.
+\\ \\
+Een deel van de kleinere testen werd ook lokaal uitgevoerd op een laptop.
+Dit zal elke keer expliciet vermeld worden indien dit het geval was.
+De gebruikte laptop is een M1 Pro MacBook Pro (14 inch) uit 2021.
+Tabel~\ref{tab:macbook_hardware} bevat de exacte specificaties van deze laptop.
+\\ \\
+Naast een VM en eigen laptop hebben we ook toegang tot enkele andere machines indien hier nood toe zou zijn.
+Een eerste optie is gebruik makende van andere servers van Unipept.
+Zo is het mogelijk om applicaties die op dit moment op verschillend servers runnen tijdelijk zo te herverdelen dat er een machine met 768 GiB ram ter beschikking komt.
+Een andere optie is door gebruik tee maken van de HPC van UGentV\footnote{\url{https://docs.hpc.ugent.be/}}.
+Hierop zijn nodes beschikbaar met 940 GiB RAM\@.
+Tot slot heeft de CompOmics\footnote{Computational Omics} onderzoeksgroep aan UGent ook enkele machines staan dit tot 2TiB aan geheugen hebben.
+Deze onderzoeksgroep werkt aan softwaretoepassingen voor het verwerken van proteomica-data, waar het onderzoeksgebied van de metaproteomica onder valt.
+
+\begin{table}[ht]
     \centering
     \begin{tabular}{p{0.20\linewidth}p{0.45\linewidth}p{0.25\linewidth}}
         Onderdeel         & Fysieke server                                                            & Virtuele Machine    \\
@@ -376,12 +389,7 @@ Al deze informatie, en ook over de andere machines gebruik door Unipept, kan ter
     \label{tab:Matt_hardware}
 \end{table}
 
-Een deel van de kleinere testen werd ook uitgevoerd lokaal op een laptop.
-Dit wordt elke keer expliciet vermeld indien dit het geval was.
-De gebruikte laptop is een M1 Pro MacBook Pro (14 inch) uit 2021.
-Tabel~\ref{tab:macbook_hardware} bevat de exacte specificaties van deze laptop.
-\\
-\begin{table}[h!]
+\begin{table}[ht]
     \centering
     \begin{tabular}{p{0.20\linewidth}p{0.54\linewidth}}
         Onderdeel         & hardware                                               \\
@@ -396,9 +404,3 @@ Tabel~\ref{tab:macbook_hardware} bevat de exacte specificaties van deze laptop.
     \caption{Hardwarespecificaties van de gebruikte laptop voor kleinere testen. Elke keer testen op dit toestel uitgevoerd zijn wordt dit expliciet vermeld.}
     \label{tab:macbook_hardware}
 \end{table}
-
-Naast een VM en eigen laptop hebben we ook toegang tot enkele andere machines indien hier nood toe zou zijn.
-Het is mogelijk in het totaal 768 GiB aan RAM kunnen ter beschikking stellen op een Unipept machine door enkele VMs en Unipept applicaties te verdelen over andere machines.
-De HPC van UGent\footnote{\url{https://docs.hpc.ugent.be/}} biedt nodes aan die tot 940 GiB aan RAM hebben.
-Tot slot heeft de CompOmics\footnote{Computational Omics} onderzoeksgroep aan UGent ook enkele machines staan dit tot 2TiB aan geheugen hebben.
-Deze onderzoeksgroep werkt aan softwaretoepassingen voor het verwerken van proteomica-data, waar het onderzoeksgebied van de metaproteomica onder valt.
