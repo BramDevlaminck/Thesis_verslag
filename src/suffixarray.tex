@@ -458,12 +458,33 @@ Indien we hier gebruik van maken duurt het zoeken van 100000 peptides opnieuw en
 Natuurlijk zouden we ook het zoeken in een suffixboom kunnen parallelliseren.
 Daarbij zal de absolute tijdswinst echter veel kleiner zijn doordat dit al zo snel is.
 
+\section{Isoleucine en Leucine gelijkstellen}\label{sec:isoleucine-en-leucine-equivalentie}
+Naast het vinden van exacte matches is het vinden van inexacte matches ook interessant.
+Vooral het vinden van matches waarbij we een I (Isoleucine) en L (Leucine) met elkaar omwisselen is een belangrijke optie in de huidige Unipept index.
+Deze twee aminozuren kunnen door een massaspectrometer door hun identieke massa namelijk erg moeilijk uit elkaar gehouden worden.
+Door deze restrictie van de huidige hardware is het voor onderzoekers erg nuttig om alle matches te vinden waar een I ook een L kan zijn of omgekeerd.
+Om deze vorm van inexacte matching toe te voegen aan de index gebruik makende van een suffix array zijn twee aanpakken.
+\begin{enumerate}
+    \item Genereer alle varianten van de gezochte peptide waarbij elke combinatie van I en L'en gegenereerd wordt.
+    Dit zal $2^i$ peptides genereren met $i$ het aantal I en L'en in de peptide.
+    \item Genereer de varianten van de gezochte peptide \textit{on the fly} tijdens het zoekproces.
+    Hierbij zullen grote stukken van de boom geknipt kunnen worden en gemeenschappelijk zijn.
+\end{enumerate}
+
+De eerste aanpak zal duidelijk simpeler zijn en ook makkelijker toepasbaar zijn wanneer we bijvoorbeeld karakterklasses willen matches.
+Dit gaat meer in de richting van wat de Expasy ScanProsite tool\cite{scanprosite} toelaat.
+Hun tool bevat een eigen taaltje dat wat lijkt op reguliere expressies waarbij onder andere wildcards, karakterklasses, inverse klasses en harhalingen gespecificeerd kunnen worden.
+Zo'n uitgebreide ondersteuning inbouwen zou ons te ver van ons doel leiden aangezien vooral het zoeken van varianten waar een I en L omgewisseld worden belangrijk zijn, en dus snel moet zijn.
+\\ \\
+In de praktijk vertaalt het gelijkstellen van I en L zich naar een vrij kleine overhead.
+Dit valt te zien in Figuur~\ref{fig:uniprot_search}.
+
 \section{UniProtKB}
 Zoals eerder vermeld levert een ruwe extrapolatie op dat we $\pm$ 1.2 TB aan geheugen nodig zou hebben om een index voor UniProtKB op te bouwen.
 Hierbij werd er echter van uitgegaan dat UniProtKB 500x meer eiwitten dan Swiss-Prot bevat.
 Dit is een overschatting van de realiteit waar UniProt op dit moment \textit{slechts} $\pm$ 440 keer groter is.
 Dit zorgt ervoor dat het opbouwen mogelijks al haalbaar is op HPC van UGent waar nodes beschikbaar zijn die ongeveer 940 GB aan beschikbaar geheugen hebben.
-Na dit te proberen bleek dit ook effectief al haalbaar.
+Na dit te proberen bleek dit ook effectief het geval te zijn.
 Figuur~\ref{fig:build_uniprot} toont de nodige tijd en hoeveelheid geheugen om dit te realiseren.
 Opvallend hierbij is dat het Libsais algoritme hier trager is dan libdivsufsort, terwijl dit voor alle kleinere datasets net omgekeerd was.
 Afhankelijk van je dataset is het ene algoritme dus sneller dan het andere.
@@ -481,8 +502,64 @@ Een volgende stap na het opbouwen van de volledige SA was het beslissen van de s
 Zoals eerder aangegeven in de conclusie van sectie~\ref{subsec:zoeken-in-sparse-suffix-arrays} willen we deze sparseness factor zo laag mogelijk kiezen, met als restrictie dat de SSA nog steeds in het geheugen moet kunnen gehouden worden.
 De beschikbare machines die UniPept hosten hebben elk $pm$ 0.5 TB RAM ter beschikking.
 Dit wil zeggen dat we de resulterende index hierin moeten krijgen, en ook nog genoeg overhead moeten laten zodat de machine zeker niet out-of-memory gaat tijdens het hosten van de index en het verwerken van meerdere requests.
-Praktisch gezien komt dit er op neer dat we gebruik maken van sparseness factor 3. % TODO: of 2, moeten we eens testen
-Dit resulteert in een SA van 231.81 GB.
-In combinatie met de tekst (86.93 GB) resulteert dit in een totale indexgrootte van 318,74 GB, wat comfortabel in de 0.5 TB past.
-Indien we sparseness factor 2 zouden gebruiken is dit niet meer het geval. % TODO: zou er wel in kunnen, ongeveer 440 GB in het totaal nodig, maar is dit nog "oké?"
-Dan komt de totale indexgrootte op $\pm$ 450 GB uit, wat te dicht ligt bij de grens.
+Praktisch gezien komt dit er op neer dat we gebruik maken van sparseness factor 3.
+Dit resulteert in een SA van 231.81 GB\@.
+In combinatie met de tekst (86.93 GB) resulteert dit in een totale indexgrootte van 318.74 GB, wat comfortabel in de 0.5 TB past.
+Hierbij moet natuurlijk nog wat overhead gerekend worden om de mapping van de suffix naar proteïne bij te houden.
+Bovendien bevatten deze servers ook nog andere databanken om verdere aggregaties te berekenen.
+Zo biedt Unipept naast een taxonomische analyse ook nog een functionele analyse aan.
+Deze functionele analyse wordt uitgevoerd op basis van de gematchte eiwitten die de indexstructuur terug geeft.
+Indien we sparseness factor 2 zouden gebruiken komt de totale indexgrootte uit op $\pm$ 450 GB\@.
+Dit op zich zou nog net in de machine passen, maar laat niet genoeg ruimte voor de andere processen.
+\\ \\
+Natuurlijk is naast het effectief kunnen in het geheugen houden van de indexstructuur de zoekperformantie extreem belangrijk.
+Zoals verwacht op basis van de kleinere testen is deze nog steeds goed.
+Figuur~\ref{fig:uniprot_search} toont de resultaten voor onze testbestanden.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.95\linewidth]{uniprot_searchtime_standard_vs_il_equality}
+    \caption{Zoektijd op Uniprot (Swiss-Prot + TrEMBL) met en zonder het gelijkstellen van I en L op een SA met sparseness factor 3.}
+    \label{fig:uniprot_search}
+\end{figure}
+
+\subsection{Vergelijking met andere tools}
+Aangezien we er in geslaagd zijn om UniProt volledig te indexeren is het nuttig om de performantie te vergelijken met bestaande tools.
+De tools die we bekijken zijn de Uniprot Peptide search tool, de Expasy ScanProsite tool en Unipept (met de bestaande indexstructuur).
+Vanwege de performantie zullen we ons beperken tot het opzoeken van één willekeurige peptide \texttt{ISPAVLFVIVILAVLFFISGLLHLLVR}.
+Gebruik makende van de nieuwe suffix array duurt het opzoeken 0.01 seconde (onafhankelijk van als we I en L gelijkstellen).
+Hierbij wordt natuurlijk geen extra tijd geïntroduceerd door een API call over het internet aangezien deze index nog niet publiek beschikbaar is.
+
+\subsubsection{Uniprot peptide search tool}
+Deze tool is een standaard onderdeel van Uniprot en laat toe om alle voorkomens van een bepaald eiwit te vinden in de volledige Uniprot database.
+Als mogelijke opties kunnen we kiezen om enkel in Swiss-Prot te zoeken, of in Swiss-Prot en TrEMBL, en als we I en L aan elkaar willen gelijkstellen.
+Dit zijn dus ook de opties die mogelijk zijn aan de hand van het zoeken in een sufixarray.
+Qua performantie heeft deze tool echter meerdere problemen.
+Zo duurt het zoeken (zonder het gelijkstellen van I en L) op Swiss-Prot + TrEMBL ongeveer 20 minuten.
+Bovendien faalt het zoeken en ophalen van de resultaten regelmatig.
+In het totaal zijn er na het zoeken 50 matches.
+
+\subsubsection{Expasy ScanProsite tool}
+Deze tool laat toe om aan de hand van een taaltje die lijkt op reguliere expressies allerlei patronen te zoeken.
+Een sterk voordeel van deze tool is dus op vlak van inexacte matching.
+Ook hier is de performantie merkelijk minder.
+Hier duurt het zoeken zo'n 7.5 minuten, maar zijn er minder resultaten gevonden dan bij de officiële UniProt tool.
+Hier zijn er slechts 30 gevonden matches.
+Deze zijn allemaal een subset van wat in de UniProt tool gevonden wordt.
+
+\subsubsection{Huidige Unipept index}
+Deze index laat toe om, \textbf{op voorwaarde dat je peptide tryptisch is}, alle matches te vinden met de keuze om I en L gelijk te stellen.
+De peptide die we hier gebruiken is dit ook net, dus zou deze index hiervoor dezelfde matches moeten vinden.
+Dit is inderdaad het geval, en gebeurt bovendien gebruik makende van een API call in 0.1 seconden, wat duidelijk extreem veel sneller is dan de andere bestaande opties.
+Opnieuw is de zoektijd hier al zo klein dat de invloed van het gelijkstellen van I en L niet te meten valt.
+
+
+\section{Aanbieden van de nieuwe indexstructuur}\label{sec:aanbieden-van-de-nieuwe-indexstructuur}
+Alle eerder vermelde benchmarks tonen enkel de zoektijd.
+Bij het opstarten van de standaard executable moeten we echter eerst de indexstructuur inladen.
+Dit alleen duurt 20 tot 25 minuten.
+We willen dit inladen slechts eenmalig doen om dan alle requests onmiddellijk af te kunnen afhandelen.
+Dit doen we aan de hand van een simpele webserver aan de hand van de Axum crate\cite{axum}.
+Deze webserver laadt bij het opstarten de indexstructuur in en blijft daarna wachten op HTTP requests die een JSON bevatten met daarin de peptides die we willen zoeken.
+
+
