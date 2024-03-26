@@ -530,7 +530,7 @@ Vanwege de performantie zullen we ons beperken tot het opzoeken van één willek
 Gebruik makende van de nieuwe suffix array duurt het opzoeken 0.01 seconde (onafhankelijk van als we I en L gelijkstellen).
 Hierbij wordt natuurlijk geen extra tijd geïntroduceerd door een API call over het internet aangezien deze index nog niet publiek beschikbaar is.
 
-\subsubsection{Uniprot peptide search tool}
+\subsubsection{Uniprot peptide search tool} % TODO: cite
 Deze tool is een standaard onderdeel van Uniprot en laat toe om alle voorkomens van een bepaald eiwit te vinden in de volledige Uniprot database.
 Als mogelijke opties kunnen we kiezen om enkel in Swiss-Prot te zoeken, of in Swiss-Prot en TrEMBL, en als we I en L aan elkaar willen gelijkstellen.
 Dit zijn dus ook de opties die mogelijk zijn aan de hand van het zoeken in een sufixarray.
@@ -539,15 +539,15 @@ Zo duurt het zoeken (zonder het gelijkstellen van I en L) op Swiss-Prot + TrEMBL
 Bovendien faalt het zoeken en ophalen van de resultaten regelmatig.
 In het totaal zijn er na het zoeken 50 matches.
 
-\subsubsection{Expasy ScanProsite tool}
+\subsubsection{Expasy ScanProsite tool} % TODO: cite
 Deze tool laat toe om aan de hand van een taaltje die lijkt op reguliere expressies allerlei patronen te zoeken.
 Een sterk voordeel van deze tool is dus op vlak van inexacte matching.
 Ook hier is de performantie merkelijk minder.
-Hier duurt het zoeken zo'n 7.5 minuten, maar zijn er minder resultaten gevonden dan bij de officiële UniProt tool.
+Hier duurt het zoeken zo'n 5.5 minuten, maar zijn er minder resultaten gevonden dan bij de officiële UniProt tool.
 Hier zijn er slechts 30 gevonden matches.
 Deze zijn allemaal een subset van wat in de UniProt tool gevonden wordt.
 
-\subsubsection{Huidige Unipept index}
+\subsubsection{Huidige Unipept index} % TODO: cite
 Deze index laat toe om, \textbf{op voorwaarde dat je peptide tryptisch is}, alle matches te vinden met de keuze om I en L gelijk te stellen.
 De peptide die we hier gebruiken is dit ook net, dus zou deze index hiervoor dezelfde matches moeten vinden.
 Dit is inderdaad het geval, en gebeurt bovendien gebruik makende van een API call in 0.1 seconden, wat duidelijk extreem veel sneller is dan de andere bestaande opties.
