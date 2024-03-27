@@ -523,32 +523,33 @@ Figuur~\ref{fig:uniprot_search} toont de resultaten voor onze testbestanden.
     \label{fig:uniprot_search}
 \end{figure}
 
-\subsection{Vergelijking met andere tools}
+\subsection{Vergelijking met andere tools}\label{subsec:vergelijking-met-andere-tools}
 Aangezien we er in geslaagd zijn om UniProt volledig te indexeren is het nuttig om de performantie te vergelijken met bestaande tools.
 De tools die we bekijken zijn de Uniprot Peptide search tool, de Expasy ScanProsite tool en Unipept (met de bestaande indexstructuur).
 Vanwege de performantie zullen we ons beperken tot het opzoeken van één willekeurige peptide \texttt{ISPAVLFVIVILAVLFFISGLLHLLVR}.
-Gebruik makende van de nieuwe suffix array duurt het opzoeken 0.01 seconde (onafhankelijk van als we I en L gelijkstellen).
-Hierbij wordt natuurlijk geen extra tijd geïntroduceerd door een API call over het internet aangezien deze index nog niet publiek beschikbaar is.
+Als referentie gebruiken we de zoektijd in de nieuwe indexstructuur gebruikmakende van een suffix array met sparseness factor 3.
+Hierin duurt het zoeken van de peptide 0.01 seconden en levert 50 matches op.
+Wanneer we I en L gelijkstellen duurt dit opnieuw 0.01 seconden, maar levert dit wel 52 matches op.
+Hierbij wordt natuurlijk geen extra tijd geïntroduceerd door een API call over het internet aangezien deze index (nog) niet publiek beschikbaar is.
 
-\subsubsection{Uniprot peptide search tool} % TODO: cite
-Deze tool is een standaard onderdeel van Uniprot en laat toe om alle voorkomens van een bepaald eiwit te vinden in de volledige Uniprot database.
-Als mogelijke opties kunnen we kiezen om enkel in Swiss-Prot te zoeken, of in Swiss-Prot en TrEMBL, en als we I en L aan elkaar willen gelijkstellen.
+\subsubsection{UniProt peptide search tool}
+De UniProt peptide search tool\cite{uniprot_search_paper, uniprot_search_site} is een onderdeel van de UniProt site en laat toe om alle voorkomens van een bepaald eiwit te vinden in de volledige UniProt database.
+Als opties kunnen we kiezen om enkel in Swiss-Prot te zoeken, of in Swiss-Prot en TrEMBL, en of we I en L aan elkaar willen gelijkstellen.
 Dit zijn dus ook de opties die mogelijk zijn aan de hand van het zoeken in een sufixarray.
 Qua performantie heeft deze tool echter meerdere problemen.
 Zo duurt het zoeken (zonder het gelijkstellen van I en L) op Swiss-Prot + TrEMBL ongeveer 20 minuten.
 Bovendien faalt het zoeken en ophalen van de resultaten regelmatig.
-In het totaal zijn er na het zoeken 50 matches.
 
-\subsubsection{Expasy ScanProsite tool} % TODO: cite
-Deze tool laat toe om aan de hand van een taaltje die lijkt op reguliere expressies allerlei patronen te zoeken.
-Een sterk voordeel van deze tool is dus op vlak van inexacte matching.
-Ook hier is de performantie merkelijk minder.
-Hier duurt het zoeken zo'n 5.5 minuten, maar zijn er minder resultaten gevonden dan bij de officiële UniProt tool.
-Hier zijn er slechts 30 gevonden matches.
-Deze zijn allemaal een subset van wat in de UniProt tool gevonden wordt.
 
-\subsubsection{Huidige Unipept index} % TODO: cite
-Deze index laat toe om, \textbf{op voorwaarde dat je peptide tryptisch is}, alle matches te vinden met de keuze om I en L gelijk te stellen.
+\subsubsection{Expasy ScanProsite tool}
+De Expasy ScanProsite tool\cite{scanprosite} laat toe om aan de hand van een taaltje die lijkt op reguliere expressies allerlei patronen te zoeken.
+Een sterk voordeel van deze tool is dus op vlak van inexacte matching, maar in plaats van de volledige UniProt databank te doorzoeken wordt enkel rekening gehouden met proteïnes die deel uit maken van een reference proteome\footnote{Deze zogenaamde reference proteomes zijn een collectie van eiwitten die door een bepaald organisme gemaakt kunnen worden, en die bovendien taxonomisch belangrijk bevonden worden. Deze laatste voorwaarde wil dus zeggen dat dit niet zomaar van elk organisme is, enkel van een selecte groep organismes die op basis van verschillende factoren belangrijk bevonden wordt. Een voorbeeld hiervan is de \textit{human reference proteome}. Dit zijn alle eiwitten die door een mens aangemaakt kunnen worden.}.
+Dit komt er op neer dat ze bij UniProt 2024\_01 slechts rekening houden met 85152388 van de 249751891 proteïnes.
+Wanneer we de zoekperformantie hier testen duurt het zoeken van de ene peptide zo'n 5.5 minuten.
+Hierbij zijn er slechts 30 matches gevonden, wegens de subset van proteïnes die gebruikt wordt.
+
+\subsubsection{Huidige Unipept index}
+De bestaande Unipept index laat toe om, \textbf{op voorwaarde dat je peptide tryptisch is}, alle matches te vinden met de keuze om I en L gelijk te stellen.
 De peptide die we hier gebruiken is dit ook net, dus zou deze index hiervoor dezelfde matches moeten vinden.
 Dit is inderdaad het geval, en gebeurt bovendien gebruik makende van een API call in 0.1 seconden, wat duidelijk extreem veel sneller is dan de andere bestaande opties.
 Opnieuw is de zoektijd hier al zo klein dat de invloed van het gelijkstellen van I en L niet te meten valt.
