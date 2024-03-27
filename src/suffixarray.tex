@@ -461,7 +461,7 @@ Daarbij zal de absolute tijdswinst echter veel kleiner zijn doordat dit al zo sn
 \section{Isoleucine en Leucine gelijkstellen}\label{sec:isoleucine-en-leucine-equivalentie}
 Naast het vinden van exacte matches is het vinden van inexacte matches ook interessant.
 Vooral het vinden van matches waarbij we een I (Isoleucine) en L (Leucine) met elkaar omwisselen is een belangrijke optie in de huidige Unipept index.
-Deze twee aminozuren kunnen door een massaspectrometer door hun identieke massa namelijk erg moeilijk uit elkaar gehouden worden.
+Deze twee aminozuren kunnen door een massaspectrometer door hun identieke massa namelijk niet uit elkaar gehouden worden.
 Door deze restrictie van de huidige hardware is het voor onderzoekers erg nuttig om alle matches te vinden waar een I ook een L kan zijn of omgekeerd.
 Om deze vorm van inexacte matching toe te voegen aan de index gebruik makende van een suffix array zijn twee aanpakken.
 \begin{enumerate}
@@ -545,8 +545,8 @@ Bovendien faalt het zoeken en ophalen van de resultaten regelmatig.
 De Expasy ScanProsite tool\cite{scanprosite} laat toe om aan de hand van een taaltje die lijkt op reguliere expressies allerlei patronen te zoeken.
 Een sterk voordeel van deze tool is dus op vlak van inexacte matching, maar in plaats van de volledige UniProt databank te doorzoeken wordt enkel rekening gehouden met proteïnes die deel uit maken van een reference proteome\footnote{Deze zogenaamde reference proteomes zijn een collectie van eiwitten die door een bepaald organisme gemaakt kunnen worden, en die bovendien taxonomisch belangrijk bevonden worden. Deze laatste voorwaarde wil dus zeggen dat dit niet zomaar van elk organisme is, enkel van een selecte groep organismes die op basis van verschillende factoren belangrijk bevonden wordt. Een voorbeeld hiervan is de \textit{human reference proteome}. Dit zijn alle eiwitten die door een mens aangemaakt kunnen worden.}.
 Dit komt er op neer dat ze bij UniProt 2024\_01 slechts rekening houden met 85152388 van de 249751891 proteïnes.
-Wanneer we de zoekperformantie hier testen duurt het zoeken van de ene peptide zo'n 5.5 minuten.
-Hierbij zijn er slechts 30 matches gevonden, wegens de subset van proteïnes die gebruikt wordt.
+Wanneer we de zoekperformantie hier testen duurt het zoeken van de ene peptide zo'n 5.5 minuten zonder gelijkstellen van I en L en 15 minuten met het gelijkstellen van I en L\@.
+Hierbij zijn er slechts 30 resp. 32 matches gevonden, wegens de subset van proteïnes die gebruikt wordt.
 
 \subsubsection{Huidige Unipept index}
 De bestaande Unipept index laat toe om, \textbf{op voorwaarde dat je peptide tryptisch is}, alle matches te vinden met de keuze om I en L gelijk te stellen.
