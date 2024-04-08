@@ -586,14 +586,12 @@ De UniProt peptide search tool\cite{uniprot_search_paper, uniprot_search_site} i
 Als opties kunnen we kiezen om enkel in Swiss-Prot te zoeken, of in Swiss-Prot en TrEMBL.
 Voor beide datasets kunnen we kiezen of we I en L aan elkaar willen gelijkstellen.
 Deze features komen exact overeen met de eigenschappen van onze nieuwe indexstructuur.
-Qua performantie heeft deze tool echter meerdere problemen.
-Zo duurt het zoeken (zonder het gelijkstellen van I en L) op Swiss-Prot + TrEMBL ongeveer \textbf{20 minuten}.
-Wanneer we I en L aan elkaar gelijkstellen duurt het zoeken ongeveer 10 minuten, en vinden we dezelfde 52 matches zoals uit de nieuwe index.
-Deze uitvoeringstijden zijn echter extreem variabel.
-Zo is hier vermoedelijk een vorm van caching toegepast aangezien het zoeken voor een tweede keer extreem veel sneller gaat.
+Qua performantie is deze tool echter extreem onstabiel.
+Zo duurt het zoeken van \texttt{ISPAVLFVIVILAVLFFISGLLHLLVR} in de volledige UniProtKB database \textbf{enkele seconden tot zelfs 20 minuten}.
+Zoals verwacht zijn de gevonden matches identiek aan de matches die onze nieuwe indexstructuur vindt.
+Bovendien vermoeden we ook dat er een vorm van caching toegepast wordt aangezien het zoeken voor een tweede keer zo goed als onmiddellijk het resultaat geeft.
 Dit maakt het benchmarken extreem moeilijk.
 Naast de variabele performantie faalt deze tool ook regelmatig tijdens het berekenen en ophalen van de resultaten.
-
 
 \subsubsection{Expasy ScanProsite tool}
 De Expasy ScanProsite tool\cite{scanprosite} laat toe om aan de hand van een taaltje die lijkt op reguliere expressies allerlei patronen te zoeken.
