@@ -87,9 +87,9 @@ Hierbij worden naast de suffix array nog drie extra tabellen bijgehouden.
 Deze worden de Longest Common Prefix (LCP), Child en suffix link table genoemd.
 
 \section{Complexiteit}\label{sec:complexiteit}
-Traditionele sorteeralgoritmes zoals merge sort~\cite{mergeSort} kunnen in $O(n \log n)$ tijd en $O(n^2)$ geheugen een suffix array opbouwen.
+Traditionele sorteeralgoritmen zoals merge sort~\cite{mergeSort} kunnen in $O(n \log n)$ tijd en $O(n^2)$ geheugen een suffix array opbouwen.
 Hierbij is $n$ de lengte van de tekst.
-Ondertussen bestaan er echter verschillende algoritmes die een tijdscomplexiteit van $O(n)$ bereiken~\cite{sais, ko_alura, radixSA, dark_archon, libdivsufsort}.
+Ondertussen bestaan er echter verschillende algoritmen die een tijdscomplexiteit van $O(n)$ bereiken~\cite{sais, ko_alura, radixSA, dark_archon, libdivsufsort}.
 Bovendien vereisen deze veel minder geheugen dan een equivalente suffixboom.
 Sommige implementaties vereisen slechts $5n + O(1)$ geheugen~\cite{dark_archon, libdivsufsort}.
 
@@ -97,7 +97,7 @@ Sommige implementaties vereisen slechts $5n + O(1)$ geheugen~\cite{dark_archon, 
 \section{Bestaande implementaties}\label{sec:bestaande-implementaties}
 Aangezien er meerdere sterk geoptimaliseerde implementaties bestaan voor het opbouwen van een suffix array vergelijken we eerst de performantie van deze implementaties.
 Hieruit kunnen we nadien een snelle en geheugenefficiënte implementatie selecteren.
-Tabel~\ref{tab:sa_building} bevat een overzicht van verschillende algoritmes.
+Tabel~\ref{tab:sa_building} bevat een overzicht van verschillende algoritmen.
 Voor sommige werden verschillende implementaties getest.
 
 \begin{table}[H]
@@ -118,7 +118,7 @@ Voor sommige werden verschillende implementaties getest.
                 radixSA\footnote{\url{https://github.com/mariusmni/radixSA64}}                                             & C++                  & 9.74     & 11.26    & 2.11     & 3.52     \\
                 \hline
             \end{tabular}
-        \caption{Uitvoeringstijd en maximaal geheugengebruik voor het opbouwen van een suffix array aan de hand van verschillende algoritmes voor de Swiss-Prot eiwitdatabank.
+        \caption{Uitvoeringstijd en maximaal geheugengebruik voor het opbouwen van een suffix array aan de hand van verschillende algoritmen voor de Swiss-Prot eiwitdatabank.
         Indien er een 32 bit en 64 bit integer implementatie beschikbaar was werden deze allebei getest. Een - staat voor niet getest. Deze testen werden lokaal uitgevoerd op een M1 Pro MacBook Pro. De specificaties hiervan zijn terug te vinden in tabel~\ref{tab:macbook_hardware}.}
         \label{tab:sa_building}
     \end{minipage}
@@ -145,14 +145,14 @@ Dit is niet vanzelfsprekend.
 
 \section{Toepassen van suffix arrays op een eiwitdatabank}\label{sec:toepassen-van-suffix-arrays-op-een-eiwitdatabank}
 Het moeilijkste deel van onze probleemstelling is het opbouwen van de suffix array.
-Dit kunnen we oplossen aan de hand van de algoritmes uit sectie~\ref{sec:bestaande-implementaties}.
+Dit kunnen we oplossen aan de hand van de algoritmen uit sectie~\ref{sec:bestaande-implementaties}.
 Eens we die suffix array opgebouwd hebben blijft er echter nog een stuk van ons probleem over.
 Eerst moeten we nog een mapping maken van de gevonden suffixen naar het bijbehorende eiwit.
 Op basis van dit eiwit wordt daarna de LCA gezocht.
 
 \subsection{Bouwen van de suffix array}\label{subsec:bouwen-van-de-suffix-array}
 Zoals in de inleiding van sectie~\ref{sec:probleemstelling} willen we Rust gebruiken vanwege de combinatie van \textit{memory safety} en hoge performantie.
-We willen echter gebruik maken van de al bestaande geoptimaliseerde algoritmes om een suffix array op te bouwen.
+We willen echter gebruik maken van de al bestaande geoptimaliseerde algoritmen om een suffix array op te bouwen.
 Om beide doelen te bereiken maken we gebruik van interoperabiliteit tussen Rust en C/C++.
 Zo bestaan er al bindings\footnote{\url{https://crates.io/crates/libdivsufsort-rs}} van Rust naar de originele implementatie van libdivsufsort\cite{libdivsufsort} (in C).
 Ook al blijkt uit het testen dat dit algoritme voor het opbouwen van de indexstructuur over een kleinere eiwitdatabank niet het snelste is.
@@ -219,7 +219,7 @@ Hierdoor blijft het maximale geheugengebruik tijdens het opbouwen identiek aan h
 Dit is net het punt waar wij ons geheugengebruik verder willen verlagen.
 Gelukkig heeft het gebruik hiervan nog altijd het voordeel dat de uiteindelijke machine die de index zal hosten lagere geheugenvereisten zal hebben.
 \\ \\
-Het samplen van een opgebouwde suffix array is de meest gebruikte methode tot op vandaag vanwege de bestaande sterk geoptimaliseerde implementaties van de klassieke SA constructie algoritmes.
+Het samplen van een opgebouwde suffix array is de meest gebruikte methode tot op vandaag vanwege de bestaande sterk geoptimaliseerde implementaties van de klassieke SA constructie algoritmen.
 Bij sparse suffix arrays is het beste algoritme qua tijdscomplexiteit tot nu toe een Monte Carlo algoritme dat $O(n)$ tijd en $O(b)$ geheugen nodig heeft en een Las Vegas algoritme dat $O(n \sqrt{\log b})$ tijd en $O(b)$ geheugen verbruikt.
 Hierbij is $n$ de lengte van de tekst, en $b$ het aantal effectief gebruikte suffixes in de sparse SA~\cite{building_sparse_sa}.
 Van het Monte-Carlo algoritme is er een bestaande implementatie\footnote{\url{https://github.com/lorrainea/SSA/tree/main/MA}}.
@@ -229,7 +229,7 @@ Terwijl we slechts een tiental seconden nodig hebben om de standaard SA op te bo
 Voor compressed suffix arrays bestaat er een algoritme dat een tijdscomplexiteit van $o(n)$ heeft in combinatie met $O(n \log \sigma)$ bits aan geheugen~\cite{building_compressed_sa}.
 Hierbij is $n$ de tekstlengte en $\sigma$ de alfabetgrootte.
 \\ \\
-Het grootste nadeel aan deze algoritmes in context van deze thesis is dat er nog geen sterk geoptimaliseerde implementaties bestaan.
+Het grootste nadeel aan deze algoritmen in context van deze thesis is dat er nog geen sterk geoptimaliseerde implementaties bestaan.
 Bovendien zal de \textbf{factor van ingevoegde sparseness in ons geval altijd vrij klein} zijn om de zoektijden beperkt te houden (aangezien we werken met een erg grote dataset en vrij korte strings).
 Indien we dus een implementatie hebben om rechtstreeks een CSA of SSA te bouwen, maar met een grotere constante qua geheugengebruik zal vanwege de kleine sparseness factor de winst snel verloren gaan.
 \textbf{In ons geval is een SSA interessanter dan een CSA} omwille van de verschillende restricties tijdens het zoeken dat een SSA en CSA hebben.
@@ -537,7 +537,7 @@ Na dit te proberen bleek \textit{slechts} 740 GB RAM nodig.
 Figuur~\ref{fig:build_uniprot} toont de nodige tijd en hoeveelheid geheugen om dit te realiseren.
 \textbf{Opvallend hierbij is dat het libsais algoritme hier trager is dan libdivsufsort}, terwijl dit voor alle kleinere datasets net omgekeerd was.
 Afhankelijk van je dataset is het ene algoritme dus sneller dan het andere.
-Het geheugengebruik van beide algoritmes blijft echter erg gelijkaardig, wat het belangrijkste is voor ons.
+Het geheugengebruik van beide algoritmen blijft echter erg gelijkaardig, wat het belangrijkste is voor ons.
 \\
 \begin{figure}[H]
     \centering

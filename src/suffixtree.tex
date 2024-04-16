@@ -1,24 +1,41 @@
 \chapter{Suffixbomen}\label{ch:suffix-bomen}
-Suffixbomen zijn een eerste datastructuur die het mogelijk maken om efficiënt te controleren als een korte string deel uit maakt van een andere, grotere string.
-Meer specifiek gaat een variant hiervan, de zogenaamde veralgemeende suffixboom.
-Deze laten het toe om efficiënt te controleren als een string deel is van een \textbf{verzameling} van andere strings.
+Suffixbomen zijn een eerste datastructuur die het mogelijk maken om efficiënt te controleren of een korte string voorkomt in een andere, grotere string en waar deze mogelijke match zich bevindt.
+Meer specifiek gaat het om een variant hiervan, de zogenaamde veralgemeende suffixboom.
+Deze laten toe om efficiënt te \textbf{controleren of een string deel is van één of meerdere strings uit een verzameling}.
 \\ \\
-We behandelen deze datastructuur als eerste omdat hij vrij intuïtief is en het minst complex is.
-Bovendien kan een goede tijdscomplexiteit bereikt worden aangezien de zoektijd in een suffixboom lineair is in de lengte van de zoekstring/peptide.
+We behandelen deze datastructuur als eerste, omdat hij vrij intuïtief en het minst complex is.
+Bovendien kan een goede tijdscomplexiteit bereikt worden aangezien de zoektijd naar exacte matches in een suffixboom lineair is in de lengte van de zoekstring/peptide.
 Het opbouwen van de suffixboom kan ook in lineaire tijd gebeuren, maar dan lineair in de totale lengte van alle proteïnen in de databank.
-Hiervoor hebben we een \textbf{eigen Rust implementatie}.
+Hiervoor hebben we een \textbf{eigen Rust implementatie} geschreven.
 Aan de hand hiervan was het mogelijk om vertrouwd te raken met de programmeertaal Rust.
 Daar komt bij dat het ons ook de mogelijkheid geeft om enkele interessante Rust implementatiedetails te bespreken, samen met de bereikte performantie.
 
 \section{Wat zijn suffixbomen?}\label{sec:wat-zijn-suffix-bomen?}
-Suffixbomen zijn een soort tries.
-Tries zijn boomstructuren waarbij elk pad tot een blad een string voorstelt.
-Meer specifiek zijn het Patricia\footnote{Dit is een trie waarbij elke interne top een vertakking voorstelt. Anders gezegd: er zijn geen interne toppen die maar 1 kind hebben.} tries\cite{patricia} waarbij het laatste teken van de inputstring uniek is binnen die string.
-Dit unieke eindteken zal ervoor zorgen dat elke suffix van de inputstring uniek is.
-Elke suffix is dus nooit de prefix van een andere suffix.
-Bijgevolg zal \textbf{elke suffix een eigen blad in de boom} krijgen.
-Elk pad tot zo'n blad zal exact 1 suffix voorstellen uit de inputstring waarvoor de boom opgesteld is.
+Een suffixboom van een tekst $T$ wordt formeel gedefinieerd als volgt~\cite{CCB_course}:
+\begin{enumerate}
+    \item Het is een boomstructuur met exact $n$ bladeren waarbij alle takken samenkomen in de wortel van de boom.
+    De bladeren krijgen elk een uniek nummer in het interval $[0, n[$.
+    \item Elke interne top (behalve de wortel) heeft op zijn minst 2 kinderen.
+    \item Elke boog heeft een label die een niet-lege substring van de tekst $T$ voorstelt.
+    \item Voor alle bogen die uit een bepaalde top vertrekken geldt dat het eerste karakter van hun labels verschillend is.
+    \item Voor elk \textbf{blad $i \in [0, n[$} geldt dat de aaneenschakeling van alle labels op het pad van de wortel naar blad $i$ overeenkomt met \textbf{suffix $S_i$}.
+    Dit is de suffix die op index $i$ in tekst $T$ begint.
+\end{enumerate}
+
+Merk op dat niet voor elke tekst $T$ een suffixboom zal bestaan.
+Deze bestaat alleen wanneer geen enkele suffix een prefix is van een andere suffix.
+In de praktijk wordt daarom een uniek eindteken, meestal \texttt{\$}, toegevoegd aan de tekst.
+Hierdoor is elke suffix namelijk uniek, en kan deze dus ook nooit een prefix zijn van een andere suffix.
+Op deze manier zal er gegarandeerd een suffixboom voor de (licht aangepaste) tekst $T$ bestaan.
+\\ \\
+Het navigeren in een suffixboom kunnen we efficiënter maken door ook de \textbf{suffixlinks} bij te houden.
+Dit is een pointer van een interne top $v$ naar een andere interne top $s(v)$.
+Deze suffixlink bestaat als het pad uit de wortel naar top $v$ voorgesteld kan worden door de label $c\alpha$, waar $c$ een karakter is en $\alpha$ een (mogelijks lege) string.
+De top $s(v)$ zal dan de top zijn waarvoor geldt dat het pad van de wortel tot aan de top de substring $\alpha$ voorstelt.
+Indien $\alpha$ leeg is, zal $s(v)$ de wortel van de suffixboom zijn.
+\\ \\
 Figuur~\ref{fig:suffix_tree_example} stelt de suffixboom voor van de string \texttt{acacgt\$}.
+Hierbij stellen de stippellijnen de suffixlinks voor.
 Merk op dat we \texttt{\$} als uniek eindteken gebruiken.
 
 \begin{figure}[H]
@@ -70,8 +87,7 @@ Merk op dat we \texttt{\$} als uniek eindteken gebruiken.
         \draw[dashed, ->] (Start1) to[out=-20,in=200] (End1);
         \draw[dashed, ->] (End1) to[out=60,in=-60] (End2);
     \end{tikzpicture}
-    \caption{Suffixboom voor de string \texttt{acacgt\$}.}\label{fig:suffix_tree_example}
-
+    \caption{Suffixboom voor de string \texttt{acacgt\$}. De stippellijnen stellen de suffixlinks voor.}\label{fig:suffix_tree_example}
 \end{figure}
 
 Natuurlijk is het niet efficiënt om de structuur op deze manier op te slaan.
@@ -83,7 +99,7 @@ Hierdoor moeten we \textbf{geen kopie} meer opslaan\textbf{ van de originele str
 Sterker nog, we moeten dit zelfs niet in elk blad bijhouden.
 We kunnen bij elke boog tussen de toppen labels bijhouden.
 Het label van het blad kunnen we daarna reconstrueren door de labels van de bogen op weg naar dit blad achter elkaar te plaatsen.
-Op deze manier wordt de nodige opslag per top een constante en krijgen we \textbf{lineair geheugengebruik}.
+Op deze manier wordt de nodige opslag per top een constante en krijgen we \textbf{lineair geheugengebruik} ($O(n)$).
 Figuur~\ref{fig:suffix_tree_example_indices} toont hoe dit er in de praktijk uitziet.
 Merk op dat indexering start vanaf nul en dat de eindindex exclusief is.
 Een boog met waarde \texttt{1,3} stelt dus de substring \texttt{ca} voor uit het voorbeeld.
@@ -141,36 +157,39 @@ Een boog met waarde \texttt{1,3} stelt dus de substring \texttt{ca} voor uit het
         \draw[dashed, ->] (End1) to[out=60,in=-60] (End2);
 
     \end{tikzpicture}
-    \caption{Suffixboom voor de string \texttt{acacgt\$}, gebruik makende van indices.}\label{fig:suffix_tree_example_indices}
+    \caption{Suffixboom voor de string \texttt{acacgt\$}, gebruik makende van indices. De stippellijnen stellen de suffixlinks voor.}\label{fig:suffix_tree_example_indices}
 
 \end{figure}
 
-Deze suffixbomen laten toe om in één string snel substrings te zoeken.
+Deze suffixbomen laten toe om in één string in $O(n)$ tijd substrings te zoeken.
+Hierbij is $n$ de lengte van de gezochte substring.
+Indien we ook willen weten hoeveel voorkomens er exact zijn, en waar deze zich bevinden neemt dit $O(k)$ extra tijd.
+Hierbij is $k$ het aantal voorkomens van de substring in de tekst.
 Zoals eerder vermeld willen we echter peptiden zoeken in een \textbf{verzameling van proteïnes}.
-Daarom wordt gebruik gemaakt van \textbf{veralgemeende suffixbomen}.
-Hierbij wordt de verzameling van woorden die geïndexeerd moet worden behandeld alsof het één grote tekst is.
+Daarom wordt gebruikgemaakt van een \textbf{veralgemeende suffixboom}.
+Hierbij wordt de verzameling van eiwitten die geïndexeerd moet worden behandeld alsof het één grote tekst is.
 De manier waarop deze tekst gevormd wordt is echter erg belangrijk.
-Alle proteïnes moeten aan elkaar gehangen worden met ertussen een teken dat niet in de proteïnes en peptiden zelf voorkomt, en als eindteken moet er een ander uniek tegen gebruikt worden.
-Wanneer niet aan de eerste voorwaarde voldaan wordt zullen we ongeldige matches vinden.
-Het zou namelijk mogelijk zijn om een match te vinden die over 2 proteïnes gespreid is.
-Wanneer niet aan de tweede voorwaarde voldaan wordt dan breken we de eigenschap van suffixbomen waarbij elke suffix nooit een prefix van een andere suffix is.
+Alle proteïnes moeten aan elkaar gehangen worden met ertussen een teken dat niet in de proteïnes en peptiden zelf voorkomt, en als eindteken moet er een ander uniek teken gebruikt worden.
+Wanneer niet aan de eerste voorwaarde voldaan wordt, zullen we ongeldige matches vinden.
+Het zou namelijk mogelijk zijn om een match te vinden die over twee of meer proteïnes gespreid is.
+Wanneer niet aan de tweede voorwaarde voldaan wordt, dan breken we de eigenschap van suffixbomen waarbij elke suffix nooit een prefix van een andere suffix is.
 Dit zou als gevolg hebben dat niet elke suffix een eigen blad in de boom krijgt.
 
 \section{Het algoritme van Ukkonen}\label{sec:Ukkonen}
 Het algoritme van Ukkonen~\cite{Ukkonen1995} is een complexe, maar efficiënte manier om suffixbomen op te bouwen in lineaire tijd met lineair geheugengebruik.
-De beschrijving in de originele paper is vrij theoretisch wat het algoritme minder toegankelijk maakt.
+De beschrijving in de originele paper is vrij theoretisch, wat het algoritme minder toegankelijk maakt.
 Het komt echter uitgebreid aan bod in een aantal andere publicaties en boeken~\cite{Gusfield1997, AD3_ukkonen, CCB_course, Ukkonen_CCB}.
 Deze vormden een grote hulp bij het maken van een eigen implementatie.
 
 \subsection{Kotlin}\label{subsec:kotlin}
-Een eerste implementatie van Ukkonen's algoritme is gemaakt in Kotlin.
+Een eerste implementatie\footnote{\url{https://github.com/BramDevlaminck/SuffixTree}} van Ukkonen's algoritme heb ik geïmplementeerd in Kotlin.
 Hierdoor kon er gefocust worden op het algoritme zonder belemmerd te worden door restricties opgelegd door de \textit{borrow checker} deel van Rust.
 Tijdens het implementeren was de referentiecode van prof.~Jan Fostier~\cite{Ukkonen_CCB} een groot hulpmiddel, omdat we hierdoor tijdens het debuggen het verloop van het programma konden opvolgen.
 \\ \\
 Het belangrijkste verschil tussen de Kotlin-implementatie en de referentie-implementatie is de manier waarop de kinderen voorgesteld worden.
 Bij de eerste is dit aan de hand van een HashMap terwijl de laatste gebruikmaakt van een pointer array.
 De reden voor de andere aanpak is om alles zo simpel mogelijk te houden.
-Hierdoor kon een karakter rechtstreeks als sleutel gebruikt kon worden, en was een omzetting naar een index niet nodig.
+Hierdoor kon een karakter rechtstreeks als sleutel gebruikt worden, en was een omzetting naar een index niet nodig.
 Om dit prototype te maken, heb ik gekozen voor Kotlin boven Python aangezien Kotlin performanter is en ook een aangename ontwikkelingservaring biedt.
 Hierdoor is het mogelijk om de testdatasets op te bouwen binnen de 10 minuten.
 \\ \\
@@ -180,9 +199,12 @@ Tot slot had ik op het einde ook enkele bugs die niet voorkwamen in kleinere voo
 Dit maakte het lokaliseren en oplossen van de laatste problemen vrij tijdsintensief.
 
 \subsection{Rust}\label{subsec:rust}
+Door het \textit{ownership} systeem van Rust zijn er enkele belangrijke nuances in het implementeren van het algoritme van Ukkonen in Rust.
+In de volgende secties bespreken we eerst enkele van deze nuances en hoe deze zich vertalen in onze eigen implementatie\footnote{\url{https://github.com/BramDevlaminck/Thesis_rust_implementations/tree/master/suffixtree}}.
+Daarna bespreken we de performantie op vlak van snelheid en geheugengebruik.
 
 \subsubsection{Boomstructuren}
-Deze quote komt rechtstreeks uit een Medium artikel~\cite{rust_difficulty_quote} en toont direct aan dat het maken van een suffixboom in Rust niet-triviaal ging zijn.
+Deze quote komt rechtstreeks uit een Medium artikel~\cite{rust_difficulty_quote} en toont direct aan waarom het maken van een suffixboom in Rust niet-triviaal is.
 \begin{quote}
     \textit{Rust is known to be notorious difficult when it comes to certain data structures like linked lists, trees, etc.}
 \end{quote}
@@ -194,13 +216,13 @@ Dit is net wat nodig is tijdens het opbouwen van de boom want er worden nog kind
 Dit is een probleem aangezien ouders pointers naar kinderen moeten hebben, de kinderen een verwijzing naar hun ouder, en er dan ook nog eens pointers zijn voor de suffix links.
 \\ \\
 Als oplossing hiervoor introduceert Rust het \texttt{Rc<T>} datatype.
-Hierbij stapt Rust af van zijn standaard \textit{ownership} systeem wordt gebruik gemaakt van \textbf{Reference Counting}~\cite{reference_counting}.
+Hierbij stapt Rust af van zijn standaard \textit{ownership} systeem en wordt gebruikgemaakt van \textbf{Reference Counting}~\cite{reference_counting}.
 Pas wanneer alle referenties weg zijn, zal het geheugen automatisch vrijgegeven worden.
 De beperking hierbij is echter dat deze referenties \textit{immutable} zijn.
 Dit volstaat niet tijdens het opbouwen van de boom.
 \\ \\
 Om dit toch mogelijk te maken, introduceert Rust het \textbf{\textit{interior mutability}} patroon~\cite{interior_mutability}.
-Hiervoor wordt gebruik gemaakt van het \texttt{Refcell} datatype.
+Hiervoor wordt gebruikgemaakt van het \texttt{Refcell} datatype.
 Dit laat toe om data toch aan te passen, ook al is de referentie \textit{immutable}.
 Aangezien dit de standaard Rust regels doorbreekt, is dit \texttt{unsafe}\footnote{Dit is code waarvan de compiler niet kan nagaan als die aan alle voorwaarden voldoet die nodig zijn om \textit{memory safety} te kunnen garanderen. Dit sleutelwoord bestaat zodat de programmeur meer vrijheid zou kunnen krijgen om bepaalde patronen toch te kunnen toepassen. De verantwoordelijkheid om correct het geheugen te gebruiken wordt hier bij de programmeur gelegd. Een andere reden om \texttt{unsafe} te gebruiken is om bepaalde interacties met hardware uit te voeren. Deze zijn inherent onveilig en zouden anders onmogelijk zijn.} en kan Rust \textit{at compile-time} geen \textit{memory safety} meer garanderen.
 \texttt{Refcell} zal gelukkig de nodige code invoegen zodat runtime memory safety wel gegarandeerd is.
@@ -209,11 +231,12 @@ Mogelijke foutieve geheugenoperaties zullen dus tijdens het uitvoeren van het pr
 Maar zelfs dan blijft er nog altijd een probleem.
 Geheugen dat beheerd wordt aan de hand van \textit{reference counting} zal enkel vrijgegeven kunnen worden indien de \textit{reference counter} op 0 staat.
 Er zijn echter scenario's waar dit nooit zal gebeuren.
-Namelijk bij \textbf{cyclische verwijzingen}; een patroon dat jammer genoeg erg vaak voor komt.
+Namelijk bij \textbf{cyclische verwijzingen}; een patroon dat jammer genoeg erg vaak voorkomt.
 In ons geval is dit een ouder die een pointer heeft naar een kind, dat zelf een pointer heeft naar die ouder.
 Als oplossing hiervoor introduceert Rust dan weer het \texttt{Weak<T>} datatype.
 \\ \\
-Dit is duidelijk erg ingewikkeld, en introduceert ook nog eens \textit{performance overhead} die ongewenst is en te vermijden lijkt.
+Dit is duidelijk erg ingewikkeld.
+Het introduceert ook nog eens \textit{performance overhead} die ongewenst is en die we willen vermijden.
 Een optie zou kunnen zijn om expliciet het \texttt{unsafe} keyword te gebruiken, wat meer vrijheid geeft.
 Het nadeel hiervan is natuurlijk dat we dan de garanties van memory safety kwijt zijn, wat net één van de hoofdredenen is om Rust te gebruiken.
 Dit was dus geen optie.
@@ -224,19 +247,21 @@ Alle toppen worden hierbij in deze ene vector opgeslagen.
 In plaats van pointers naar elkaar bij te houden, zullen de toppen indexen bijhouden.
 Deze indexen stellen de indexen in de arena van de top voor, waarnaar anders een pointer wordt bijgehouden.
 \\ \\
-Aangezien we alles in één vector opslaan zou het mogelijk zijn de nodige hoeveelheid geheugen onmiddellijk aan te vragen bij het opstarten van het programma.
-Zoals in sectie~\ref{sec:wat-zijn-suffix-bomen?} beschreven staat zijn er ten hoogste $2n - 1$ toppen voor een tekst met lengte $n$.
-Voor de Swiss-Prot databank die een inputstring van 206 523 693 karakters vormt wil dit zeggen dat er in het slechtste geval 413 047 385 toppen zijn.
-In de praktijk worden er echter slechts 328 922 516 toppen gevormd.
-Indien we het geheugen op voorhand aanvragen zou het geheugengebruik dus nog met een factor $\frac{413 047 385}{328 922 516} \approx 1,26$ hoger liggen.
-Daarom dat we die aanpak niet gekozen hebben.
+Aangezien we alles in één vector opslaan, is het mogelijk om de nodige hoeveelheid geheugen onmiddellijk aan te vragen bij het opstarten van het programma.
+Zoals in sectie~\ref{sec:wat-zijn-suffix-bomen?} beschreven staat zijn er ten hoogste $2n - 1$ toppen voor een tekst van lengte $n$.
+Voor de Swiss-Prot databank die een inputstring van 206\thinspace523\thinspace693 karakters vormt, wil dit zeggen dat er in het slechtste geval 413\thinspace047\thinspace385 toppen zijn.
+In de praktijk worden er echter slechts 328\thinspace922\thinspace516 toppen gevormd.
+Indien we het geheugen op voorhand aanvragen zou het geheugengebruik dus nog met een factor $\frac{413\thinspace047\thinspace385}{328\thinspace922\thinspace516} \approx 1,26$ hoger liggen.
+Daarom hebben we die aanpak niet gekozen.
 \\ \\
-Na het maken van deze ontwerpaanpassingen bleef slechts één moeilijkheid over.
-Uitzoeken hoe de cursor (die bijhoudt waar we zijn in de boom tijdens het bouwen), de input string en de boom zich van elkaar moeten verhouden in het systeem van eigenaarschap.
-Uiteindelijk viel dit vrij makkelijk uit te zoeken gebruik makende van de foutmeldingen gegeven door \texttt{rustc}\footnote{De compiler voor de Rust programmeertaal}.
-Het omzetten van de resterende Kotlin-code naar Rust was erg simpel en bijna een één op één vertaling.
+Na het maken van deze ontwerpbeslissingen bleef slechts één moeilijkheid over.
+Uitzoeken hoe de cursor (die bijhoudt waar we zijn in de boom tijdens het bouwen), de input string en de boom zich tot elkaar moeten verhouden in het systeem van eigenaarschap.
+Uiteindelijk viel dit vrij makkelijk uit te zoeken, gebruik makende van de foutmeldingen gegeven door \texttt{rustc}\footnote{De compiler voor de Rust programmeertaal}.
+Het omzetten van de resterende Kotlin-code naar Rust was erg simpel en bijna een één-op-één vertaling.
 Hier heb ik er echter voor gekozen om kinderen voor te stellen op dezelfde manier als in de C++-referentiecode.
-Kinderen worden dus voorgesteld aan de hand van een array die een vaste grootte heeft, wat als gevolg heeft dat \textbf{elke top even groot is}.
+Er wordt dus een array bijgehouden per top waarin plaats voorzien wordt voor alle mogelijke kinderen van die top.
+Dit gebeurt ook indien een top geen, of slechts een klein aantal, kinderen bevat.
+Dit heeft als gevolg dat de \textbf{voorstelling van elke top even groot} is.
 
 \subsubsection{Geheugenefficiëntie}
 \textit{Null pointers} worden ook wel \textit{the billion-dollar mistake} genoemd vanwege het grote aantal bugs dat ze veroorzaken.

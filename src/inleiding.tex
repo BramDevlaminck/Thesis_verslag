@@ -39,7 +39,7 @@ Dit maakt de analyse moeilijker aangezien proteïnen van verschillende organisme
 Meer specifiek is het doel van metaproteomica om op zoek te gaan naar de taxa en functies die horen bij een verzameling van eiwitfragmenten.
 Deze eiwitfragmenten noemen we peptides wanneer ze bestaan uit twee of meer aminozuren en hun lengte beperkt blijft.
 In de praktijk gaat dit over sequenties van ongeveer 2 tot 50 aminozuren lang.
-Een een veelvoorkomende categorie van peptiden die we zullen analyseren zijn tryptische peptiden.
+Een veelvoorkomende categorie van peptiden die we zullen analyseren zijn tryptische peptiden.
 
 \begin{figure}[H]
     \centering
@@ -145,7 +145,7 @@ Dit laat toe om waar mogelijk bestaande code te hergebruiken.
 
 
 \section{Benchmarkdatasets}\label{sec:datasets}
-Om de snelheid, het geheugengebruik en de correctheid van de onderzochte indexstructuren en zoekalgoritmes te bepalen zullen we \textbf{twee soorten benchmarkbestanden} gebruiken.
+Om de snelheid, het geheugengebruik en de correctheid van de onderzochte indexstructuren en zoekalgoritmen te bepalen zullen we \textbf{twee soorten benchmarkbestanden} gebruiken.
 De eerste soort zijn de \textbf{proteïnedatabanken} waarmee we de indexstuctuur opbouwen.
 De grootte van deze indexstructuur is het primaire criterium aangezien deze \textbf{volledig in het RAM-geheugen} moet passen, wat een harde limiet is.
 Indien de index niet in het geheugen past, zal het programma niet uitgevoerd kunnen worden (of met een erg grote performance-penalty wanneer swapruimte\footnote{Dit is wanneer een computer schijfruimte gebruikt om het tekort aan RAM-geheugen op te vangen.} gebruikt wordt).
@@ -262,7 +262,7 @@ Opnieuw komen deze allemaal uit UniProtKB 2023\_04.
 Deze Human-Prot databank is kleiner dan Swiss-Prot, waardoor het testen tijdens ontwikkeling sneller is.
 Tabel~\ref{tab:humanprot_eigenschappen} somt enkele belangrijke metrieken op over deze dataset.
 Figuur~\ref{fig:humanprot_aminozuur} en~\ref{fig:humanprot_length} gaan dieper in op een aantal details.
-
+\\
 \begin{table}[ht]
     \centering
     \begin{tabular}{ l l }
@@ -428,3 +428,33 @@ Deze onderzoeksgroep werkt aan softwaretoepassingen voor het verwerken van prote
     \caption{Hardwarespecificaties van de gebruikte laptop voor kleinere testen. Elke keer testen op dit toestel uitgevoerd zijn, wordt dit expliciet vermeld.}
     \label{tab:macbook_hardware}
 \end{table}
+
+\section{Mogelijke oplossingen}\label{sec:mogelijke-oplossingen}
+De essentie van onze probleemstelling is het snel vinden van een grote hoeveelheid korte strings in één erg lange string.
+Dit is een vorm van stringmatching.
+Hiervoor bestaan twee verschillende strategieën (die ook gecombineerd kunnen worden).
+\begin{enumerate}
+    \item \textbf{Verwerk de korte zoekstring op voorhand} (van lengte $n$) zoals in het algoritme van Knuth-Morris-Pratt~\cite{knuth-morris-pratt}, Boyer-Moore-Horspool~\cite{boyer-moore-horspool} en het shift-AND-algoritme~\cite{shift-and}.
+    \item \textbf{Verwerk de lange tekst op voorhand} (van lengte $m$) zoals bij suffixbomen~\cite{mcCreight_first_suffixtree}, suffix arrays~\cite{suffix_array_first_mention} en (bidirectionele) FM-indexen~\cite{fm_index, bi-directional_fm_index}.
+\end{enumerate}
+Voor beide aanpakken bestaan er algoritmen om lineair in de tijd ten opzichte van de stringlengte de indexstructuur op te bouwen en te doorzoeken.
+Er is echter een belangrijk detail.
+\\ \\
+Bij de strategie waar we de korte zoekstring verwerken op voorhand kan het opbouwen in $O(n)$ tijd en geheugen, en het zoeken in $O(m)$ tijd (met $n$ de lengte van de zoekstring, en $m$ de lengte van de tekst).
+Hierbij is het \textbf{zoeken} dus \textbf{lineair in de tijd ten opzichte van de lengte van de totale tekst}.
+Dit is nadelig wanneer er veel korte strings zijn, waarvoor elke keer extra werk moet gebeuren.
+Daarna moeten we bovendien nog voor elke korte string de zoekoperatie uitvoeren, waarvoor de uitvoeringstijd lineair is in de lengte van de volledige tekst.
+\\ \\
+Indien we de lange tekst indexeren, kan het opbouwen in $O(m)$ tijd en het zoeken in $O(n)$ tijd en geheugen (opnieuw met $n$ de lengte van de zoekstring, en $m$ de lengte van de tekst).
+Hierbij is het mogelijk om één keer de indexstructuur te bouwen voor de lange tekst, waarna elke korte string \textbf{in lineaire tijd ten opzichte van zijn eigen lengte gezocht} kan worden.
+Het nadeel is echter dat het opbouwen van de indexstructuur voor een grote tekst traag kan worden, en bovendien veel geheugen kan innemen.
+\\ \\
+Het doorzoeken van UniProtKB naar matches van peptides komt overeen met de tweede aanpak, waardoor we die aanpak zullen verkennen in deze masterproef.
+We hebben een grote databank met erg veel proteïnes (een lange tekst) waarin we erg veel peptiden (korte strings) zoeken.
+In de eerste plaats willen we \textbf{exacte matches} kunnen zoeken, maar later ook naar een vorm van \textbf{inexacte} matches.
+\\ \\
+Aangezien de indexstructuur slechts eenmalig voor een bepaalde proteïnedatabank opgebouwd moet worden, ligt de \textbf{primaire restrictie bij het geheugengebruik} tijdens het opbouwen.
+Het blijft echter steeds belangrijk dat de indexstructuur in een redelijke tijd opgebouwd kan worden en performant genoeg is om snel een groot aantal peptiden te zoeken.
+De richttijd die we ons vooropstellen om de indexstructuur op te bouwen voor UniProtKB is maximaal één à twee dagen.
+Dit is een acceptabele tijdsduur aangezien de indexstructuur slechts om de acht weken opnieuw opgebouwd moet worden, overeenkomstig met de release frequentie van UniProtKB.
+In de volgende hoofdstukken verkennen we verschillende indexstructuren om een proteïnedatabank te indexeren.
