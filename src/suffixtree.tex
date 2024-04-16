@@ -83,7 +83,7 @@ Hierdoor moeten we \textbf{geen kopie} meer opslaan\textbf{ van de originele str
 Sterker nog, we moeten dit zelfs niet in elk blad bijhouden.
 We kunnen bij elke boog tussen de toppen labels bijhouden.
 Het label van het blad kunnen we daarna reconstrueren door de labels van de bogen op weg naar dit blad achter elkaar te plaatsen.
-Op deze manier wordt de nodige opslag per top een constante en krijgen we \textbf{lineair geheugenverbruik}.
+Op deze manier wordt de nodige opslag per top een constante en krijgen we \textbf{lineair geheugengebruik}.
 Figuur~\ref{fig:suffix_tree_example_indices} toont hoe dit er in de praktijk uitziet.
 Merk op dat indexering start vanaf nul en dat de eindindex exclusief is.
 Een boog met waarde \texttt{1,3} stelt dus de substring \texttt{ca} voor uit het voorbeeld.
@@ -146,11 +146,11 @@ Een boog met waarde \texttt{1,3} stelt dus de substring \texttt{ca} voor uit het
 \end{figure}
 
 Deze suffixbomen laten toe om in één string snel substrings te zoeken.
-Zoals eerder vermeld willen we echter peptides zoeken in een \textbf{verzameling van proteïnes}.
+Zoals eerder vermeld willen we echter peptiden zoeken in een \textbf{verzameling van proteïnes}.
 Daarom wordt gebruik gemaakt van \textbf{veralgemeende suffixbomen}.
 Hierbij wordt de verzameling van woorden die geïndexeerd moet worden behandeld alsof het één grote tekst is.
 De manier waarop deze tekst gevormd wordt is echter erg belangrijk.
-Alle proteïnes moeten aan elkaar gehangen worden met ertussen een teken dat niet in de proteïnes en peptides zelf voorkomt, en als eindteken moet er een ander uniek tegen gebruikt worden.
+Alle proteïnes moeten aan elkaar gehangen worden met ertussen een teken dat niet in de proteïnes en peptiden zelf voorkomt, en als eindteken moet er een ander uniek tegen gebruikt worden.
 Wanneer niet aan de eerste voorwaarde voldaan wordt zullen we ongeldige matches vinden.
 Het zou namelijk mogelijk zijn om een match te vinden die over 2 proteïnes gespreid is.
 Wanneer niet aan de tweede voorwaarde voldaan wordt dan breken we de eigenschap van suffixbomen waarbij elke suffix nooit een prefix van een andere suffix is.
@@ -228,7 +228,7 @@ Aangezien we alles in één vector opslaan zou het mogelijk zijn de nodige hoeve
 Zoals in sectie~\ref{sec:wat-zijn-suffix-bomen?} beschreven staat zijn er ten hoogste $2n - 1$ toppen voor een tekst met lengte $n$.
 Voor de Swiss-Prot databank die een inputstring van 206 523 693 karakters vormt wil dit zeggen dat er in het slechtste geval 413 047 385 toppen zijn.
 In de praktijk worden er echter slechts 328 922 516 toppen gevormd.
-Indien we het geheugen op voorhand aanvragen zou het geheugenverbruik dus nog met een factor $\frac{413 047 385}{328 922 516} \approx 1,26$ hoger liggen.
+Indien we het geheugen op voorhand aanvragen zou het geheugengebruik dus nog met een factor $\frac{413 047 385}{328 922 516} \approx 1,26$ hoger liggen.
 Daarom dat we die aanpak niet gekozen hebben.
 \\ \\
 Na het maken van deze ontwerpaanpassingen bleef slechts één moeilijkheid over.
@@ -266,10 +266,10 @@ Tot slot moeten de suffix links nullable zijn aangezien niet elke top een suffix
 Dit werkt perfect en kon mooi afgehandeld worden op de idiomatische manier die overeenkomt met goede Rust-code.
 Na de eerste benchmarks bleek het \textbf{geheugengebruik} echter \textbf{problematisch}.
 Bijna exact \textbf{2x zo hoog als de equivalente C++ implementatie}.
-Om zo'n drastisch verschil in geheugenverbruik te kunnen verklaren, moest er wel iets fundamenteel verschillen aan de manier waarop toppen hun data bijhouden.
+Om zo'n drastisch verschil in geheugengebruik te kunnen verklaren, moest er wel iets fundamenteel verschillen aan de manier waarop toppen hun data bijhouden.
 Al snel bleek dat het gebruik van \textbf{\texttt{Option<usize>}}\footnote{\texttt{usize}: \textit{The pointer-sized unsigned integer type \cite{usize}}. De grootte van dit datatype is het aantal bytes nodig om een referentie naar elk mogelijke locatie in het geheugen bij te kunnen houden. Voor 32- en 64-bit machines zijn dit resp.~4 en 8 bytes.} de boosdoener was.
 Het gebruik van \texttt{Option<>} zorgt namelijk voor \textbf{8 bytes aan overhead}.
-Aangezien een \texttt{usize} 8 bytes groot is op een 64-bit machine verklaart dit inderdaad de verdubbeling van het geheugenverbruik.
+Aangezien een \texttt{usize} 8 bytes groot is op een 64-bit machine verklaart dit inderdaad de verdubbeling van het geheugengebruik.
 Dit valt makkelijk te controleren aan de hand van de \texttt{std::mem::size\_of} functie, deel van de Rust standaardbibliotheek.
 \begin{minted}{Rust}
 assert_eq!(mem::size_of::<Option<usize>>(), 16);
@@ -277,7 +277,7 @@ assert_eq!(mem::size_of::<usize>(), 8);
 \end{minted}
 
 Als oplossing heb ik uiteindelijk mijn \textbf{eigen \textit{null} waarde gedefinieerd} die gebruik maakt van een \textit{trait}\footnote{Een trait in Rust definieert een functionaliteit dat een bepaald type heeft, en kan delen met andere types}.
-Deze oplossing doet volledig het doel van de \texttt{Option<T>} enum teniet, maar is jammer genoeg nodig omdat het gewoonweg niet acceptabel is om het geheugenverbruik hiervoor te verdubbelen.
+Deze oplossing doet volledig het doel van de \texttt{Option<T>} enum teniet, maar is jammer genoeg nodig omdat het gewoonweg niet acceptabel is om het geheugengebruik hiervoor te verdubbelen.
 Bovendien blijft \textbf{memory safety gegarandeerd}, aangezien het foutief indexeren van de null value (\texttt{usize::MAX} in dit geval) een index-out-of-bounds error creëert.
 Dergelijke indexeringsfouten worden tijdens het uitvoeren gedetecteerd en geven dus geen verdere problemen (afgezien van een mogelijke crash van het programma).
 
@@ -317,12 +317,12 @@ Dit zijn de 26 letters van het alfabet + \texttt{\#} + \texttt{\$}.
 \texttt{\#} en \texttt{\$} worden gebruikt als resp.~scheidingsteken en eindteken.
 Dit is ook wat al gebeurde in de bestaande C++ implementatie.
 De exacte waardes van het scheidings- en eindteken zijn niet belangrijk.
-De enige eigenschappen die ze moeten hebben is dat ze niet voorkomen als teken in de proteïnen of peptides, en verschillend zijn van elkaar.
+De enige eigenschappen die ze moeten hebben is dat ze niet voorkomen als teken in de proteïnen of peptiden, en verschillend zijn van elkaar.
 \\ \\
 Een andere aanpak zou kunnen zijn om HashMaps te gebruiken.
-Het totale geheugenverbruik zal hierdoor afnemen naar ongeveer 60\% van het huidige verbruik.
+Het totale geheugengebruik zal hierdoor afnemen naar ongeveer 60\% van het huidige verbruik.
 Dit gaat echter ten koste van performantie tijdens het zoeken (wat net erg belangrijk is).
-Hoe dan ook blijft het \textbf{geheugenverbruik extreem groot}, welke implementatie ook gekozen wordt.
+Hoe dan ook blijft het \textbf{geheugengebruik extreem groot}, welke implementatie ook gekozen wordt.
 \\ \\
 Het vergelijken van de implementaties heb ik opgesplitst in twee stukken:
 \begin{enumerate}
@@ -334,7 +334,7 @@ Het vergelijken van de implementaties heb ik opgesplitst in twee stukken:
 
 \subsubsection{Opbouwen}
 Om een representatief resultaat te krijgen, kijken we steeds naar het gemiddelde van 10 uitvoering.
-De uitvoeringstijd en het geheugenverbruik zijn gemeten aan de hand van het unix \texttt{time} commando.
+De uitvoeringstijd en het geheugengebruik zijn gemeten aan de hand van het unix \texttt{time} commando.
 De resultaten hiervan zijn terug te vinden in Figuur~\ref{fig:tree_building}.
 \begin{figure}[H]
     \centering
@@ -347,7 +347,7 @@ De resultaten hiervan zijn terug te vinden in Figuur~\ref{fig:tree_building}.
 Uit deze grafieken vallen 2 duidelijke conclusies te trekken.
 \begin{enumerate}
     \item De implementatie in Rust is $\pm$ 33\% sneller
-    \item Het geheugenverbruik is erg vergelijkbaar.
+    \item Het geheugengebruik is erg vergelijkbaar.
     Dit valt te verwachten aangezien beide implementaties 8 bytes nodig hebben per \textit{pointer} en evenveel plaats voorzien voor de kinderen.
     Het kleine verschil valt te verklaren vanwege één veld uit de C++ implementatie dat niet bijgehouden wordt in de Rust implementatie.
     Dit veld is de diepte van de top in de boom.
@@ -413,7 +413,7 @@ Eén van de belangrijkste analyses die Unipept aanbiedt, is de \textbf{taxonomis
 Aangezien peptiden kunnen matchen met proteïnen uit verschillende organismen, moet er een manier gekozen worden om deze \textbf{informatie te aggregeren}.
 Een optie is om een schatting te maken en het organisme met de grootst mogelijke kans te nemen.
 Unipept kiest echter een andere aanpak waarbij de informatie \textbf{conservatief} veralgemeend wordt omdat er geen manier is om met zekerheid te zeggen uit welke proteïne de peptide effectief komt.
-Dit komt omdat gebruikers enkel een set aan peptides als input geven aan Unipept, niks van extra info dat toelaat om te knippen zonder mogelijks correcte informatie te verliezen.
+Dit komt omdat gebruikers enkel een set aan peptiden als input geven aan Unipept, niks van extra info dat toelaat om te knippen zonder mogelijks correcte informatie te verliezen.
 Anders gezegd: Unipept zal enkel info geven die geldt voor alle gematchte proteïnen.
 Eén van deze stukjes informatie is het Taxon ID\@.
 Unipept zal niet de lijst van alle mogelijke taxon IDs teruggeven omdat dit twee nadelen heeft.
@@ -498,7 +498,7 @@ Vermoedelijk ligt de andere geheugenstructuur hiervoor aan de basis.
 \\ \\
 Ondanks de veelbelovende resultaten op vlak van snelheid is er een keerzijde aan de medaille.
 Het \textbf{geheugengebruik is zo groot dat we op zoek moeten naar een andere indexstructuur}.
-Voor de Swiss-Prot databank gaat het geheugenverbruik al boven 85 GB als we ook de taxon IDs voorberekenen, terwijl ons einddoel is om de indexstructuur op te bouwen voor de volledige UniProtKB databank.
+Voor de Swiss-Prot databank gaat het geheugengebruik al boven 85 GB als we ook de taxon IDs voorberekenen, terwijl ons einddoel is om de indexstructuur op te bouwen voor de volledige UniProtKB databank.
 Dit wil zeggen dat alles nog $\pm$ 500 maal opgeschaald moet worden.
 Dit zou echter vereisen dat we een server hebben met ongeveer 45 TB aan RAM geheugen.
 We hebben echter geen dergelijke machine ter beschikking.
