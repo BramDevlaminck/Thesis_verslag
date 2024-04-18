@@ -1,0 +1,92 @@
+\chapter{Unipept protein counts distribution}\label{ch:appendix-unipept-protein-counts-distribution}
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{|l|r|}
+        \hline
+        \textbf{\# Proteïnes} & \textbf{\# Peptides}\\
+        \hline
+        $\geq 1$     & 1\thinspace342\thinspace470\thinspace764 \\
+        $\geq 2$     & 355\thinspace979\thinspace324            \\
+        $\geq 10$    & 38\thinspace697\thinspace210             \\
+        $\geq 10^2$  & 2\thinspace921\thinspace879              \\
+        $\geq 10^3$  & 217\thinspace922                         \\
+        $\geq 10^4$  & 13\thinspace008                          \\
+        $\geq 10^5$  & 118                                      \\
+        $\geq 10^6$  & 0                                        \\ \hline
+    \end{tabular}
+    \caption{Het aantal verschillende tryptische peptiden die matchen met op zijn minst $x$ proteïnes uit UniProtKB 2023\_03.}
+    \label{tab:number_peptide_matches}
+\end{table}
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{|l|r|}
+        \hline
+        \textbf{\# NCBI taxonomy rank} & \textbf{\# Peptides} \\ \hline
+        root & 12\thinspace369 \\ \hline
+        superkingdom & 43 \\ \hline
+        kingdom & 16 \\ \hline
+        subkingdom & 0 \\ \hline
+        superphylum & 0 \\ \hline
+        phylum & 8 \\ \hline
+        subphylum & 7 \\ \hline
+        superclass & 1 \\ \hline
+        class & 18 \\ \hline
+        subclass & 1 \\ \hline
+        superorder & 0 \\ \hline
+        order & 0 \\ \hline
+        infraorder & 1 \\ \hline
+        superfamily & 0 \\ \hline
+        family & 2 \\ \hline
+        subfamily & 0 \\ \hline
+        tribe & 1 \\ \hline
+        subtribe & 0 \\ \hline
+        genus & 55 \\ \hline
+        subgenus & 0 \\ \hline
+        species\_group & 0 \\ \hline
+        species\_subgroup & 0 \\ \hline
+        species & 200 \\ \hline
+        subspecies & 0 \\ \hline
+        strain & 1 \\ \hline
+        varietas & 0 \\ \hline
+        forma & 0 \\ \hline
+    \end{tabular}
+    \caption{Verdeling van de 13\thinspace000 verschillende peptiden die met meer $\geq 10^4$ proteïnes matchen. We zien dat voor de overgrote meerderheid de LCA resulteert op de root. Slechts voor 200 peptides is het resultaat op soortniveau.}
+    \label{tab:peptides_distribution}
+\end{table}
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{|r|l|}
+        \hline
+        \textbf{\# Peptides} & \textbf{LCA} \\ \hline
+        119 & Alphainfluenzavirus influenzae \\ \hline
+        32 & Human immunodeficiency virus \\ \hline
+        14 & Hepatitis B virus \\ \hline
+        9 & Betainfluenzavirus influenzae \\ \hline
+        4 & Orthoflavivirus denguei \\ \hline
+        3 & Simian immunodeficiency virus \\ \hline
+        1 & Alcidodes juglans \\ \hline
+        1 & Bacillus subtilis \\ \hline
+        1 & Bacteroides thetaiotaomicron \\ \hline
+        1 & Cannabis sativa \\ \hline
+        1 & Capsicum baccatum \\ \hline
+        1 & Echinocucumis hispida \\ \hline
+        1 & Geissoloma marginatum \\ \hline
+        1 & Homo sapiens \\ \hline
+        1 & Human immunodeficiency virus \\ \hline
+        1 & Kalanchoe fedtschenkoi \\ \hline
+        1 & Leucosceptrum canum \\ \hline
+        1 & Loxia curvirostra \\ \hline
+        1 & Marinilactibacillus piezotolerans \\ \hline
+        1 & Melanocenchris jacquemontii \\ \hline
+        1 & Merops nubicus \\ \hline
+        1 & Morbillivirus hominis \\ \hline
+        1 & Phalaenopsis pulcherrima \\ \hline
+        1 & Phormidesmis priestleyi \\ \hline
+        1 & Rhodobacter maris \\ \hline
+    \end{tabular}
+    \caption{Overzicht van de geassocieerde soort voor de 200 peptides uit tabel~\ref{tab:peptides_distribution} die op soortniveau eindigen.
+    Van de 200 peptides eindigt de meerderheid in een LCA die geassocieerd is met een virus (zoals HIV of influenza). Dit komt doordat er veel onderzoek gedaan wordt naar de verschillende bestaande rassen. Deze zitten allemaal in de UniProt Knowledgebase.}
+    \label{tab:peptides_species}
+\end{table}

@@ -513,7 +513,7 @@ Daarom hebben we \textbf{voorlopig toch voor de standaard LCA aggregatiemanier} 
 Deze laat wel toe de toppen op deze efficiëntere manier te aggregeren.
 UMGAP biedt 2 implementaties aan om de LCA te berekenen voor een gegeven verzameling van taxa.
 Gebruikmakende van RMQs\footnote{Range Minimum Queries} of een boomstructuur.
-Mijn implementatie maakt gebruik van de RMQ implementatie aangezien deze significant sneller is (8 min 58 sec vs 20 min en 25 sec voor de Swiss-Prot databank) in mijn toepassing.
+Mijn implementatie maakt gebruik van de RMQ implementatie aangezien deze ssignificant sneller is (8 min 58 sec vs 20 min en 25 sec voor de Swiss-Prot databank) in mijn toepassing.
 Tot slot heb ik voor Swiss-Prot ook eens vergeleken hoe groot de behaalde tijdswinst is als we de LCAs aggregeren aan de hand van de directe kinderen, vergeleken met aggregatie op basis van de bladeren.
 Bij het aggregeren op basis van de bladeren met de RMQ implementatie was de uitvoeringstijd maar liefst 12 uur, 19 minuten en 16 seconden.
 Dit is dus een extreem groot verschil.

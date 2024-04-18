@@ -16,6 +16,7 @@
 \usepackage[inkscapelatex=false]{svg}
 \usepackage{footmisc}
 \usepackage{siunitx}
+\usepackage{setspace}
 
 
 % Bibliography settings
@@ -62,7 +63,7 @@
     \setmonofont[Scale=MatchLowercase,Contextuals={Alternate}]{Jetbrains Mono}
 
 % ------------- CONSENT OF USE -----------
-
+%    \onehalfspacing
     \include{gebruik}
 
 % ------------ TABLE OF CONTENTS ---------
@@ -80,6 +81,10 @@
     \input{suffixtree}
 
     \input{suffixarray}
+    
+    \input{fm_index_r_index}
+    
+    \input{uniprot}
 
     \input{conclusie}
 
@@ -94,5 +99,6 @@
 % ------------ APPENDIX ------------
     \appendix
     \input{appendix_A_searchfile_stats}
+    \input{appendix_B_number_of_matches}
 
 \end{document}
