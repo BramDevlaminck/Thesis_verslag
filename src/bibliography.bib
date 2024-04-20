@@ -649,3 +649,19 @@
     howpublished = {\url{https://www.ddbj.nig.ac.jp/ddbj/code-e.html\#amino-1}},
     note = {Geraadpleegd: 16 april 2024},
 }
+
+@article{pep_gm,
+    author = {Holstein, Tanja and Kistner, Franziska and Martens, Lennart and Muth, Thilo},
+    title = "{PepGM: a probabilistic graphical model for taxonomic inference of viral proteome samples with associated confidence scores}",
+    journal = {Bioinformatics},
+    volume = {39},
+    number = {5},
+    pages = {btad289},
+    year = {2023},
+    month = {05},
+    abstract = "{Inferring taxonomy in mass spectrometry-based shotgun proteomics is a complex task. In multi-species or viral samples of unknown taxonomic origin, the presence of proteins and corresponding taxa must be inferred from a list of identified peptides, which is often complicated by protein homology: many proteins do not only share peptides within a taxon but also between taxa. However, the correct taxonomic inference is crucial when identifying different viral strains with high-sequence homology—considering, e.g., the different epidemiological characteristics of the various strains of severe acute respiratory syndrome-related coronavirus-2. Additionally, many viruses mutate frequently, further complicating the correct identification of viral proteomic samples.We present PepGM, a probabilistic graphical model for the taxonomic assignment of virus proteomic samples with strain-level resolution and associated confidence scores. PepGM combines the results of a standard proteomic database search algorithm with belief propagation to calculate the marginal distributions, and thus confidence scores, for potential taxonomic assignments. We demonstrate the performance of PepGM using several publicly available virus proteomic datasets, showing its strain-level resolution performance. In two out of eight cases, the taxonomic assignments were only correct on the species level, which PepGM clearly indicates by lower confidence scores.PepGM is written in Python and embedded into a Snakemake workflow. It is available at https://github.com/BAMeScience/PepGM.}",
+    issn = {1367-4811},
+    doi = {10.1093/bioinformatics/btad289},
+    url = {https://doi.org/10.1093/bioinformatics/btad289},
+    eprint = {https://academic.oup.com/bioinformatics/article-pdf/39/5/btad289/50311697/btad289.pdf},
+}
