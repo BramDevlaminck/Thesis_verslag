@@ -93,6 +93,11 @@ Hierbij is $n$ de lengte van de tekst.
 Ondertussen bestaan er echter verschillende algoritmen die een tijdscomplexiteit van $O(n)$ bereiken~\cite{sais, ko_alura, radixSA, dark_archon, libdivsufsort}.
 Bovendien vereisen deze veel minder geheugen dan een equivalente suffixboom.
 Sommige implementaties vereisen slechts $5n + O(1)$ geheugen~\cite{dark_archon, libdivsufsort}.
+\\ \\
+Zoeken in een suffix array kan in $O(m \log n)$.
+Hierbij is $n$ opnieuw de lengte van de tekst, en $m$ de lengte van de zoekstring.
+Het resultaat van deze zoekopdracht is een interval in de suffix array waarbinnen de matches liggen, of een leeg interval indien er geen matches zijn.
+Indien we effectief alle matches willen ophalen moeten we deze allemaal overlopen en komt de totale complexiteit uit op $O(m \log n + |Occ|)$ met $|Occ|$ het aantal gevonden matches in de tekst.
 
 
 \section{Bestaande implementaties}\label{sec:bestaande-implementaties}
@@ -105,7 +110,7 @@ Voor sommige werden verschillende implementaties getest.
     \begin{minipage}{\linewidth}
         \centering
         \begin{tabular}{l l S[table-format=-2.2] S[table-format=-2.2] S[table-format=-1.2] S[table-format=-1.2]}
-            Algoritme & Programmeertaal & \multicolumn{2}{c}{Tijd (in s)} & \multicolumn{2}{c}{Geheugen (in GB)} \\
+            Implementatie & Programmeertaal & \multicolumn{2}{c}{Tijd (in s)} & \multicolumn{2}{c}{Geheugen (in GB)} \\
             \hline\hline
             &                      & {32 bit} & {64 bit} & {32 bit} & {64 bit} \\
             \cline{3-6}
@@ -250,7 +255,7 @@ Het zoeken van extreem korte sequenties is echter niet interessant omdat deze er
 \\ \\
 Bovenstaand probleem kan opgelost worden door gebruik te maken van extra datastructuren.
 Zo kan een FM-index~\cite{fm_index} gebruikmaken van een CSA, en kunnen we hierbij wel alle sequenties zoeken.
-Om dit te doen moeten we echter tijdens het opbouwen van de indexstructuur nog bijkomende onderdelen berekenen (zoals de BWT\footnote{Burrows–Wheeler transformatie} van de tekst).
+Om dit te doen moeten we echter tijdens het opbouwen van de indexstructuur nog bijkomende onderdelen berekenen (zoals de BWT\footnote{Burrows–Wheeler transformatie~\cite{bwt}} van de tekst).
 Dit verhoogt opnieuw het geheugengebruik tijdens het opbouwen.
 
 \subsection{Zoeken met sparse suffix arrays}\label{subsec:zoeken-in-sparse-suffix-arrays}
