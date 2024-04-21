@@ -20,23 +20,28 @@ Het geheugengebruik van beide algoritmen blijft echter erg gelijkaardig, wat het
     \subfloat[Tijd nodig om een SA-index voor UniProtKB te bouwen.]{\includegraphics[width=\linewidth]{build_uniprot_time}}\\[4ex] % [4ex] om wat extra vertical spacing in te voegen
 
     \subfloat[Maximale hoeveelheid geheugen gebruikt tijdens het opbouwen van een SA-index voor UniProtKB.]{\includegraphics[width=\linewidth]{build_uniprot_memory}}
-    \caption{Statistieken voor het opbouwen van een SA voor UniProtKB}\label{fig:build_uniprot}
+    \caption{Statistieken voor het opbouwen van een SA voor UniProtKB.}\label{fig:build_uniprot}
 \end{figure}
 
 \section{Een sparseness factor kiezen}
-Een volgende stap na het opbouwen van de volledige SA was het beslissen van de sparseness factor.
-Zoals eerder aangegeven in de conclusie van sectie~\ref{subsec:zoeken-in-sparse-suffix-arrays} willen we deze sparseness factor zo laag mogelijk kiezen, met als restrictie dat de SSA nog steeds in het geheugen moet kunnen gehouden worden.
-De beschikbare machines die UniPept hosten hebben elk $pm$ 0.5 TB RAM ter beschikking.
+Een volgende stap na het opbouwen van de volledige SA was het beslissen welke sparseness factor gebruikt wordt.
+Zoals eerder aangegeven in de conclusie van sectie~\ref{subsec:zoeken-in-sparse-suffix-arrays} willen we deze sparseness factor zo laag mogelijk kiezen, met als restrictie dat de SSA nog steeds in het werkgeheugen moet passen.
+De beschikbare machines die UniPept hosten hebben elk $\pm$ 0.5 TB RAM ter beschikking.
 Dit wil zeggen dat we de resulterende index hierin moeten krijgen, en ook nog genoeg overhead moeten laten zodat de machine zeker niet out-of-memory gaat tijdens het hosten van de index en het verwerken van meerdere requests.
-Praktisch gezien komt dit er op neer dat we gebruikmaken van \textbf{sparseness factor 3}.
-Dit resulteert in een SA van 231.81 GB\@.
-In combinatie met de tekst (86.93 GB) resulteert dit in een \textbf{totale indexgrootte van 318.74 GB}, wat comfortabel in de 0.5 TB past.
-Hierbij moet natuurlijk nog wat overhead gerekend worden om de mapping van de suffix naar proteïne bij te houden.
+Figuur~\ref{fig:uniprot_index_size_sparsenessfactors} geeft een overzicht van indexgrootte voor verschillende sparseness factors.
+Aangezien we ongeveer 0.5 TB RAM ter beschikking hebben, zal sparseness factor $k = 3$ de kleinste factor zijn die comfortabel in het geheugen past.
+We hebben hiervoor namelijk al 322 GB RAM nodig.
+Hierbij moet natuurlijk nog wat overhead gerekend worden om de mapping van de suffix naar proteïne, en alle annotaties die bij een proteïne horen bij te houden.
 Bovendien bevatten deze servers ook nog andere databanken om verdere aggregaties te berekenen.
-Zo biedt Unipept naast een taxonomische analyse ook nog een functionele analyse aan.
-Deze functionele analyse wordt uitgevoerd op basis van de gematchte eiwitten die de indexstructuur terug geeft.
-Indien we sparseness factor 2 zouden gebruiken komt de totale indexgrootte uit op $\pm$ 450 GB\@.
+Indien we sparseness factor 2 zouden gebruiken komt de totale indexgrootte uit op $\pm$ 440 GB\@.
 Dit op zich zou nog net in de machine passen, maar laat niet genoeg ruimte voor de andere processen.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\linewidth]{uniprot_index_sizes}
+    \caption{Grootte van de SA en totale index opgebouwd op UniProtKB voor sparseness factor $k = 1, 2, 3, 4, 5$}
+    \label{fig:uniprot_index_size_sparsenessfactors}
+\end{figure}
 
 \section{Isoleucine en Leucine gelijkstellen}\label{sec:isoleucine-en-leucine-equivalentie}
 Naast het vinden van exacte matches is het vinden van inexacte matches ook interessant.
@@ -133,10 +138,12 @@ Wanneer we alle matches willen vinden waarbij I $\neq$ L, kunnen we volgend stap
 \end{enumerate}
 
 Dit stappenplan is niet alleen simpel, maar het bevat ook geen extreem slechte gevallen zoals bij de index waarbij we I $\neq$ L stellen, en dan alle opties proberen verkennen.
+Er is dus geen nood aan een combinatie van systemen die de server moeten beschermen tegen de slechtste gevallen, die extreem lang konden duren, en bovendien ook veel geheugen vereisten.
 Naast deze voordelen blijkt ook dat deze manier van zoeken iets sneller is in het algemeen.
 Dit valt te zien in Figuur~\ref{fig:uniprot_search_il_equal}.
 Een laatste voordeel is dat het gelijkstellen van I en L de standaard optie is in de huidige Unipept UI\@.
 Dit is net ook wat hier het minste werk vereist tijdens het zoeken.
+Vanwege al deze voordelen kiezen we ervoor om van deze zoekstrategie gebruik te maken.
 
 \begin{figure}[ht]
     \centering
@@ -170,10 +177,51 @@ Bovendien vermoeden we ook dat er een vorm van caching toegepast wordt aangezien
 Dit maakt het benchmarken extreem moeilijk.
 Zoals verwacht zijn de gevonden matches identiek aan de matches die onze nieuwe indexstructuur vindt.
 Naast de variabele performantie faalt deze tool ook regelmatig tijdens het zoeken en ophalen van de resultaten.
+\\ \\
+Vanwege de extreem gelijkaardige mogelijkheden van deze tool hebben we contact opgenomen met UniProt om de vergelijking meer compleet te maken.
+Hun eigen index werkt op basis van Apache Lucene\footnote{\url{https://lucene.apache.org/}}, waarbij alle proteïnen opgesplitst worden in 3-grammen.
+Over deze index is al een publicatie, maar deze is uit 2013.
+Toen bevatte de UniProtKB ongeveer 40 miljoen proteïnen, terwijl deze nu ongeveer 250 miljoen proteïnen bevat.
+Hierdoor zijn de statistieken die toen gepubliceerd zijn verouderd.
+Volgende sectie bevat de gestelde vragen, met de gegeven antwoorden.
+
+\begin{description}[style=nextline]
+    \item[How much memory is needed to build the index structure?]
+    Answer: There is no specific requirement for the RAM memory.
+    One of our users had tested that it works with 32GB RAM\@.
+    \item[How long does it take to build the index?]
+    Answer: It depends on the hardware.
+    We usually run it in a machine with 256GB RAM to index the UniProtKB sequences plus the related information.
+    It can take 1 to 2 days depending on how busy the machine is.
+    \item[How much memory is needed to host the index?]
+    Answer: We had been running the peptidesearch services in a server with 256GB RAM for many years and upgraded the RAM to 512 GB to improve the performance.
+    \item[How many requests do you handle per day?]
+    Answer: There are around 350 searches per day in April.
+    \item[How many peptides does the average request contain?]
+    Answer: Around 80\% of the cases search one peptide.
+    \item[What percentage of requests treat isoleucine and leucine as equivalent? ]
+    Answer: Around 6\% of the cases treat isoleucine=leucine.
+    \item[What is the average time needed to handle 1 request? During our own testing we noticed that the performance can vary a lot from request to request. Is there an explanation for this?]
+    Answer: if you are using the tool on our website, response times can vary due to several reasons:
+    \begin{enumerate}
+        \item Load of the server running PeptideSearch (currently running at PIR in Delaware, US)
+        \item Load/availability of the dispatching server which is located at the EBI, UK)
+    \end{enumerate}
+\end{description}
+
+Uit deze antwoorden kunnen we concluderen dat hun index lagere geheugenvereisten heeft.
+Vermoedelijk komt dit door Apache Lucene geen hard-limit heeft om de index te kunnen gebruiken.
+Het zal echter zoveel geheugen proberen gebruiken als het toegewezen krijgt, om zo onder andere caching toe te passen.
+Dit verklaart waarschijnlijk ook deels de variabele performantie.
+Afhankelijk van eerdere zoekopdrachten zijn verschillende stukken van de index waarschijnlijk sneller doorzoekbaar.
+\\ \\
+Interessant is ook dat 80\% van de zoekopdrachten uit 1 peptide bestaan, en dat slechts in 6\% van de gevallen I en L gelijkgesteld worden.
+Dit is net het tegenovergestelde van de geregistreerde requests bij Unipept.
+Vermoedelijk worden I en L bij Unipept onder andere meer gelijkgesteld aan elkaar omdat dit standaard aan staat bij Unipept, terwijl dit bij UniProt standaard uit staat.
 
 \subsection{Expasy ScanProsite tool}
 De Expasy ScanProsite tool~\cite{scanprosite} laat toe om aan de hand van motieven die lijken op reguliere expressies allerlei patronen te zoeken.
-De beschrijving van motieven laat toe om onder andere wildcards, karakterklassen, inverse klassen en herhalingen te specificeren.
+De beschrijving van motieven laat toe om onder andere wildcards, karakterklassen\footnote{Hiermee bedoelen we het toelaten van een reeks aan tekens op een bepaalde plaats. Dit is gelijkaardig aan de \texttt{[ABC]} syntax uit reguliere expressies, waar we een A, B of C toelaten.}, inverse klassen en herhalingen te specificeren.
 De flexibiliteit van dit systeem is dus een sterk voordeel.
 Een nadeel van deze tool is dat niet de volledige UniProtKB databank doorzocht wordt.
 Er wordt enkel rekening gehouden met proteïnes die deel uit maken van een reference proteome\footnote{Deze zogenaamde reference proteomes zijn een collectie van eiwitten die door een bepaald organisme gemaakt kunnen worden, en die bovendien taxonomisch belangrijk bevonden worden. Deze laatste voorwaarde wil dus zeggen dat dit niet zomaar van elk organisme is, enkel van een selecte groep organismes die op basis van verschillende factoren belangrijk bevonden wordt. Een voorbeeld hiervan is de \textit{human reference proteome}. Dit zijn alle eiwitten die door een mens aangemaakt kunnen worden.}.
@@ -305,5 +353,21 @@ Figuur~\ref{fig:webserver_json_input} en~\ref{fig:webserver_json_output} geven e
     De extra matches boven B worden dus niet verder teruggegeven.}
     \label{fig:webserver_json_output}
 \end{figure}
+
+\section{Productie pijplijn}
+Om een nieuwe versie van UniProtKB in productie te brengen zijn verschillende stappen nodig.
+Een groot deel hiervan gebeurt al voordat de nieuwe indexstructuur van toepassing is.
+Zo moet de nieuwe databank eerst gedownload worden, alle data die Unipept nodig heeft ge-extrageerd worden, om daarna een reeks aan transformaties uit te voeren.
+De masterproef van medestudent Stijn De Clercq gaat hier dieper op in, en welke verbetering hieraan toegebracht zijn het afgelopen jaar.
+De output van deze pipeline levert een reeks \texttt{tsv} bestanden op, die gebruikt worden als input om de indexstructuur op te bouwen.
+Aangezien we de index enkel kunnen bouwen op de HPC vanwege de nodige hoeveelheid RAM, moet dit bestand ook verplaatst worden naar de HPC\@.
+Dit gaat gelukkig vrij snel aangezien dit communicatie is binnen het UGent netwerk, wat aan 1 Gbps kan. % TODO: vraag bij pieter hoe snel dit is?
+Daarna wordt er een job op de HPC in de queue gezet om de effectieve nieuwe SSA te berekenen.
+Hierbij moet eerst wat tijd gerekend worden dat de job in de queue staat, meestal duurt dit niet langer dan enkele uren, waarna de berekening zelf een 6 tal uur duurt.
+Tot slot moet de resulterende SSA van ongeveer 240 GB verplaatst worden naar alle Unipept servers die de index zullen hosten.
+Opnieuw is dit communicatie binnen het UGent netwerk, waardoor dit ongeveer een half uur in beslag neemt.
+Tot slot moet de index op alle servers opgestart worden.
+Zoals eerder vermeld, duurt dit ongeveer 20--25 minuten, waarna de index binnenkomende requests kan verwerken.
+
 
 
