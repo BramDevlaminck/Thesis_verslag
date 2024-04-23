@@ -110,7 +110,7 @@ Voor sommige werden verschillende implementaties getest.
     \begin{minipage}{\linewidth}
         \centering
         \begin{tabular}{l l S[table-format=-2.2] S[table-format=-2.2] S[table-format=-1.2] S[table-format=-1.2]}
-            Implementatie & Programmeertaal & \multicolumn{2}{c}{Tijd (in s)} & \multicolumn{2}{c}{Geheugen (in GB)} \\
+            Algoritme & Programmeertaal & \multicolumn{2}{c}{Tijd (in s)} & \multicolumn{2}{c}{Geheugen (in GB)} \\
             \hline\hline
             &                      & {32 bit} & {64 bit} & {32 bit} & {64 bit} \\
             \cline{3-6}
@@ -145,8 +145,8 @@ De baseline waarmee we willen vergelijken is de hoeveelheid geheugen die we nodi
 Voor de Swiss-Prot eiwitdatabank was dit 2.3 GB\@.
 Als we ook de pLCP array berekenen, is het maximale geheugengebruik 4.43 GB RAM, en met de LCP array loopt dit zelfs op naar 5.72 GB\@.
 \textbf{Het berekenen van deze extra arrays vraagt dus ongeveer dubbel zoveel geheugen, waardoor we deze optie niet verder uitwerken}.
-Bovendien berekenen we deze LCP array om zo het voorberekenen van de geaggregeerde taxon ID voor elke interne top van de overeenkomstige suffixboom te faciliteren.
-Om dit effectief mogelijk te maken zouden we dus op basis van de SA en LCP nog een compacte representatie van de boomstructuur moeten vinden
+Bovendien berekenen we deze LCP array om het voorberekenen van de geaggregeerde taxon ID voor elke interne top van de overeenkomstige suffixboom mogelijk te maken.
+Daarna moet er op basis van deze SA en LCP array nog een compacte representatie gevonden worden van de boomstructuur.
 Dit is niet vanzelfsprekend.
 
 
@@ -420,7 +420,7 @@ Dit motiveert onze keuze om finaal gebruik te maken van Rayon.
 Nu we verschillende manier verkend hebben om suffix arrays op te bouwen, is het interessant om suffix arrays te vergelijken met suffixbomen.
 Op basis hiervan kunnen we vaststellen welke verbeteringen we gemaakt hebben, of deze indexstructuur goed genoeg schaalt om toepasbaar te zijn op de volledige UniProtKB databank en in welke tijd de peptiden gezocht kunnen worden.
 
-\subsection{Opbouwen}
+\subsection{Opbouwen}\label{subsec:opbouwen}
 Figuur~\ref{fig:array_building} visualiseert de tijd nodig om de indexstructuur op te bouwen in combinatie met het geheugengebruik.
 Er is duidelijk een \textbf{mooie tijdswinst} verkregen, wat een bonus is voor het lokaal opbouwen van indices.
 Voor het opbouwen van de index op UniProtKB is dit echter minder van belang aangezien dit proces slechts om de 8 weken moet gebeuren.
@@ -428,7 +428,7 @@ Zolang de nodige CPU tijd hiervoor niet langer dan één à twee dagen is, is di
 Een veel belangrijkere vaststelling is het \textbf{maximale geheugengebruik tijdens opbouwen}.
 Ook dit is \textbf{drastisch gedaald}.
 Dit is exact de reden dat we deze indexstuctuur gekozen hebben.
-Wanneer we het resultaat voor Swiss-Prot extrapoleren naar UniProtKB, gebruikmakende van de assumptie dat UniProtKB ongeveer 500 keer groter is dan is de verwachting dat er ongeveer 1.2 TB RAM nodig is.
+Wanneer we het resultaat voor Swiss-Prot extrapoleren naar UniProtKB, gebruikmakende van de assumptie dat UniProtKB ongeveer 500 keer groter is, dan is de verwachting dat er ongeveer 1.2 TB RAM nodig zal zijn.
 Hierbij heeft de sparseness factor $k$ geen invloed op het maximale geheugenverbruik tijdens het opbouwen van de suffix array.
 We moeten namelijk eerst de volledige suffix array bouwen om daarna te samplen hieruit.
 Deze 1.2 TB blijft een grote hoeveelheid aan geheugen, maar is wel al beschikbaar op de huidige generatie aan servers.
@@ -443,7 +443,7 @@ Zo bieden zowel Amazon via AWS, google via GCP en Microsoft via Azure instanties
 \end{figure}
 
 \subsection{Zoeken}\label{subsec:zoeken}
-Aangezien er met se SA-indexstructuur geen voorberekening gebeurt van LCA's, is het enkel nuttig om de zoektijd inclusief het berekenen van de LCA te bekijken.
+Aangezien er met de SA-indexstructuur geen voorberekening gebeurt van LCA's, is het enkel nuttig om de zoektijd inclusief het berekenen van de LCA te bekijken.
 De tijd tot een match levert ons in dat geval nog niet alle nodige informatie op, zoals dit wel het geval was bij de suffixboom.
 \\ \\
 Figuur~\ref{fig:cutoff_humanprot}~(a) toont de zoekperformantie met suffix arrays.
@@ -459,10 +459,10 @@ Slechts voor 200 peptiden was er een resultaat op soortniveau.
 \\
 \begin{figure}[H]
     \centering
-    \subfloat[Bereken de LCA* voor alle matches.]{\includegraphics[width=0.7\linewidth]{no_cutoff_humanprot_search}}\\[4ex] % [4ex] om wat extra vertical spacing in te voegen
+    \subfloat[Bereken de LCA* voor alle matches. Voor de suffix arrays is gebruik gemaakt van sparseness factor $k = 1$.]{\includegraphics[width=0.7\linewidth]{no_cutoff_humanprot_search}}\\[4ex] % [4ex] om wat extra vertical spacing in te voegen
 
     \subfloat[Bereken de LCA* enkel als er minder dan 10\thinspace000 matches zijn.]{\includegraphics[width=0.7\linewidth]{cutoff_humanprot_search}}
-    \caption{Berekenen van de LCA* (inclusief zoeken) voor alle peptiden (a) zonder en (b) met het gebruik van de drempelwaarde (B=10\thinspace000) op het Human-Prot en Swiss-Prot proteïnenbestand.}\label{fig:cutoff_humanprot}
+    \caption{Berekenen van de LCA* (inclusief zoeken) voor alle peptiden (a) zonder en (b) met het gebruik van de drempelwaarde (B=10\thinspace000) op het Human-Prot en Swiss-Prot proteïnenbestand. De suffix array maakt gebruik van sparseness factor $k = 1$.}\label{fig:cutoff_humanprot}
 \end{figure}
 
 In Figuur~\ref{fig:cutoff_humanprot} is duidelijk te zien dat de \textbf{uitvoeringstijd drastisch daalt} wanneer de cut-off op 10000 matches geplaatst wordt.
