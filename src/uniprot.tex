@@ -277,9 +277,9 @@ We willen dit inladen slechts eenmalig doen om dan alle requests onmiddellijk te
 Dit doen we aan de hand van een simpele \textbf{webserver} met de Axum crate~\cite{axum}.
 Deze webserver laadt de indexstructuur in bij het opstarten, en blijft daarna wachten op HTTP requests die een JSON bevatten met daarin de peptiden die we willen zoeken.
 Op deze manier is dit probleem elegant opgelost, en kunnen we bovendien aan de hand van \textbf{JSON bestanden} erg makkelijk de input verwerken, en de resultaten terugsturen.
-Figuur~\ref{fig:webserver_json_input} en~\ref{fig:webserver_json_output} geven een voorbeeld input en output.
+Codefragment~\ref{fig:webserver_json_input} en~\ref{fig:webserver_json_output} geven een voorbeeld input en output.
 
-\begin{figure}[h!]
+\begin{listing}[h!]
     \begin{minted}[frame=lines,framesep=2mm,linenos]{JSON}
 {
   "peptides": [
@@ -297,9 +297,9 @@ Figuur~\ref{fig:webserver_json_input} en~\ref{fig:webserver_json_output} geven e
     Welke taxa (en overeenkomstige eiwitten) nuttig zijn tijdens het aggregeren, wordt eerder in de Unipept pipeline beslist.
     De laatste twee argumenten zouden ook weggelaten kunnen worden aangezien de standaardwaardes hier gebruikt worden.}
     \label{fig:webserver_json_input}
-\end{figure}
+\end{listing}
 
-\begin{figure}[h!]
+\begin{listing}[h!]
     \begin{minted}[frame=lines,framesep=2mm,linenos]{JSON}
 {
   "result": [
@@ -347,7 +347,7 @@ Figuur~\ref{fig:webserver_json_input} en~\ref{fig:webserver_json_output} geven e
     In dit geval stond deze bovengrens B op 10\thinspace000 matches.
     Indien deze wel gebruikt is zal de lca automatisch op 1 gezet worden en zullen er exact B matches teruggegeven worden (en dus ook matches weggelaten worden).}
     \label{fig:webserver_json_output}
-\end{figure}
+\end{listing}
 
 \section{Productie pijplijn}
 Om een nieuwe versie van de index voor UniProtKB in productie te brengen zijn verschillende stappen nodig.

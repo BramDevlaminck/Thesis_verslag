@@ -88,8 +88,9 @@ Hierbij worden naast de suffix array nog drie extra tabellen bijgehouden: de Lon
 
 
 \section{Complexiteit}\label{sec:complexiteit}
-Traditionele sorteeralgoritmen zoals merge sort~\cite{mergeSort} kunnen in $O(n \log n)$ tijd en $O(n^2)$ geheugen een suffix array opbouwen.
+Traditionele sorteeralgoritmen zoals merge sort~\cite{mergeSort} kunnen in $O(n^2 \log n)$ tijd en $O(n^2)$ geheugen een suffix array opbouwen.
 Hierbij is $n$ de lengte van de tekst.
+De totale tijdscomplexiteit is $O(n^2 \log n)$ en niet $O(n \log n)$ aangezien elke vergelijking van twee suffixen in het slechtste geval $n$ karaktervergelijkingen vereist.
 Ondertussen bestaan er echter verschillende algoritmen die een tijdscomplexiteit van $O(n)$ bereiken~\cite{sais, ko_alura, radixSA, dark_archon, libdivsufsort}.
 Bovendien vereisen deze veel minder geheugen dan een equivalente suffixboom.
 Sommige implementaties vereisen slechts $5n + O(1)$ geheugen~\cite{dark_archon, libdivsufsort}.
