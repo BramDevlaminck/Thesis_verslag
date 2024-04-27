@@ -7,38 +7,42 @@ Om deze processen te analyseren zijn er meerdere benaderingen mogelijk.
 
 
 \section{Genomica, transcriptomica \& proteomica}\label{sec:genomica-transcriptomica-&-proteomica}
-Een eerste mogelijkheid is aan de hand van het onderzoeksgebied van de \textbf{proteomica}.
-Dit is de studie van alle eiwitten die binnen een enkel organisme tot expressie kunnen komen.
-Hierbij probeert men te begrijpen hoe eiwitten in elkaar zitten, hoe deze met elkaar en binnen een bepaalde omgeving met elkaar interageren en wat hun belangrijkste functie is.
-In de biologie bestaat er een concept dat de omzetting naar deze eiwitten beschrijft, dit noemt men het centraal dogma.
-Wanneer we er een analogie bij betrekken kunnen we centraal dogma omschrijven als het proces dat een gerecht doorloopt in de keuken van een restaurant.
-Hierbij zijn de eiwitten het afgewerkte gerecht.
-Naast proteomica bestaan er nog twee andere gerelateerde disciplines.
-\\ \\
-De eerste alternatieve discipline is \textbf{genomica}, het onderzoek naar het genoom.
-Het genoom van een organisme is de collectie van al het DNA binnen een organisme.
-Dit stelt voor welke proteïnen mogelijks door het organisme geconstrueerd kunnen worden.
-Dit is het begin van het proces van het centraal dogma, wanneer we de analogie van eerder erbij betrekken is dit het receptenboek dat alle recepten bevat.
-Een belangrijk verschil met proteomica is dat DNA instructies voorstelt voor de productie van alle mogelijke proteïnen die het organisme kan maken.
+De eerste mogelijke discipline is \textbf{genomica}, het onderzoek naar het genoom.
+Het genoom van een organisme is de collectie van al het DNA binnen dat organisme.
+Het DNA bevat ``het recept'' voor alle proteïnen die mogelijks door het organisme geconstrueerd kunnen worden
+Dit is het begin van het proces van het centraal dogma.
+Dit centraal dogma beschrijft de omzetting van DNA naar proteïnes.
+Wanneer we gebruikmaken van een analogie, dan is het DNA een receptenboek en is een proteïne een afgewerkt gerecht (waarvoor de instructies in het receptenboek staan).
+Het DNA stelt dus de instructies voor van alle mogelijke proteïnen die een bepaald organisme kan maken.
 Het geeft dus geen informatie over de proteïnen die op dat moment in de tijd actief zijn.
 Het is een voorstelling van wat het organisme kan, niet wat het op \textit{dit} moment aan het doen is.
 Belangrijk is dat ongeveer 98\% van het menselijke genoom niet-coderend is, wat wil zeggen dat dit deel van het DNA niet omgezet kan worden naar een betekenisvolle proteïne.
-In de plaats kunnen deze niet-coderende delen omgezet worden naar \textit{regulatory sequences}, niet-coderende genen, of andere componenten.
+In de plaats kunnen deze niet-coderende delen omgezet worden naar \textit{regulatory sequences}, niet-coderende genen, of andere componenten waarvan we nog niet altijd weten of ze al dan niet een functie hebben.
 \\ \\
 De andere discipline is de \textbf{transcriptomica}.
 Deze discipline onderzoekt het transcriptoom van een organisme, wat de verzameling is van alle RNA moleculen die in het organisme aanwezig zijn.
-Het transcriptoom is een belangrijke indicatie van welke delen uit het DNA effectief proteïnen encoderen.
-Dit omdat RNA, meer specifiek messenger RNA (mRNA) en transfer RNA (tRNA), een belangrijk onderdeel is van het proces om DNA om te zetten naar proteïnen.
+Het transcriptoom is een belangrijke indicator voor welke delen uit het DNA effectief proteïnen encoderen.
+Dit komt omdat RNA, meer specifiek messenger RNA (mRNA) en transfer RNA (tRNA), een belangrijk onderdeel zijn van het proces om DNA om te zetten naar proteïnen.
 In de restaurant analogie is dit een kopie van één recept uit het receptenboek.
 Dit recept beschrijft hoe het gerecht exact gemaakt moet worden.
-Een visualisatie van de analogie, en de link met het centraal dogma van de biologie, kan terug gevonden worden in Figuur~\ref{fig:recipe}.
 \\ \\
-Onze focus ligt vooral binnen het veld van de \textbf{metaproteomica}.
-Het \textit{meta} prefix zegt dat de te analyseren stalen niet van één organisme afkomstig zijn, maar van \textbf{meerdere organismen} (typisch binnen hetzelfde ecosysteem).
+Tot slot bestaat ook het onderzoeksgebied van de \textbf{proteomica}.
+Dit is de studie van alle proteïnen die binnen een enkel organisme tot expressie kunnen komen.
+Hierbij probeert men te begrijpen hoe proteïnen in elkaar zitten, hoe deze met elkaar en binnen een bepaalde omgeving met elkaar interageren en wat hun belangrijkste functie is.
+Het voordeel van het bestuderen van de proteïnen is dat je weet welke proteïnen exact op een specifiek moment aanwezig zijn, en op die manier kan afleiden wat er exact gebeurt in een organisme.
+Zoals eerder beschreven zijn de proteïnen het afgewerkte gericht binnen onze analogie.
+Een visualisatie van de analogie, en de link met het centraal dogma van de biologie, kan teruggevonden worden in Figuur~\ref{fig:recipe}.
+\\ \\
+De focus van deze masterproef ligt vooral binnen het veld van de \textbf{metaproteomica}.
+Het prefix \textit{meta} geeft aan dat de te analyseren stalen niet van één organisme afkomstig zijn, maar van \textbf{meerdere organismen} (typisch binnen hetzelfde ecosysteem).
 Dit maakt de analyse moeilijker aangezien proteïnen van verschillende organismen gelijkaardige aminozuursequenties kunnen hebben (al dan niet door toeval).
-Meer specifiek is het doel van metaproteomica om op zoek te gaan naar de taxa en functies die horen bij een verzameling van eiwitfragmenten.
-Deze eiwitfragmenten noemen we peptides wanneer ze bestaan uit twee of meer aminozuren en hun lengte beperkt blijft.
+Binnen het metaproteomica veld gaan onderzoekers op zoek naar welke organismes er in een ecosysteem aanwezig zijn en wat deze daar dan doen.
+Dit doet men door een verzameling van eiwitfragmenten te analyseren.
+Deze eiwitfragmenten noemen we peptiden wanneer ze bestaan uit twee of meer aminozuren en hun lengte beperkt blijft.
 In de praktijk gaat dit over sequenties van ongeveer 2 tot 50 aminozuren lang.
+Idealiter kunnen we deze analyses uitvoeren met volledige proteïnen, en niet met peptiden.
+Dit is echter niet mogelijk vanwege beperkingen bij de huidige generatie aan machines die proteïnen inlezen.
+Deze kunnen slechts korte fragmenten, dus peptiden, inlezen.
 Een veelvoorkomende categorie van peptiden die we zullen analyseren zijn tryptische peptiden.
 
 \begin{figure}[H]
@@ -74,8 +78,8 @@ Daarna worden deze resultaten aan de hand van diverse zoekprocessen (via zogenaa
 Deze sequenties vormen de input voor tools zoals Unipept.
 \\ \\
 Eén belangrijke consequentie van het gebruik van een massaspectrometer is dat Isoleucine (I) en Leucine (L) niet uit elkaar gehouden kunnen worden.
-Deze aminozuren bestaan uit dezelfde atomen (C\textsubscript{6}H\textsubscript{13}NO\textsubscript{2}), maar deze zijn op een andere manier verbonden.
-Hierdoor hebben ze een identieke massa, wat ervoor zorgt dat ze niet te onderscheiden zijn.
+Deze aminozuren bestaan uit dezelfde atomen (C\textsubscript{6}H\textsubscript{13}NO\textsubscript{2}), maar hebben niet dezelfde structuur.
+Bijgevolg hebben ze een identieke massa, en zijn ze niet te onderscheiden van elkaar.
 
 
 \section{Unipept}\label{sec:unipept-introductie}
@@ -86,16 +90,15 @@ Unipept~\cite{unipept_orig} biedt een ecosysteem van tools aan om stalen uit het
     Met de gebruiksvriendelijke \textit{user interface} wordt analyseren van metaproteomica data beschikbaar gesteld.
     De resultaten van deze analyse worden aan de hand van visualisaties en tabellen aan de gebruiker voorgesteld.
     Deze kunnen vervolgens makkelijk geëxporteerd worden (bijv.~voor analyse in andere tools).
-    \item \textbf{Unipept CLI\footnote{\textit{commandline interface}}~\cite{unipept_cli}} Dit is een \textit{power-user} tool voor de commandolijn om analyses uit te voeren op grotere stalen.
+    \item \textbf{Unipept CLI\footnote{\textit{commandline interface}}~\cite{unipept_cli}} Dit is een \textit{power-user} tool voor de commandolijn om analyses uit te voeren op grotere stalen en laat toe om de Unipept analyses in een grotere \textit{pipeline} op te nemen.
     \item \textbf{Unipept API\footnote{\textit{application programming interface}}~\cite{unipept_api, unipept_cli}} Dit is een collectie van \textit{endpoints} die andere applicaties (inclusief de Unipept CLI), toelaat om de functionaliteit van Unipept te integreren.
     \item \textbf{Unipept Desktop~\cite{unipept_desktop, unipept_desktop_2}} Dit is de recentste toevoeging aan het Unipept ecosysteem en laat toe dat onderzoekers niet noodzakelijk met de Unipept servers moeten communiceren om analyses uit te voeren.
-    Deze applicatie combineert de voordelen van de web app, CLI en API en laat toe om lokaal stalen te analyseren, gebruikmakende van een gebruiksvriendelijke UI\@.
-
+    Deze applicatie combineert de voordelen van de web app, CLI en API en laat toe om lokaal grote stalen te analyseren, gebruikmakende van een gebruiksvriendelijke UI\@.
 \end{itemize}
 
 Op dit moment is Unipept \textbf{exclusief gericht op de analyse van tryptische peptiden}.
-De reden hiervoor is de manier waarop de achterliggende indexstructuur opgebouwd wordt.
-Dit opbouwen gaat in grote lijnen als volgt:
+De huidige achterliggende indexstructuur is namelijk specifiek hiervoor ontworpen omdat tot op heden metaproteomica onderzoek bijna uitsluitend gebruikmaakt van tryptische peptiden.
+Het opbouwen van de huidige indexstructuur gaat in grote lijnen als volgt:
 
 \begin{enumerate}
     \item Haal alle proteïnen en bijbehorende taxonomische en functionele annotaties op uit de UniProtKB databank~\cite{UniprotKB}.
@@ -110,7 +113,14 @@ Dit komt doordat tijdens het opbouwen van de Unipept indexstructuur de vuistrege
 Op basis hiervan worden de taxonomische en functionele annotaties voor elke tryptische peptide voorberekend.
 \\ \\
 Op dit moment is er wel een \textit{workaround} die toelaat om peptiden met \textit{missed cleavages} toch te zoeken.
-Dit heeft echter wel een significante impact op de performantie.
+Hiervoor worden alle peptiden die een missed cleavage hebben opgesplitst, en worden de tryptische fragmenten apart gezocht.
+Daarna wordt de doorsnede genomen van de gematchte proteïnen per fragment, waarna we dus een verzameling van proteïnen bekomen die op zijn minst alle tryptische fragmenten bevatten.
+Voor deze verzameling van proteïnen moet nog gecontroleerd worden als de fragmenten weldegelijk na elkaar voorkomen (en dus verbonden zijn).
+Dit doen we door brute-force voor elke proteïne te controleren als de originele peptide hier in voor komt.
+Tot slot wordt de LCA van de gematchte proteïnen berekend.
+Dit moet gebeuren tijdens het zoeken zelf, in tegenstelling tot het zoeken van strikt tryptische peptiden.
+Indien we geen rekening houden met \textit{missed cleavages} zijn alle LCAs namelijk al voorberekend.
+Het is duidelijk dat al deze extra stappen een sterke, negatieve invloed hebben op de performantie.
 Deze verminderde performantie bij \textit{missed cleavages}, in combinatie met het compleet ontbreken van een manier om willekeurig gesplitste peptiden te zoeken, verklaart de nood aan een nieuwe indexstructuur.
 \\ \\
 Voor een gedetailleerdere beschrijving van Unipept en het onderzoeksveld van metaproteomica is het aangeraden om de inleiding van het doctoraat van Dr.~Pieter Verschaffelt te lezen~\cite{phdPieterUnipept}.
@@ -118,20 +128,20 @@ Dit vormde een duidelijke en goede basis voor deze inleiding.
 
 
 \section{Probleemstelling}\label{sec:probleemstelling}
-In deze masterproef zoeken we een oplossing voor het snel terugvinden van \textbf{willekeurige peptiden} in een eiwitdatabank.
+In deze masterproef zoeken we een oplossing voor het snel terugvinden van \textbf{willekeurige peptiden}\footnote{Hiermee bedoelen we zowel peptiden die tryptisch zouden moeten zijn, maar één of meerdere \textit{missed cleavages} hebben. Als peptiden die niet-tryptisch zijn, en dus op een andere manier gesplist zijn.} in een eiwitdatabank.
 Bij het vinden van een match moet het daarna mogelijk zijn de informatie op te halen die hoort bij alle proteïnen waarin de peptide voorkomt.
 Binnen het onderzoeksgebied van de informatica kunnen we dit probleem als volgt herformuleren:
 ``In een grote verzameling van middellange strings (alle eiwitten in onze databank), moeten we voor een verzameling van korte strings (peptiden) terugvinden in welke van deze middellange strings ze voorkomen.''
-We willen echter niet alleen maar vinden van welke proteïnen een peptide deel is.
+We willen echter niet alleen maar vinden van welke proteïnen een peptide deel uitmaakt.
 Ook de bijbehorende taxonomische en functionele annotaties van de gematchte proteïne moeten zo snel mogelijk te vinden zijn.
-Deze gevonden annotaties moeten efficiënt verwerkt kunnen worden om zo efficiënt het eindresultaat te bekomen.
+Deze gevonden annotaties moeten efficiënt verwerkt kunnen worden om zo vlot het eindresultaat te bekomen.
 Om dit te realiseren, worden waar mogelijk annotaties geaggregeerd tijdens het opbouwen van de indexstructuur.
 \\ \\
 Belangrijk hierbij is dat dit alles niet alleen \textbf{snel} gebeurt, maar dat we ook proberen \textbf{het vereiste geheugen tot een minimum te beperken}.
 Wat als acceptabel beschouwd wordt, hangt af van de omgeving waarin de analyses uitgevoerd worden.
 Voor stalen die geanalyseerd worden op een PC m.b.v.~Unipept Desktop is dit $\pm$ 16 GB RAM\@.
 Voor grotere stalen waarvan de analyse op de Unipept servers uitgevoerd wordt mikken we op 0.5-2 TB geheugengebruik.
-Dit komt overeen met een realistische configuratie voor een server die gericht is op het uitvoeren geheugenintensieve taken.
+Dit komt overeen met een realistische configuratie voor een server die gericht is op het uitvoeren van geheugenintensieve taken.
 \\ \\
 Tot slot willen we ook \textbf{semi-exacte matching} toevoegen tijdens het zoeken.
 Hierbij willen we de mogelijkheid aanbieden om Isoleucine (I) en Leucine (L) gelijk te stellen aan elkaar.
@@ -162,7 +172,7 @@ UniProtKB zelf bestaat uit twee onderdelen (gegeven statistieken zijn voor relea
 \begin{enumerate}
     \item \textbf{Swiss-Prot}: Dit is een kleinere, manueel gecureerde dataset met 570\thinspace157 eiwitsequenties.
     \item \textbf{TrEMBL}: Deze dataset bevat 251\thinspace600\thinspace768 sequenties en is dus veel groter dan Swiss-Prot.
-    Een bijkomend verschil is dat deze dataset \textbf{niet} manueel gecureerd is, maar algoritmisch geannoteerd werd.
+    Een bijkomend verschil is dat deze dataset \textbf{niet} manueel gecureerd is, maar geautomatiseerd geannoteerd werd.
 \end{enumerate}
 Uiteindelijk is het doel om een indexstructuur voor UniProtKB op te bouwen waarbij de probleemstelling opgelost is.
 UniProtKB is echter veel te groot om mee te werken tijdens het testen.
@@ -181,14 +191,14 @@ Dit verklaart onmiddellijk de keuze om gebruik te maken van kleinere datasets ti
         Metriek                   & Waarde                                       \\
         \hline\hline
         Totaal aantal sequenties  & 248\thinspace842\thinspace516                \\
-        Totale lengte             & 86\thinspace805\thinspace673\thinspace041 aa \\
-        Minimale proteïnelengte   & 1 aa                                         \\
-        Maximale proteïnelengte   & 45\thinspace354 aa                           \\
-        Gemiddelde proteïnelengte & 348.84 aa                                    \\
-        Mediaan proteïnelengte    & 278 aa                                       \\
+        Totale lengte             & 86\thinspace805\thinspace673\thinspace041 AA \\
+        Minimale proteïnelengte   & 1 AA                                         \\
+        Maximale proteïnelengte   & 45\thinspace354 AA                           \\
+        Gemiddelde proteïnelengte & 348.84 AA                                    \\
+        Mediaan proteïnelengte    & 278 AA                                       \\
         \hline
     \end{tabular}
-    \caption{Eigenschappen van de volledige UniProtKB 2023\_04 databank. De afkorting \textit{aa} staat voor \textit{amino acids}.}
+    \caption{Eigenschappen van de volledige UniProtKB 2023\_04 databank. De afkorting \textit{AA} staat voor \textit{amino acids}.}
     \label{tab:uniprotKB_eigenschappen}
 \end{table}
 
@@ -222,14 +232,14 @@ Figuur~\ref{fig:swissprot_aminozuur} en Figuur~\ref{fig:swissprot_length} geven 
         Metriek                   & Waarde                           \\
         \hline\hline
         Totaal aantal sequenties  & 569\thinspace619                 \\
-        Totale lengte             & 205\thinspace954\thinspace074 aa \\
-        Minimale proteïnelengte   & 2 aa                             \\
-        Maximale proteïnelengte   & 35\thinspace213 aa               \\
-        Gemiddelde proteïnelengte & 361.56 aa                        \\
-        Mediaan proteïnelengte    & 295 aa                           \\
+        Totale lengte             & 205\thinspace954\thinspace074 AA \\
+        Minimale proteïnelengte   & 2 AA                             \\
+        Maximale proteïnelengte   & 35\thinspace213 AA               \\
+        Gemiddelde proteïnelengte & 361.56 AA                        \\
+        Mediaan proteïnelengte    & 295 AA                           \\
         \hline
     \end{tabular}
-    \caption{Eigenschappen van de Swiss-Prot databank (UniProtKB 2023\_04). De afkorting \textit{aa} staat voor \textit{amino acids}.}
+    \caption{Eigenschappen van de Swiss-Prot databank (UniProtKB 2023\_04). De afkorting \textit{AA} staat voor \textit{amino acids}.}
     \label{tab:swissprot_eigenschappen}
 \end{table}
 
@@ -269,14 +279,14 @@ Figuur~\ref{fig:humanprot_aminozuur} en~\ref{fig:humanprot_length} gaan dieper i
         Metriek                   & Waarde                          \\
         \hline\hline
         Totaal aantal sequenties  & 82\thinspace695                 \\
-        Totale lengte             & 30\thinspace293\thinspace046 aa \\
-        Minimale proteïnelengte   & 2 aa                            \\
-        Maximale proteïnelengte   & 35\thinspace991 aa              \\
-        Gemiddelde proteïnelengte & 366.32 aa                       \\
-        Mediaan proteïnelengte    & 204 aa                          \\
+        Totale lengte             & 30\thinspace293\thinspace046 AA \\
+        Minimale proteïnelengte   & 2 AA                            \\
+        Maximale proteïnelengte   & 35\thinspace991 AA              \\
+        Gemiddelde proteïnelengte & 366.32 AA                       \\
+        Mediaan proteïnelengte    & 204 AA                          \\
         \hline
     \end{tabular}
-    \caption{Eigenschappen van de Human-Prot databank (UniProtKB 2023\_04). De afkorting \textit{aa} staat voor \textit{amino acids}.}
+    \caption{Eigenschappen van de Human-Prot databank (UniProtKB 2023\_04). De afkorting \textit{AA} staat voor \textit{amino acids}.}
     \label{tab:humanprot_eigenschappen}
 \end{table}
 
@@ -326,16 +336,16 @@ Tabel~\ref{tab:artifiele_bestanden_statistieken} bevat in kolom twee en drie een
         Metriek                    & Swiss-Prot-TRYP                & Swiss-Prot-MC                  & Human-Prot                                  \\
         \hline\hline
         Totaal aantal sequenties   & 100\thinspace000               & 100\thinspace000               & 250\thinspace000                            \\
-        Totale lengte              & 1\thinspace605\thinspace909 aa & 2\thinspace544\thinspace356 aa & 2\thinspace458\thinspace834\thinspace046 aa \\
-        Minimale peptidelengte     & 5 aa                           & 5 aa                           & 1 aa                                        \\
-        Maximale peptidelengte     & 50 aa                          & 93 aa                          & 12 aa                                       \\
-        Gemiddelde peptidelengte   & 16.06 aa                       & 25.44 aa                       & 9.84 aa                                     \\
-        Mediaan peptidelengte      & 13 aa                          & 23 aa                          & 10 aa                                       \\
+        Totale lengte              & 1\thinspace605\thinspace909 AA & 2\thinspace544\thinspace356 AA & 2\thinspace458\thinspace834\thinspace046 AA \\
+        Minimale peptidelengte     & 5 AA                           & 5 AA                           & 1 AA                                        \\
+        Maximale peptidelengte     & 50 AA                          & 93 AA                          & 12 AA                                       \\
+        Gemiddelde peptidelengte   & 16.06 AA                       & 25.44 AA                       & 9.84 AA                                     \\
+        Mediaan peptidelengte      & 13 AA                          & 23 AA                          & 10 AA                                       \\
         Aantal vindbare peptiden   & 67\thinspace375                & 62\thinspace581                & 250\thinspace000                            \\
         Aantal tryptische peptiden & 100\thinspace000               & 4107                           & 102\thinspace659                            \\
         \hline
     \end{tabular}
-    \caption{Eigenschappen van de verschillende peptidebestanden. \textit{Swiss-Prot-TRYP} bevat de statistieken voor het Swiss-Prot peptidebestand met enkel tryptische peptiden. Hierbij komen er dus geen \textit{missed cleavages} voor. \textit{Swiss-Prot-MC} bevat net wel \textit{missed cleavages}. De laatste kolom bevat de statistieken voor het peptidebestand dat hoort bij de Human-Prot eiwitdatabank. De afkorting \textit{aa} staat voor \textit{amino acids}.}
+    \caption{Eigenschappen van de verschillende peptidebestanden. \textit{Swiss-Prot-TRYP} bevat de statistieken voor het Swiss-Prot peptidebestand met enkel tryptische peptiden. Hierbij komen er dus geen \textit{missed cleavages} voor. \textit{Swiss-Prot-MC} bevat net wel \textit{missed cleavages}. De laatste kolom bevat de statistieken voor het peptidebestand dat hoort bij de Human-Prot eiwitdatabank. De afkorting \textit{AA} staat voor \textit{amino acids}.}
     \label{tab:artifiele_bestanden_statistieken}
 \end{table}
 
@@ -353,24 +363,24 @@ Deze peptidebestanden worden in combinatie met de Swiss-Prot proteïnedatabank g
                 Metriek                    & SIHUMI 03           & SIHUMI 05           & SIHUMI 05           & SIHUMI 08           & SIHUMI 11           & SIHUMI 14           \\
                 \hline\hline
                 Totaal aantal sequenties   & 25\thinspace000     & 25\thinspace000     & 24\thinspace424     & 25\thinspace000     & 24\thinspace998     & 25\thinspace000     \\
-                Totale lengte              & 420\thinspace544 aa & 420\thinspace423 aa & 373\thinspace633 aa & 316\thinspace114 aa & 366\thinspace894 aa & 430\thinspace674 aa \\
-                Minimale peptidelengte     & 6 aa                & 6 aa                & 6 aa                & 6 aa                & 6 aa                & 6 aa                \\
-                Maximale peptidelengte     & 50 aa               & 50 aa               & 47 aa               & 43 aa               & 50 aa               & 50 aa               \\
-                Gemiddelde peptidelengte   & 16.82 aa            & 16.82 aa            & 15.30 aa            & 12.64 aa            & 14.68 aa            & 17.23 aa            \\
-                Mediaan peptidelengte      & 15 aa               & 16 aa               & 14 aa               & 12 aa               & 14 aa               & 16 aa               \\
+                Totale lengte              & 420\thinspace544 AA & 420\thinspace423 AA & 373\thinspace633 AA & 316\thinspace114 AA & 366\thinspace894 AA & 430\thinspace674 AA \\
+                Minimale peptidelengte     & 6 AA                & 6 AA                & 6 AA                & 6 AA                & 6 AA                & 6 AA                \\
+                Maximale peptidelengte     & 50 AA               & 50 AA               & 47 AA               & 43 AA               & 50 AA               & 50 AA               \\
+                Gemiddelde peptidelengte   & 16.82 AA            & 16.82 AA            & 15.30 AA            & 12.64 AA            & 14.68 AA            & 17.23 AA            \\
+                Mediaan peptidelengte      & 15 AA               & 16 AA               & 14 AA               & 12 AA               & 14 AA               & 16 AA               \\
                 Aantal vindbare peptiden   & 2570                & 2698                & 3652                & 4135                & 3792                & 2761                \\
                 Aantal tryptische peptiden & 17\thinspace263     & 162                 & 152                 & 207                 & 153                 & 242                 \\
                 \hline
             \end{tabular}}
-        \caption{Eigenschappen van de SIHUMIx peptidebestanden. Elke kolom stelt een staal voor met als bestandsnaam \texttt{S<XX>.txt}. Deze stalen kunnen teruggevonden worden in onze GitHub repository \protect\footnote{\url{https://github.com/BramDevlaminck/Thesis\_benchmarkdata}} onder de \texttt{SIHUMI}-folder. De afkorting \textit{aa} staat voor \textit{amino acids}.} % protect is needed to make footnote possible in a caption. This is combined with a minipage to place the footnote directly under the table
+        \caption{Eigenschappen van de SIHUMIx peptidebestanden. Elke kolom stelt een staal voor met als bestandsnaam \texttt{S<XX>.txt}. Deze stalen kunnen teruggevonden worden in onze GitHub repository\protect\footnote{\url{https://github.com/BramDevlaminck/Thesis\_benchmarkdata}} onder de \texttt{SIHUMI}-folder. De afkorting \textit{AA} staat voor \textit{amino acids}.} % protect is needed to make footnote possible in a caption. This is combined with a minipage to place the footnote directly under the table
         \label{tab:sihumi_zoekbestanden}
     \end{minipage}
 \end{table}
 
 \subsubsection{Human-Prot}
-Voor deze databank hebben we één peptidebestand bestaande uit HLA-peptiden.
-Dit zijn \textbf{korte, niet-tryptische peptiden} uit het immunopeptidomics onderzoeksveld.
-Hierdoor kan Unipept op dit moment niet gebruikt worden om dit soort stalen te analyseren.
+Voor deze databank hebben we één peptidebestand waarin we HLA-peptiden simuleren.
+Dit zijn \textbf{korte, niet-tryptische peptiden} waarin men typisch geïnteresseerd is in het immunopeptidomics onderzoeksveld.
+Dit betekent dat Unipept op dit moment niet gebruikt kan worden om dit soort stalen te analyseren.
 Elke peptide in dit peptidebestand is een sample van een proteïne uit de Human-Prot databank.
 Hierdoor zijn alle peptiden die we zoeken effectief vindbaar in de dataset.
 Een kort overzicht van enkele eigenschappen is terug te vinden in de laatste kolom van Tabel~\ref{tab:artifiele_bestanden_statistieken}.
@@ -405,7 +415,7 @@ Deze onderzoeksgroep werkt aan softwaretoepassingen voor het verwerken van prote
         \hline\hline
         CPU               & 2\times Intel Xeon 4410Y (12 cores / 24 threads, 2 - 3.9 GhZ, 30 MiB cache)         & 12 threads           \\
         RAM               & 768 GiB                                                                             & 128 GiB              \\
-        Opslag            & 6\times 16 TiB HDD (3.5 inch, 7.2K RPM SATA), 4\times 3.84 TiB SSD (2.5 inch, SATA) & 1 TiB SSD, 4 TiB SSD \\
+        Opslag            & 6\times 16 TiB HDD (3.5 inch, 7.2K RPM SATA), 4\times 3.84 TiB SSD (2.5 inch, SATA) & 1 TiB SSD, 4 TiB HDD \\
         Besturingssysteem & Debian 12 (met Proxmox)                                                             & Ubuntu 22.04 LTS     \\
         \hline
     \end{tabular}
@@ -456,5 +466,5 @@ In de eerste plaats willen we \textbf{exacte matches} kunnen zoeken, maar later 
 Aangezien de indexstructuur slechts eenmalig voor een bepaalde proteïnedatabank opgebouwd moet worden, ligt de \textbf{primaire restrictie bij het geheugengebruik} tijdens het opbouwen.
 Het blijft echter steeds belangrijk dat de indexstructuur in een redelijke tijd opgebouwd kan worden en performant genoeg is om snel een groot aantal peptiden te zoeken.
 De richttijd die we ons vooropstellen om de indexstructuur op te bouwen voor UniProtKB is maximaal één à twee dagen.
-Dit is een acceptabele tijdsduur aangezien de indexstructuur slechts om de acht weken opnieuw opgebouwd moet worden, overeenkomstig met de release frequentie van UniProtKB.
+Dit is een acceptabele tijdsduur aangezien de indexstructuur slechts om de acht weken opnieuw opgebouwd moet worden, overeenkomstig met de frequentie waarbij een nieuwe versie van de UniProtKB databank uitgebracht wordt.
 In de volgende hoofdstukken verkennen we verschillende indexstructuren om een proteïnedatabank te indexeren.

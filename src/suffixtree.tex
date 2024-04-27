@@ -1,14 +1,14 @@
 \chapter{Suffixbomen}\label{ch:suffix-bomen}
 Suffixbomen zijn een eerste datastructuur die het mogelijk maken om efficiënt te controleren of een korte string voorkomt in een andere, grotere string en waar deze mogelijke match zich bevindt.
 Meer specifiek gaat het om een variant hiervan, de zogenaamde veralgemeende suffixboom.
-Deze laten toe om efficiënt te \textbf{controleren of een string deel is van één of meerdere strings uit een verzameling}.
+Deze laat toe om efficiënt te \textbf{controleren of een string deel is van één of meerdere strings uit een verzameling}.
 \\ \\
 We behandelen deze datastructuur als eerste, omdat hij vrij intuïtief en het minst complex is.
 Bovendien kan een goede tijdscomplexiteit bereikt worden aangezien de zoektijd naar exacte matches in een suffixboom lineair is in de lengte van de zoekstring/peptide.
 Het opbouwen van de suffixboom kan ook in lineaire tijd gebeuren, maar dan lineair in de totale lengte van alle proteïnen in de databank.
 Hiervoor hebben we een \textbf{eigen Rust implementatie} geschreven.
 Aan de hand hiervan was het mogelijk om vertrouwd te raken met de programmeertaal Rust.
-Daar komt bij dat het ons ook de mogelijkheid geeft om enkele interessante Rust implementatiedetails te bespreken, samen met de bereikte performantie.
+Daar komt bij dat het ons ook de mogelijkheid geeft om enkele interessante implementatiedetails, specifiek voor deze programmeertaal, te bespreken samen met de bereikte performantie.
 
 \section{Wat zijn suffixbomen?}\label{sec:wat-zijn-suffix-bomen?}
 Een suffixboom van een tekst $T$ wordt formeel gedefinieerd als volgt~\cite{CCB_course}:
@@ -182,8 +182,8 @@ Het komt echter uitgebreid aan bod in een aantal andere publicaties en boeken~\c
 Deze vormden een grote hulp bij het maken van een eigen implementatie.
 
 \subsection{Kotlin}\label{subsec:kotlin}
-Een eerste implementatie\footnote{\url{https://github.com/BramDevlaminck/SuffixTree}} van Ukkonen's algoritme heb ik geïmplementeerd in Kotlin.
-Hierdoor kon er gefocust worden op het algoritme zonder belemmerd te worden door restricties opgelegd door de \textit{borrow checker} deel van Rust.
+Een eerste implementatie\footnote{\url{https://github.com/BramDevlaminck/SuffixTree}} van Ukkonen's algoritme heb ik met behulp van de programmeertaal Kotlin gemaakt.
+Hierdoor kon er gefocust worden op het algoritme zonder belemmerd te worden door restricties opgelegd door de \textit{borrow checker}\footnote{\url{https://doc.rust-lang.org/1.8.0/book/references-and-borrowing.html}} van Rust.
 Tijdens het implementeren was de referentiecode van prof.~Jan Fostier~\cite{Ukkonen_CCB} een groot hulpmiddel, omdat we hierdoor tijdens het debuggen het verloop van het programma konden opvolgen.
 \\ \\
 Het belangrijkste verschil tussen de Kotlin-implementatie en de referentie-implementatie is de manier waarop de kinderen voorgesteld worden.
@@ -211,7 +211,7 @@ Deze quote komt rechtstreeks uit een Medium artikel~\cite{rust_difficulty_quote}
 De oorzaak hiervoor ligt bij het \textit{ownership} systeem van Rust.
 Dit systeem zorgt ervoor dat elk stukje data slechts één eigenaar kan hebben.
 In dit geval kan dus \textbf{slechts één top een andere top opslaan}, of er een \textit{mutable reference} naar hebben.
-Meer praktisch wil dit dus zeggen dat slechts één top een \textit{pointer} kan hebben naar een andere top, met de toelating om die top aan te passen.
+Concreet wil dit dus zeggen dat slechts één top een \textit{pointer} kan hebben naar een andere top, met de toelating om die top aan te passen.
 Dit is net wat nodig is tijdens het opbouwen van de boom want er worden nog kinderen toegevoegd en toppen gesplitst.
 Dit is een probleem aangezien ouders pointers naar kinderen moeten hebben, de kinderen een verwijzing naar hun ouder, en er dan ook nog eens pointers zijn voor de suffix links.
 \\ \\
@@ -219,7 +219,7 @@ Als oplossing hiervoor introduceert Rust het \texttt{Rc<T>} datatype.
 Hierbij stapt Rust af van zijn standaard \textit{ownership} systeem en wordt gebruikgemaakt van \textbf{Reference Counting}~\cite{reference_counting}.
 Pas wanneer alle referenties weg zijn, zal het geheugen automatisch vrijgegeven worden.
 De beperking hierbij is echter dat deze referenties \textit{immutable} zijn.
-Dit volstaat niet tijdens het opbouwen van de boom.
+Dit volstaat niet tijdens het opbouwen van de boom aangezien wij wijzigingen moeten kunnen maken aan de toppen waar naar verwezen wordt.
 \\ \\
 Om dit toch mogelijk te maken, introduceert Rust het \textbf{\textit{interior mutability}} patroon~\cite{interior_mutability}.
 Hiervoor wordt gebruikgemaakt van het \texttt{Refcell} datatype.
@@ -235,8 +235,7 @@ Namelijk bij \textbf{cyclische verwijzingen}; een patroon dat jammer genoeg erg 
 In ons geval is dit een ouder die een pointer heeft naar een kind, dat zelf een pointer heeft naar die ouder.
 Als oplossing hiervoor introduceert Rust dan weer het \texttt{Weak<T>} datatype.
 \\ \\
-Dit is duidelijk erg ingewikkeld.
-Het introduceert ook nog eens \textit{performance overhead} die ongewenst is en die we willen vermijden.
+De manier waarop Rust memory safety garandeert, introduceert duidelijk extra complexiteit en \textit{performance overhead} die ongewenst is en we willen vermijden.
 Een optie zou kunnen zijn om expliciet het \texttt{unsafe} keyword te gebruiken, wat meer vrijheid geeft.
 Het nadeel hiervan is natuurlijk dat we dan de garanties van memory safety kwijt zijn, wat net één van de hoofdredenen is om Rust te gebruiken.
 Dit was dus geen optie.
@@ -302,7 +301,7 @@ assert_eq!(mem::size_of::<Option<usize>>(), 16);
 assert_eq!(mem::size_of::<usize>(), 8);
 \end{minted}
 
-Als oplossing heb ik uiteindelijk mijn \textbf{eigen \textit{null} waarde gedefinieerd} die gebruikmaakt van een \textit{trait}\footnote{Een trait in Rust definieert een functionaliteit dat een bepaald type heeft, en kan delen met andere types}.
+Als oplossing heb ik uiteindelijk mijn \textbf{eigen \textit{null} waarde gedefinieerd} die gebruikmaakt van een \textit{trait}\footnote{Een trait in Rust definieert een functionaliteit die een bepaald type heeft, en kan delen met andere types.}.
 Deze oplossing doet volledig het doel van de \texttt{Option<T>} enum teniet, maar is jammer genoeg nodig omdat het gewoonweg niet acceptabel is om het geheugengebruik hiervoor te verdubbelen.
 Bovendien blijft \textbf{memory safety gegarandeerd}, aangezien het foutief indexeren van de null value (\texttt{usize::MAX} in dit geval) een index-out-of-bounds error genereert.
 Dergelijke indexeringsfouten worden tijdens het uitvoeren gedetecteerd en geven dus geen verdere problemen (afgezien van een mogelijke crash van het programma).
@@ -332,23 +331,22 @@ impl Nullable<NodeIndex> for NodeIndex {
 
 \subsection{Performantie}\label{subsec:performantie}
 Natuurlijk is het belangrijk dat de implementatie performant en correct is.
-Aangezien we ook over een bestaande C++ implementatie van Ukkonen's algoritme beschikken, was dit een perfecte maatstaf.
+Aangezien we ook over een bestaande C++ implementatie van Ukkonen's algoritme beschikken, was dit een perfecte maatstaf om mee te vergelijken.
 Uiteindelijk heb ik één aanpassing moeten maken in deze C++ code om een eerlijke vergelijking uit te voeren.
 Oorspronkelijk werd er in elke top ruimte voorzien voor 256 mogelijke kinderen.
-Dit was veel te hoog voor onze use case.
+Dit was veel te hoog voor onze usecase.
 Er zijn namelijk slechts 20 aminozuren en enkele \textit{wildcard characters}.
 Dit verklaart onmiddellijk waarom het geheugengebruik initieel ongeveer een factor 10 hoger was dan nodig.
-Uiteindelijk ben ik gegaan voor een implementatie (zowel in Rust als C++) waarin is voor \textbf{28 kinderen}.
+Uiteindelijk ben ik gegaan voor een implementatie (zowel in Rust als C++) waar plaats is voor \textbf{28 kinderen}.
 De 26 letters van het alfabet en de karakters \texttt{\#} en \texttt{\$}.
 \texttt{\#} en \texttt{\$} die gebruikt worden als resp.~scheidingsteken en eindteken in veralgemeende suffixbomen.
 Dit is ook wat al gebeurde in de bestaande C++ implementatie.
-De exacte waarden van het scheidings- en eindteken zijn niet belangrijk.
-De enige eigenschappen die ze moeten hebben is dat ze niet voorkomen als teken in de proteïnen of peptiden, en verschillend zijn van elkaar.
+De exacte waarden van het scheidings- en eindteken zijn niet belangrijk, de enige eigenschappen die ze moeten hebben is dat ze niet voorkomen als teken in de proteïnen of peptiden, en verschillend zijn van elkaar.
 \\ \\
 Een andere aanpak zou kunnen zijn om HashMaps te gebruiken.
 Het totale geheugengebruik zal hierdoor afnemen naar ongeveer 60\% van het huidige verbruik.
 Dit gaat echter ten koste van performantie tijdens het zoeken (wat net erg belangrijk is).
-Hoe dan ook blijft het \textbf{geheugengebruik extreem groot}, welke implementatie ook gekozen wordt.
+Hoe dan ook blijft het \textbf{geheugengebruik extreem hoog}, welke implementatie ook gekozen wordt.
 \\ \\
 Het vergelijken van de implementaties heb ik opgesplitst in twee stukken:
 \begin{enumerate}
@@ -427,6 +425,7 @@ De reden hiervoor is dat alle bladeren in deze subboom de gematchte proteïnen e
 Figuur~\ref{fig:performance_all-occurrences_tree} bevat een overzicht van de nodige zoektijd voor beide implementaties op alle peptidebestanden.
 We zien duidelijk dat er hier een \textbf{significant verschil is tussen de C++ en Rust implementatie}.
 Vermoedelijk komt dit door de \textbf{andere \textit{memory layout}} die ontstaat doordat de Rust implementatie 1 grote vector gebruikt, terwijl de C++ implementatie losse toppen gebruikt die verspreid liggen in het geheugen.
+Deze verbeterde lokaliteit zal het aantal cache-hits verhogen, wat op zijn beurt de performantie ten goede komt.
 
 \begin{figure}[ht]
     \centering
@@ -445,7 +444,7 @@ Er is namelijk geen manier is om met zekerheid te zeggen uit welke proteïne de 
 Dit omdat gebruikers enkel een verzameling peptiden als input geven.
 Geen extra info die toelaat om te snoeien zonder mogelijks correcte informatie te verliezen.
 Anders gezegd: Unipept zal enkel info geven die geldt voor alle gematchte proteïnen.
-Eén van deze stukjes informatie is het Taxon ID\@.
+Eén van deze stukjes informatie is het taxon ID\@.
 Unipept zal niet de lijst van alle mogelijke taxon IDs teruggeven omdat dit twee nadelen heeft.
 Ten eerste kan dit een erg grote lijst worden indien de peptide met erg veel proteïnen matcht.
 Ten tweede zou dit ook vereisen om altijd de volledige subboom na een match te overlopen.
@@ -453,14 +452,36 @@ In plaats daarvan gaan we \textbf{via voorberekeningen de taxon IDs aggregeren g
 Met andere woorden, we gaan op zoek naar de laagste gemeenschappelijke voorouder van alle taxon IDs die in de bladeren van de subboom zitten van een bepaalde top.
 Hiervoor bestaan verschillende strategieën die al uitgewerkt zijn in UMGAP~\cite{UMGAP_paper, UMGAP_source}, en die hier herbruikbaar waren.
 \\ \\
-Origineel was het plan om LCA*~\footnote{LCA = Lowest Common Ancester, Laagste Gemeenschappelijke Voorouder. De * wijst erop dat dit algoritme een variant is.} te gebruiken als aggregatiestrategie.
+Initieel hebben we gekeken naar het LCA*\footnote{LCA = Lowest Common Ancester, Laagste Gemeenschappelijke Voorouder. De * wijst erop dat dit algoritme een variant is.} algoritme.
 Dit is een heuristiek gebaseerd op de LCA\footref{footnote:lca}.
 Bij LCA* zoeken we het meest specifieke taxon in de boom die ofwel een ouder of kind is van elke taxon in de boom.
 Anders gezegd is dit de LCA van een verzameling taxa, nadat we alle taxa verwijderd hebben die ouder zijn van minstens één taxon in die verzameling~\cite{UMGAP_paper}.
+Figuur~\ref{fig:lca*_example} legt dit uit aan de hand van een klein voorbeeld.
 Het voordeel van LCA* ten opzichte van LCA is dat de resulterende data langer exact blijft.
 De LCA van een verzameling van taxon IDs zal namelijk altijd als waarde 1 hebben, dus de root zijn, zodra één element in de verzameling als root geannoteerd is.
-Dit gedrag willen we zo lang mogelijk vermijden.
-\\ \\
+Dit gedrag willen we zo veel mogelijk vermijden.
+\\
+\begin{figure}[ht]
+    \centering
+        \begin{tikzpicture}
+        [
+            level 1/.style = {sibling distance = 2.5cm, level distance = 2cm},
+            level 2/.style = {sibling distance = 3.5cm, level distance = 2cm}
+        ]
+            \node {root}
+            child {node [gray] {Bacteria}
+            child {node {E. coli}}
+            child {node {Salmonella enterica}}}
+            child {node [gray] {Eukaryota}}
+            child {node [gray] {Viruses}}
+            child {node [gray] {Archaea}}
+            ;
+        \end{tikzpicture}
+
+    \caption{Sterk versimpelde voorstelling van de NCBI taxonomy. We berekenen de LCA en LCA* van de verzameling van zwarte toppen. De grijze toppen zijn \textit{placeholders}. De LCA van de verzameling \texttt{\{root, E. coli, Salmonella enterica\}} is vanzelfsprekend \texttt{root}, aangezien dit de wortel van de boomstructuur is. Bij het berekenen van de LCA* verwijderen we echter alle taxa die ouder zijn van minstens één taxon in de verzameling. \texttt{Root} is een ouder van zowel \texttt{E. coli} als \texttt{Salmonella enterica}, en wordt daarom niet gebruikt tijdens het berekenen van de LCA*. De LCA* wordt dus berekend door de LCA van de verzameling \texttt{\{E. coli, Salmonella enterica\}} te zoeken. Het resultaat hiervan is de top \texttt{Bacteria}. Dit illustreert hoe LCA* beter overweg kan met ``te algemene'' taxonomische annotaties.}
+    \label{fig:lca*_example}
+\end{figure}
+
 Om het geaggregeerde taxon ID van elke interne top in de boomstructuur efficiënt voor te berekenen, was het idee om dit te doen op basis van de directe kinderen van die top.
 Hiermee bedoelen we de eerstegraads kinderen.
 Deze liggen 1 niveau lager in de boomstructuur, en hebben als ouder allemaal dezelfde top waarvan we het taxon ID willen berekenen.
@@ -530,9 +551,9 @@ Vermoedelijk ligt de andere geheugenstructuur hiervoor aan de basis.
 Ondanks de veelbelovende resultaten op vlak van snelheid is er een keerzijde aan de medaille.
 Het \textbf{geheugengebruik is zo groot dat we op zoek moeten naar een andere indexstructuur}.
 Voor de Swiss-Prot databank gaat het geheugengebruik al boven 85 GB als we ook de taxon IDs voorberekenen, terwijl ons einddoel is om de indexstructuur op te bouwen voor de volledige UniProtKB databank.
-Dit wil zeggen dat alles nog $\pm$ 500 maal opgeschaald moet worden.
+Rekening houdende met het lineaire gedrag van het geheugengebruik wil dit zeggen dat alles nog $\pm$ 500 maal opgeschaald moet worden.
 Dit zou echter vereisen dat we een server nodig hebben met ongeveer 45 TB aan RAM\@.
 We hebben echter geen dergelijke machine ter beschikking.
 Daarom moeten we op zoek naar andere indexstructuren die minder geheugen vereisen, eventueel met een impact op de zoeksnelheid.
-We hebben immers gezien dat suffixbomen niet enkel flexibeler zijn in het zoeken naar peptiden dan de huidige Unipept-index die enkel toelaat om tryptische peptiden te zoeken, maar ook dat ze het zoekproces meerdere grootordes sneller maken.
+We hebben immers gezien dat suffixbomen niet enkel flexibeler zijn in het zoeken naar peptiden dan de huidige Unipept-index die enkel toelaat om tryptische peptiden te zoeken, maar ook dat ze het zoekproces meerdere grootteordes sneller maken.
 Dat betekent dat we in de praktijk wat marge hebben om aan zoeksnelheid in te boeten, als we er zouden in slagen om UniProtKB volledig te indexeren.

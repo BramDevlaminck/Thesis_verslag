@@ -27,18 +27,36 @@ Zo laten bidirectionele FM-indices toe om algemenere inexacte matching uit te vo
 \section{Future work}
 Ondanks dat we een index gevonden hebben die de huidige Unipept index kan vervangen, en willekeurige peptiden kan vinden in plaats van enkel tryptische peptiden, zijn er meerdere plaatsen waar nog extra onderzoek naar kan gebeuren.
 \\ \\
-Zo zou het extreem interessant zijn om een manier te vinden om de suffix array onmiddellijk \textbf{sparse te maken tijdens het opbouwen}.
+De makkelijkste, en meest duidelijke verbetering is het verder \textbf{verkleinen van de resulterende index}.
+UniProt 2023\_04 bevat ongeveer 86.8 miljard aminozuren, waardoor we dus ook evenveel verschillende getallen moeten kunnen voorstellen in de suffix array.
+Aangezien $86.8 \cdot 10^9 > 2^{32}$ maken we gebruik van 64 bit integers.
+Hiermee kunnen we echter veel te veel verschillende getallen voorstellen.
+In de praktijk hebben we slechts nood aan $\log_2(86.8 \cdot 10^9) \approx 36.3$ bits.
+Voor de huidige UniProtKB database hebben we dus slechts 37 bits per waarde in de suffix array nodig.
+Aangezien de huidige sparse suffix array (met sparseness factor $k = 3$) ongeveer 235 GB groot is, zou deze na deze aanpassing slechts 136 GB groot zijn.
+Bij de tekst kunnen we dezelfde aanpassing maken.
+Daar hebben we 26 + 2 = 28 verschillende tekens, wat aan de hand van 5 bits voorgesteld kan worden.
+Aangezien de huidige tekst ongeveer 87 GB groot is, zou dit resulteren in een tekst die slechts $87 \cdot \frac{5}{8} \approx 54$ GB groot is.
+Een derde luik van de indexstructuur zijn de functionele annotaties die 11 GB groot zijn na compressie.
+Tot slot moeten we ook nog de mapping van de suffixen naar de proteïnen bijhouden.
+Dit is één 32 bit integer per proteïne, aangezien er ongeveer $250\thinspace000\thinspace000 < 2^{32}$ proteïnen zitten in UniProtKB\@.
+Dit resulteert in een mapping van 1 GB\@.
+Hierdoor zou de totale resulterende index van $235 + 87 + 11 + 1 = 334$ GB naar $136 + 54 + 11 + 1 = 202$ GB gaan, wat iets meer dan \textbf{1/3 winst} oplevert.
+Merk op dat dit de nodige hoeveelheid geheugen tijdens het opbouwen niet verkleint, aangezien we in die fase wel gebruik moeten maken van 64 bit integers en 8 bit karakters.
+\\ \\
+Ook tijdens het opbouwen zijn er nog interessante pistes om te verkennen.
+Zo zou het extreem voordelig zijn om een manier te vinden om de suffix array onmiddellijk \textbf{sparse te maken tijdens het opbouwen}.
 Hierbij zal het bovendien belangrijk zijn dat deze implementatie een \textbf{lage constante factor heeft op vlak van geheugengebruik}.
 Indien deze constante vrij groot is, zal de winst verloren gaan ten opzichte van de huidige implementatie, aangezien we altijd een kleine sparseness factor $k$ gebruiken.
 Een andere aanpak zou kunnen zijn via een online algoritme waarbij we een bestaande SSA kunnen uitbreiden met nieuwe eiwitten.
 Zo kunnen we tijdens het opbouwen één eiwit per keer toevoegen aan de suffix array, maar kunnen we ook nieuwere UniProtKB releases efficiënt afhandelen door te vertrekken van de index uit de vorige release.
 \\ \\
-Een tweede duidelijk punt van verbetering, is tijdens het \textbf{berekenen van de LCA*}.
+Een derde duidelijk punt van verbetering, is tijdens het \textbf{berekenen van de LCA*}.
 Indien deze voorberekend wordt tijdens het opbouwen van de index zal dit niet enkel de performantie ten goede komen, het zal ook de nood voor de drempelwaarde B (die standaard op 10\thinspace000 staat) sterk verminderen.
 De meest duidelijke piste hiervoor is aan de hand van Enhanced Suffix Arrays (ESAs).
 In deze masterproef hebben we deze piste niet verder verkend vanwege de eerste indicatie dat het berekenen van de extra tabellen het geheugenverbruik zou verdubbelen, en dat het \textit{on the fly} berekenen van de LCA* een acceptabele overhead met zich mee brengt.
 \\ \\
-Een derde mogelijke route, is het \textbf{uitbreiden van de inexacte matching}.
+Een vierde mogelijke route, is het \textbf{uitbreiden van de inexacte matching}.
 Op dit moment is dit slechts in een extreem beperkte vorm aanwezig.
 We hebben namelijk enkel de optie om I en L aan elkaar gelijk te stellen.
 Tools zoals de eerder vermelde Expasy ScanProsite tool ondersteunen verschillende manieren om inexacte matching uit te voeren.
