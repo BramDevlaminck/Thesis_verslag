@@ -3,26 +3,25 @@ Eiwitten zijn alomtegenwoordig en spelen een belangrijke rol in ons dagelijkse l
 Ze garanderen een correcte werking van belangrijke processen binnen elk organisme.
 Hieronder vallen de levensprocessen van ons eigen lichaam, maar ook die van dieren, planten, bacteriën en zelfs virussen.
 Omwille hiervan bestaan er databanken zoals UniProtKB, die voor miljoenen eiwitten bijhouden wat hun gekende functies zijn, en door welke organismen ze geproduceerd kunnen worden.
-Gebruikmakende van deze databanken probeert men voor eiwitstalen te achterhalen welke organismen aanwezig zijn en wat ze doen.
+Gebruikmakende van deze databanken probeert men voor eiwitstalen te achterhalen welke organismen aanwezig zijn in een ecosysteem en wat ze doen.
 Er is echter een extra stap nodig.
-De machines die eiwitten inlezen, en omzetten naar een tekstueel formaat, kunnen dit slechts voor korte fragmenten van eiwitten.
-We noemen deze fragmenten peptiden.
-Omwille van deze reden worden eerst proteases (eiwitafbrekende enzymen) aan een staal toegevoegd.
+De machines die eiwitten inlezen, en omzetten naar een tekstueel formaat, kunnen dit slechts voor korte fragmenten van eiwitten, ook wel peptiden genoemd.
+Daarom worden eerst proteases (eiwitafbrekende enzymen) aan een staal toegevoegd.
 Deze zullen de eiwitten ``knippen'', waarna we peptiden bekomen.
 \\ \\
 Doordat alle eiwitten verknipt zijn in peptiden, is er geen zekerheid meer over welke eiwitten er exact aanwezig zijn.
 Hier komen tools zoals Unipept van pas om te zoeken uit welke mogelijke eiwitten een peptide afkomstig kan zijn.
-Tot slot kan op basis van de gevonden eiwitten afgeleid worden welke organismen mogelijks aanwezig zijn, en wat er op dat moment gebeurt in de staal.
+Op basis van de gevonden eiwitten kan daarna afgeleid worden welke organismen mogelijks aanwezig zijn, en wat er op dat moment gebeurt in het staal.
 De precisie van deze conclusie kan erg variëren van peptide tot peptide.
-Sommige eiwitten bevatten fragmenten die namelijk erg uniek zijn, waardoor zo'n unieke nauwkeurige informatie over het mogelijke organisme oplevert.
-Andere fragmenten zijn dan terug erg veelvoorkomend, waardoor we enkel kunnen concluderen dat de peptide inderdaad voorkomt in een gekend eiwit.
+Sommige peptiden bestaan uit een uniek patroon, waardoor ze slechts uit een kleine groep mogelijke eiwitten kunnen komen.
+Andere peptiden zijn dan weer erg veelvoorkomend, waardoor ze uit duizenden eiwitten zouden kunnen komen.
 \\ \\
-Zoals eerder vermeld is Unipept één van de programma's die een onderzoeker kan helpen in het vinden van de overeenkomstige eiwitten, welke organismen dit eiwit kunnen produceren en wat de functie van het eiwit is.
+Zoals eerder vermeld, is Unipept één van de programma's die een onderzoeker kan helpen in het vinden van de eiwitten waar een peptide onderdeel van kan zijn, welke organismen die eiwitten kunnen produceren en wat de functies hiervan kunnen zijn.
 Unipept heeft echter één grote beperking op dit moment.
 Enkel peptiden die ontstaan zijn na het knippen van de eiwitten door de protease trypsine kunnen gezocht worden.
 Dit was tot nu toe geen grote beperking omdat trypsine de meest gebruikte protease is in het onderzoeksveld waar Unipept origineel voor ontworpen was.
 Ons doel is echter om unipept breder toepasbaar te maken, bijvoorbeeld ook voor kankeronderzoek.
-Het wegwerken van deze beperking, waardoor alle soorten peptiden gezocht, en gevonden kunnen worden is de hoofdfocus van deze masterproef.
+Het wegwerken van deze beperking, waardoor alle soorten peptiden gezocht en gevonden kunnen worden, is de hoofdfocus van deze masterproef.
 \\ \\
 De uiteindelijke oplossing maakt gebruik van een datastructuur die we een \textit{suffix array} noemen om efficiënt alle eiwitten voor te stellen.
 Deze datastructuur bestaat uit één lijst die alle mogelijke suffixen van alle eiwitten voorstelt.
