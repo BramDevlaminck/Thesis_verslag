@@ -8,7 +8,7 @@ Aangezien we de huidige Unipept index willen vervangen door deze nieuwe indexstr
 Zoals vermeld in sectie~\ref{subsec:opbouwen} levert een ruwe extrapolatie op dat we 1.2 TB RAM nodig hebben om een suffix array op te bouwen voor UniProtKB\@.
 Hierbij werd er echter van uitgegaan dat UniProtKB 500 keer meer eiwitten dan Swiss-Prot bevat.
 Dit is een overschatting van de realiteit waar UniProtKB op dit moment \textit{slechts} $\pm$ 440 keer groter is.
-Dit zorgt ervoor dat het opbouwen mogelijks al \textbf{haalbaar is op HPC van UGent} waar nodes beschikbaar zijn met 940 GB RAM.
+Dit zorgt ervoor dat het opbouwen mogelijks al \textbf{haalbaar is op HPC van UGent} waar nodes beschikbaar zijn met 940 GB RAM\@.
 Na dit te proberen bleek \textit{slechts} 740 GB RAM nodig.
 Figuur~\ref{fig:build_uniprot} toont de nodige tijd en hoeveelheid geheugen om dit te realiseren.
 \textbf{Opvallend hierbij is dat de libsais implementatie hier trager is dan libdivsufsort}, terwijl dit voor alle kleinere datasets net omgekeerd was.
@@ -267,7 +267,38 @@ De verklaring hiervoor is dat Rust 24 bytes overhead heeft per vector, en 24 byt
 Om deze annotaties bij te houden, hadden we net één vector per proteïne nodig, en die vector bevatte een reeks aan korte strings (de annotaties zelf).
 Om dit op te lossen heeft Tibo Vande Moortele een simpele compressiebibliotheek\footnote{\url{https://github.com/unipept/unipept-index/tree/main/fa-compression}} ontwikkeld voor deze annotaties.
 Hierbij worden 2 karakters uit een annotatie gecomprimeerd naar 1 byte, en kunnen bovendien enkele tekens weggelaten worden.
-Na het gebruik van deze bibliotheek resulteert dit in \textbf{11 GB extra geheugengebruik}, wat in de context van de al 320 GB grote index (wanneer de tekst ook meegerekend wordt) bijna verwaarloosbaar is.
+Na het gebruik van deze bibliotheek resulteert dit in \textbf{10.5 GB extra geheugengebruik}, wat in de context van de al 320 GB grote index (wanneer de tekst ook meegerekend wordt) bijna verwaarloosbaar is.
+
+\section{Overzicht geheugenverbruik}
+In de vorige secties zijn verschillende extra onderdelen besproken om de functionaliteiten van Unipept toe te voegen aan de nieuwe index.
+Al deze extra onderdelen vragen extra geheugen, wat het totale geheugengebruik laat oplopen tot net geen 350 GB\@.
+Figuur~\ref{fig:uniprot_memory_treemap} geeft een overzicht van het geheugenverbruik per onderdeel.
+De volgende opsomming herhaalt kort voor elk onderdeel en welke rol deze speelt in het geheel.
+
+\begin{itemize}
+    \item Sparse suffix array: De sparse suffix array die opgebouwd werd op basis van de volledige UniProtKB databank.
+    \item Tekst: Dit is de UniProtKB databank, waarbij alle proteïnen aan elkaar gehangen zijn als één lange string.
+    Tussen elke proteïne hangt hetzelfde, unieke scheidingsteken, en op het einde van de tekst een ander uniek teken.
+    \item Functionele annotaties: De gecomprimeerde functionele annotaties die beschreven zijn in sectie~\ref{sec:functionele-analyse}.
+    Op basis van deze annotaties wordt de functionele analyse van Unipept uitgevoerd.
+    \item UniProt accession numbers: Elke proteïne in UniProtKB heeft een uniek ID (accession number).
+    Voor elk eiwit dat matcht met de gezochte peptide wordt dit ID als onderdeel van de output teruggegeven.
+    \item Taxonomische annotaties: Het taxon ID dat per proteïne bijgehouden wordt.
+    Op basis van deze taxon IDs wordt de LCA* van alle gevonden matches berekend.
+    \item Suffix → proteïne: De sparse mapping die beschreven is in sectie~\ref{subsec:mapping-van-suffix-naar-proteine}.
+    Deze mapping wordt gebruikt de bijhorende proteïne te vinden van een gematchte suffix.
+    \item NCBI Taxonomy aggregator: Een object dat de gebruikte NCBI taxonomy om de LCA* aggregaties uit te voeren bevat.
+    Aangezien het opgebouwd wordt op basis van de NCBI Taxonomy is de grootte hiervan onafhankelijk van de gebruikte proteïnedatabank.
+\end{itemize}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.95\linewidth]{uniprot_memory_treemap}
+    \caption{Visualisatie van het totale geheugenverbruik voor de index gebouwd op UniProtKB, gebruikmakende van sparseness factor $k = 3$ voor de SSA.
+    In het totaal vraagt deze index 346.5 GB RAM, waarvan het grootste stuk gebruikt wordt door SSA en de proteïne sequenties (de tekst) zelf.
+    Naast deze twee onderdelen die nodig zijn voor het matchen van de suffixen, is er nog een kleine 25 GB extra geheugenverbruik voor het uitvoeren van de Unipept analyses, of om de ID's van de gevonden matches terug te kunnen geven.}
+    \label{fig:uniprot_memory_treemap}
+\end{figure}
 
 \section{Aanbieden van de nieuwe indexstructuur}\label{sec:aanbieden-van-de-nieuwe-indexstructuur}
 Alle eerder vermelde benchmarks tonen enkel de zoektijd.
