@@ -18,6 +18,7 @@
 \usepackage{footmisc}
 \usepackage{siunitx}
 \usepackage{setspace}
+\usepackage{pdfpages}
 
 
 % Bibliography settings
@@ -64,6 +65,7 @@
     \setmonofont[Scale=MatchLowercase,Contextuals={Alternate}]{Jetbrains Mono}
     \pagenumbering{roman}
     \input{samenvatting}
+    \includepdf[pages=-]{../out/abstract.pdf}
 
 
 % ------------- CONSENT OF USE -----------

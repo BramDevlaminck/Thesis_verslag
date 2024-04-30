@@ -1,0 +1,40 @@
+%! Author = brdvlami
+%! Date = 30/04/2024
+
+% Preamble
+\documentclass[11pt]{article}
+\author{Bram Devlaminck}
+\title{Snelle semi-exacte matching\newline van peptiden met een geheugenefficiënte index voor UniProtKB}
+\date{}
+
+% Packages
+\usepackage[english]{babel}
+\usepackage{subfloat}
+\usepackage{float}
+\usepackage{biblatex}
+\usepackage{multicol}
+\addbibresource{abstract_bibliography.bib}
+\usepackage[hyperfootnotes=true]{hyperref}
+\hypersetup{
+    colorlinks,
+    linkcolor={black},
+    citecolor={blue!50!black},
+    urlcolor={blue!80!black}
+}
+\setlength{\parindent}{0em}
+
+
+% Document
+\begin{document}
+
+    \maketitle
+
+    \begin{multicols}{3}
+    [
+        \section{test section}\label{sec:test-section}
+        test, test 2
+    ]
+    \end{multicols}
+
+
+\end{document}
