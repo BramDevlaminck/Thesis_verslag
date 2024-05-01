@@ -3,9 +3,6 @@
 
 % Preamble
 \documentclass[11pt]{article}
-\author{Bram Devlaminck}
-\title{Snelle semi-exacte matching\newline van peptiden met een geheugenefficiënte index voor UniProtKB}
-\date{}
 
 % Packages
 \usepackage[english]{babel}
@@ -13,6 +10,7 @@
 \usepackage{float}
 \usepackage{biblatex}
 \usepackage{multicol}
+\usepackage{caption}
 \addbibresource{abstract_bibliography.bib}
 \usepackage[hyperfootnotes=true]{hyperref}
 \hypersetup{
@@ -21,19 +19,150 @@
     citecolor={blue!50!black},
     urlcolor={blue!80!black}
 }
-\setlength{\parindent}{0em}
+%\setlength{\parindent}{0em}
+\usepackage{geometry}
+\geometry{
+    a4paper,
+    left=25mm,
+    right=25mm,
+    top=25mm,
+    bottom=25mm,
+}
+\usepackage{graphicx}
+
+\newenvironment{Figure}
+{\par\medskip\noindent\minipage{\linewidth}}
+{\endminipage\par\medskip}
 
 
+\newenvironment{Table}
+{\par\medskip\noindent\minipage{\linewidth}}
+{\endminipage\par\medskip}
 % Document
 \begin{document}
 
-    \maketitle
+    \begingroup
+    \centering
+    \LARGE Fast semi-exact peptide matching with a memory conservative index for UniProtKB\\[1em]
+    \large Bram Devlaminck\\[2em]
+    \endgroup
 
-    \begin{multicols}{3}
-    [
-        \section{test section}\label{sec:test-section}
-        test, test 2
-    ]
+    \begin{multicols}{2}
+        \section*{Abstract}\label{sec:test-section}
+
+
+        \section{Introduction}\label{sec:introduction}
+        Proteins are all around us an play an important role in our daily life.
+        They guarantee the proper functioning of processes inside every organism.
+        This makes proteins interesting to study, because they teach us what is happening in an ecosystem.
+
+        When researchers have a sample of proteins, these get split into peptides by a protease (such as trypsin), after which a mass spectrometer can read these fragments.
+        These fragments are the input for search engines, which translate them into human-readable strings.
+        This process loses some important information.
+        Instead of whole proteins, we end up with short peptides.
+        Because of this we don't know which proteins were present in the sample.
+        This is where tools like Unipept come into play.
+        By searching these short peptides into the UniProtKB database, we can determine of which proteins the peptide might be a fragment.
+        Using these resulting proteins Unipept provides a functional and taxonomic analysis.
+
+        However, Unipept has one big restriction.
+        Unipept will only find all matches for tryptic peptides (these are peptides created by the protease trypsin) or when accepting a big performance penalty tryptic peptides with missed cleavages (these are peptides where trypsin should have cut the protein, but this did not happen for some reason).
+        This restriction has not been a big problem since trypsin is the most commonly used protease in the metaproteomics research field, but this prevents Unipept from being more broadly useable.
+
+        This explains the search for a new index with the following constraints.
+        \begin{enumerate}
+            \item For every peptide, all matches in UniProtKB should be found.
+            \item We need to be able to build the index for the full UniProtKB database with maximum memory usage around 1 to 2 TB of RAM\@.
+            \item Search performance should be on par with the current Unipept index.
+            \item The new index needs to be able to replace the current index, and facilitate all the current Unipept features.
+        \end{enumerate}
+
+        In short, we want an index that does not remove any of the current features, while remove the restriction that only tryptic peptides can efficiently be found by the current index.
+        This also means that our new index will need to provide a way to equalize the amino acids Isoleucine and Leucine.
+
+
+        \section{Methods}\label{sec:methods}
+        Possible well-known index structures for string matching are suffix trees (STs), suffix arrays (SAs), FM-indices and R-indices.
+        All of these make a trade-off between index-size, memory usage and search performance.
+        Mainly the memory usage is important, since this index structure had the lowest peak memory usage during testing.
+        Using libdivsufsort or libsais, it is possible to build a full suffix array with $5n + O(1)$ memory, where $n$ is the size of the text that needs to be indexed.
+
+        \subsection{Sparse Suffix Arrays}
+        While a complete suffix array delivers the best performance, the index itself is quite large.
+        Since we are never interested in searching peptides that are less than 5 amino acids long\footnote{This is already a restriction in the current Unipept index, that has almost no real-world information loss associated with it because short peptides have thousands of matches, which makes the analysis results undetailed.}, we can make the suffix array sparse, which makes the resulting index smaller.
+        This is done by sampling the full suffix array, and only keeping every k-th suffix of the input text.
+        This results in a sparse suffix array (SSA) which is only $\frac{1}{k}$th of the original suffix array size.
+
+        \subsection{Equalizing Isoleucine and Leucine}
+        There are two possible ways to equalize isoleucine and leucine during search.
+        We could use the suffix array build with the original text, and explore all variants of the input peptide where and I and L can be replaced by each other.
+        This would need to explore $2^x$ options with $x$ the number of I or L's in the searched peptide.
+        Alternatively, we could build a suffix array over the modified text, where every I is replaced by an L, or vice versa.
+        When the same is done on the peptides themselves, we find all matches where I and L are equalized.
+        However, finding matches where we don't want to equalize I and L requires extra work.
+        This can be done with an extra filtering step where we check all the matches I and L locations of the original peptide using the original text (the modified text is never needed during search).
+        All the other characters will always match because the search in the suffix array guarantees this.
+        Furthermore, Unipept by default enables the option where I (Isoleucine) and L (Leucine) are equalized to each other during search, which makes the second approach preferable.
+
+
+        \section{Results}\label{sec:results}
+        There are three aspects to consider.
+        The memory usage and speed during building, the resulting index size while hosting and search performance.
+
+        \subsection{Building the Index}
+        Building the suffix array for the complete UniProtKB database requires maximum 735 GB of RAM and 5 hours of computing time using the libdivsufsort algorithm.
+        This computation is done once for each UniProtKB release and requires the use of the HPC at Ghent University, after which the resulting index is written to a file, and moved to the Unipept servers.
+        These servers each have 0.5 TB of RAM available.
+        This determines the sparseness factor $k$ that we use on the suffix array.
+        The full suffix array is 700 GB, plus another 88 GB of text.
+        To makes this fit on the Unipept servers we take $k = 3$, which translates to a total index size of $\frac{700}{3} + 88 \approx 322$ GB\@.
+
+        \subsection{Querying the index}
+        TODO
+
+        \subsection{Overview Memory Usage}
+        TODO
+
+
+        \section{Comparison}\label{sec:comparison}
+        To compare our new index we need to take multiple aspects in to account.
+        Tools such as the Uniprot peptide search tool, the Expasy ScanProsite tool and Unipept at the moment all have the possibility to find matches in the UniProtKB database.
+        There are some big differences though.
+
+        Feature wise, the UniProt Peptide Search tool is identical to the new suffix array index developed for Unipept.
+        They can both find all matches in UniProtKB, and have the option to equalize I and L\@.
+        The only difference is the performance.
+        Searching one peptide in the SA only takes a few milliseconds, while the UniProt tool takes a few seconds up to multiple minutes.
+
+        Expasy ScanProsite tool takes another approach.
+        They provide a wide range of options for inexact matching.
+        They call this motives, ant these are comparable to regular expressions where the user can use wildcards, character classes and even negations.
+        The other major difference is that this tool does not use the whole UniProtKB database.
+        Only the proteins that are part of a reference genome are indexed, which means that less matches are found.
+
+        The last major tool we compare with is the current Unipept index.
+        As described in the introduction we wanted to keep all the current features of Unipept, with the addition of removing the restriction where Unipept can only quickly find tryptic peptides (or with a performance penalty also tryptic peptides with missed cleavages).
+        This means that every non-tryptic peptide will result in 0 matches in the old index, while the new index will find all matches that are in UniProtKB\@.
+        Table~\ref{tab:tool_comparison} gives a small overview of the described differences between the tools.
+
+        \begin{Table}
+            \centering
+            \resizebox{\textwidth}{!}{
+                \begin{tabular}{ l l l l l }
+                    & SSA    & UPS          & ESP        & UP             \\
+                    \hline\hline
+                    Used Prot.   & all    & all          & ref. prot. & all            \\
+                    Approx Match & [IL]   & [IL]         & flexible   & [IL]           \\
+                    time         & < 5 ms & 1 s - 20 min & 5 min      & < 5 ms         \\
+                    Valid pept.  & all    & all          & all        & $\sim$ tryptic \\
+                    \hline
+                \end{tabular}
+            }
+            \captionof{table}{Comparison of the new suffix array (SA), UniProt Peptide Search (UPS) tool, Expasy ScanProSite (ESP) tool and the current Unipept (UP) index.}
+            \label{tab:tool_comparison}
+        \end{Table}
+
+%        \section{Discussion}\label{sec:discussion}
     \end{multicols}
 
 
