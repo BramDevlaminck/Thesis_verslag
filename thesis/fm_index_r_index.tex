@@ -20,10 +20,10 @@ Aan de hand van een variant van de FM-index, de bidirectionele FM-index, kan men
 Om een goed beeld te krijgen over het geheugenverbruik tijdens het opbouwen hebben we verschillende bestaande FM-index implementaties getest.
 Opnieuw focussen we ons vooral op het geheugenverbruik aangezien dit de primaire restrictie tijdens het opbouwen.
 Tabel~\ref{tab:fm_index_building} geef een overzicht van de geteste implementaties.
-Omdat ons einddoel is om UniProtKB te indexeren kunnen we ons opnieuw enkel focussen op de 64 bit implementaties.
+Omdat ons einddoel is om UniProtKB te indexeren kunnen we ons opnieuw enkel focussen op de 64-bit implementaties.
 UniProtKB bevat namelijk meer tekens dan dat de maximale 32 bit integer groot is.
 Als referentie maken we gebruik van de resultaten uit Tabel~\ref{tab:sa_building}.
-Hieruit konden we concluderen dat er 1.86 GB RAM nodig is om een suffix array op te bouwen (bij het gebruik van 64 bit integers).
+Hieruit konden we concluderen dat er 1.86 GB RAM nodig is om een suffix array op te bouwen (bij het gebruik van 64-bit integers).
 Wanneer we dit vergelijken met de resultaten voor de geteste FM-index implementaties, zien we dat deze \textbf{bijna twee maal zo veel geheugen nodig hebben}.
 Omwille hiervan hebben we deze optie niet verder verkend.
 
@@ -34,7 +34,7 @@ Omwille hiervan hebben we deze optie niet verder verkend.
             \begin{tabular}{l l S[table-format=-2.2] S[table-format=-2.2] S[table-format=-1.2] S[table-format=-1.2]}
                 Implementatie & Programmeertaal & \multicolumn{2}{c}{Tijd (in s)} & \multicolumn{2}{c}{Geheugen (in GB)} \\
                 \hline\hline
-                &                         & {32 bit} & {64 bit} & {32 bit} & {64 bit} \\
+                &                         & {32-bit} & {64-bit} & {32-bit} & {64-bit} \\
                 \cline{3-6}
                 \url{https://crates.io/crates/fm-index}     & Rust                    & {-}      & 33.92    & {-}      & 3.22     \\
                 \url{https://github.com/simongog/sdsl-lite} & C++                     & {-}      & 27.74    & {-}      & 3.70     \\
@@ -43,7 +43,7 @@ Omwille hiervan hebben we deze optie niet verder verkend.
             \end{tabular}
         }
         \caption{Uitvoeringstijd en maximaal geheugengebruik voor het opbouwen van een FM-index aan de hand van verschillende implementaties voor de Swiss-Prot eiwitdatabank.
-        Afhankelijk van als de implementatie 32 bit of 64 bit integers gebruikt is een andere kolom ingevuld. Een - staat voor niet getest. Deze testen werden lokaal uitgevoerd op een M1 Pro MacBook Pro. De specificaties hiervan zijn terug te vinden in tabel~\ref{tab:macbook_hardware}.}
+        Afhankelijk van als de implementatie 32-bit of 64-bit integers gebruikt is een andere kolom ingevuld. Een - staat voor niet getest. Deze testen werden lokaal uitgevoerd op een M1 Pro MacBook Pro. De specificaties hiervan zijn terug te vinden in tabel~\ref{tab:macbook_hardware}.}
         \label{tab:fm_index_building}
     \end{minipage}
 \end{table}
@@ -56,9 +56,9 @@ Vanwege het gebruik van RLE op de BWT, zal de \textbf{resulterende index kleiner
 Om na te gaan wat het effect hiervan is op de onze eiwitdatabanken, hebben we de R-index getest op de eerste 0.5\%, 1\%,\ldots\space van de volledige UniProtKB databank.
 Figuur~\ref{fig:sa_vs_r_index} visualiseert het geheugenverbruik en de resulterende indexgrootte in vergelijking met suffix arrays.
 Merk op dat het geheugenverbruik tijdens het opbouwen en de grootte van de resulterende R-index meer dan verdubbelt bij het overgaan van 2\% (1\thinspace651\thinspace521\thinspace046 tekens) naar 4\% (3\thinspace319\thinspace904\thinspace170) van UniProtKB\@.
-De oorzaak hiervan is het overschakelen van 32 bit naar 64 bit integers binnen de R-index.
-Bij de indices tot en met 2\% maakt de R-index implementatie gebruik van 32 bit integers omdat er minder tekens in de geïndexeerde tekst staan dan de maximale 32 bit integer waarde.
-Bij grotere databanken wordt deze 32 bit integer limiet overschreden, waardoor de R-index implementatie moet overschakelen naar het gebruik van 64 bit integers.
+De oorzaak hiervan is het overschakelen van 32-bit naar 64-bit integers binnen de R-index.
+Bij de indices tot en met 2\% maakt de R-index implementatie gebruik van 32-bit integers omdat er minder tekens in de geïndexeerde tekst staan dan de maximale 32-bit integer waarde.
+Bij grotere databanken wordt deze 32-bit integer limiet overschreden, waardoor de R-index implementatie moet overschakelen naar het gebruik van 64-bit integers.
 \\ \\
 Enerzijds valt duidelijk te zien dat het opbouwen van een \textbf{suffix array minder geheugen vraagt}.
 Anderzijds is de \textbf{resulterende R-index kleiner}, en wordt deze bovendien procentueel kleiner voor grotere databanken.
