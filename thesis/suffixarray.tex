@@ -93,7 +93,7 @@ Hierbij is $n$ de lengte van de tekst.
 De totale tijdscomplexiteit hiervan is $O(n^2 \log n)$ en niet $O(n \log n)$ aangezien elke vergelijking van twee suffixen in het slechtste geval $n$ karaktervergelijkingen vereist.
 Ondertussen bestaan er echter verschillende algoritmen die een tijdscomplexiteit van $O(n)$ bereiken~\cite{sais, ko_alura, radixSA, dark_archon, libdivsufsort} voor het opbouwen van de suffix array van een tekst.
 Bovendien vereisen deze veel minder geheugen dan een equivalente suffixboom.
-Sommige implementaties vereisen slechts $5n + O(1)$ geheugen~\cite{dark_archon, libdivsufsort}.
+Sommige implementaties vereisen slechts $5n + O(1)$ geheugen~\cite{dark_archon, libdivsufsort, libsais}.
 \\ \\
 Zoeken in een suffix array kan in $O(m \log n)$.
 Hierbij is $n$ opnieuw de lengte van de tekst, en $m$ de lengte van de zoekstring.

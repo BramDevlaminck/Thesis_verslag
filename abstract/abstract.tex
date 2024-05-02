@@ -2,7 +2,7 @@
 %! Date = 30/04/2024
 
 % Preamble
-\documentclass[11pt]{article}
+\documentclass[10pt]{article}
 
 % Packages
 \usepackage[english]{babel}
@@ -13,6 +13,7 @@
 \usepackage{caption}
 \addbibresource{abstract_bibliography.bib}
 \usepackage[hyperfootnotes=true]{hyperref}
+\usepackage{xcolor}
 \hypersetup{
     colorlinks,
     linkcolor={black},
@@ -52,66 +53,72 @@
 
 
         \section{Introduction}\label{sec:introduction}
-        Proteins are all around us an play an important role in our daily life.
-        They guarantee the proper functioning of processes inside every organism.
-        This makes proteins interesting to study, because they teach us what is happening in an ecosystem.
+        Traditionally, the most used protease in the (meta)proteomics field is trypsin.
+        Because of this, Unipept~\cite{unipept_desktop, unipept_api, unipept_4, unipept_orig, unipept_tutorial, unipept_web, unipept_cli, unipept_desktop_2} was specifically developed with this in mind.
+        This resulted in the use of an index structure where the UniProtKB~\cite{UniprotKB} database is preprocessed by splitting every protein according to the cleavage pattern that trypsin creates.
+        This also allows Unipept to precompute the LCA for every possible combination of matching tryptic peptides.
+        This approach has proven its efficiency in the past few years, but also has its limitations.
 
-        When researchers have a sample of proteins, these get split into peptides by a protease (such as trypsin), after which a mass spectrometer can read these fragments.
-        These fragments are the input for search engines, which translate them into human-readable strings.
-        This process loses some important information.
-        Instead of whole proteins, we end up with short peptides.
-        Because of this we don't know which proteins were present in the sample.
-        This is where tools like Unipept come into play.
-        By searching these short peptides into the UniProtKB database, we can determine of which proteins the peptide might be a fragment.
-        Using these resulting proteins Unipept provides a functional and taxonomic analysis.
+        Trypsin will from time to time miss a cleavage position, this creates a so-called missed cleavage.
+        Peptides with such missed cleavages will not be present in the current Unipept index, since Unipept assumes that there are no missed cleavages.
+        To solve this problem, a solution was retro-fitted to handle these missed cleavages.
+        When this option is selected, Unipept will scan the input peptide for these missed cleavage positions, split the peptide and perform separate lookups for every tryptic peptide.
+        These results are intersected, which delivers a set of possible protein matches.
+         Every protein in this set is brute-force scanned to ensure that the complete original peptide is present, and not only the separate tryptic fragments.
+        Finally, the LCA of the found proteins is calculated on-the-fly.
+        All these extra steps, including the on-the-fly calculation of the LCA has a significant impact on the performance when this option is enabled.
 
-        However, Unipept has one big restriction.
-        Unipept will only find all matches for tryptic peptides (these are peptides created by the protease trypsin) or when accepting a big performance penalty tryptic peptides with missed cleavages (these are peptides where trypsin should have cut the protein, but this did not happen for some reason).
-        This restriction has not been a big problem since trypsin is the most commonly used protease in the metaproteomics research field, but this prevents Unipept from being more broadly useable.
+        A second disadvantage of the current Unipept index is the inability to process non-tryptic peptides.
+        Similar to peptides with missed cleavages, these will not be present in the index, but there exists no workaround for this.
 
-        This explains the search for a new index with the following constraints.
+        This restriction has not been a significant problem since Unipept was originally created for the metaproteomics field, where trypsin is widely used.
+        However, we have the field such as the immunopeptidomics field frequently work with non-tryptic peptides.
+        We aspire to broaden the usecases of Unipept, which requires a new search index with the following properties:
+
         \begin{enumerate}
-            \item For every peptide, all matches in UniProtKB should be found.
+            \item For every peptide (tryptic or non-tryptic), all matches in UniProtKB should be found.
             \item We need to be able to build the index for the full UniProtKB database with maximum memory usage around 1 to 2 TB of RAM\@.
             \item Search performance should be on par with the current Unipept index.
             \item The new index needs to be able to replace the current index, and facilitate all the current Unipept features.
         \end{enumerate}
 
         In short, we want an index that does not remove any of the current features, while remove the restriction that only tryptic peptides can efficiently be found by the current index.
-        This also means that our new index will need to provide a way to equalize the amino acids Isoleucine and Leucine.
-
+        This also means that our new index will need to provide a way to equalize the amino acids isoleucine and leucine, as this is one of the current features.
 
         \section{Methods}\label{sec:methods}
-        Possible well-known index structures for string matching are suffix trees (STs), suffix arrays (SAs), FM-indices and R-indices.
-        All of these make a trade-off between index-size, memory usage and search performance.
-        Mainly the memory usage is important, since this index structure had the lowest peak memory usage during testing.
-        Using libdivsufsort or libsais, it is possible to build a full suffix array with $5n + O(1)$ memory, where $n$ is the size of the text that needs to be indexed.
+        Our new index structure makes use of a suffix array.
+        This suffix array can be build using the libdivsufsort~\cite{libdivsufsort} or libsais~\cite{libsais} library.
+        Both provide a linear time algorithm with a $5n + O(1)$ memory complexity, where $n$ is the size of the text that needs to be indexed.
 
         \subsection{Sparse Suffix Arrays}
-        While a complete suffix array delivers the best performance, the index itself is quite large.
+        While a complete suffix array delivers the best performance, the index itself is large.
         Since we are never interested in searching peptides that are less than 5 amino acids long\footnote{This is already a restriction in the current Unipept index, that has almost no real-world information loss associated with it because short peptides have thousands of matches, which makes the analysis results undetailed.}, we can make the suffix array sparse, which makes the resulting index smaller.
-        This is done by sampling the full suffix array, and only keeping every k-th suffix of the input text.
+        This is accomplished by sampling the full suffix array, and only keeping every k-th suffix of the input text.
         This results in a sparse suffix array (SSA) which is only $\frac{1}{k}$th of the original suffix array size.
 
         \subsection{Equalizing Isoleucine and Leucine}
-        There are two possible ways to equalize isoleucine and leucine during search.
-        We could use the suffix array build with the original text, and explore all variants of the input peptide where and I and L can be replaced by each other.
-        This would need to explore $2^x$ options with $x$ the number of I or L's in the searched peptide.
-        Alternatively, we could build a suffix array over the modified text, where every I is replaced by an L, or vice versa.
-        When the same is done on the peptides themselves, we find all matches where I and L are equalized.
-        However, finding matches where we don't want to equalize I and L requires extra work.
-        This can be done with an extra filtering step where we check all the matches I and L locations of the original peptide using the original text (the modified text is never needed during search).
-        All the other characters will always match because the search in the suffix array guarantees this.
-        Furthermore, Unipept by default enables the option where I (Isoleucine) and L (Leucine) are equalized to each other during search, which makes the second approach preferable.
+        Our solution to treat isoleucine and leucine as equal consists out of 2 parts.
+        Firstly, we don't index the original text, but a slightly modified version.
+        We replace every occurrence of Leucine by Isoleucine, which essentially equalizes them during the construction of the suffix array.
+        During the search, we perform the same translation on every peptide, and as a result we find every match with I and L equalized.
+        We perform this search using the original, unmodified text.
+        This is important, since we need this original text when we need to perform a search operation were we do not want to equalize I and L\@.
+        In this case a second step is added.
+
+        During this second step, we filter away the wrong matches from the first stage.
+        This is achieved by checking every I and L location in the original, unmodified peptide with the matching amino acid in the original text.
+        When these two characters are the same, there is indeed an exact match.
+        A mismatch indicates that I and L were wrongfully equalized.
+        Only these I and L locations have to be checked since the suffix array search already ensures that all other characters match in the original text.
 
 
-        \section{Results}\label{sec:results}
+        \section{Results}\label{sec:results} % TODO: mention hardware specifics
         There are three aspects to consider.
         The memory usage and speed during building, the resulting index size while hosting and search performance.
 
         \subsection{Building the Index}
         Building the suffix array for the complete UniProtKB database requires maximum 735 GB of RAM and 5 hours of computing time using the libdivsufsort algorithm.
-        This computation is done once for each UniProtKB release and requires the use of the HPC at Ghent University, after which the resulting index is written to a file, and moved to the Unipept servers.
+        This operation is performed once for each UniProtKB release and requires the use of the HPC at Ghent University, after which the resulting index is written to a file, and moved to the Unipept servers.
         These servers each have 0.5 TB of RAM available.
         This determines the sparseness factor $k$ that we use on the suffix array.
         The full suffix array is 700 GB, plus another 88 GB of text.
@@ -126,8 +133,8 @@
 
         \section{Comparison}\label{sec:comparison}
         To compare our new index we need to take multiple aspects in to account.
-        Tools such as the Uniprot peptide search tool, the Expasy ScanProsite tool and Unipept at the moment all have the possibility to find matches in the UniProtKB database.
-        There are some big differences though.
+        Tools such as the Uniprot peptide search tool~\cite{uniprot_search_site, uniprot_search_paper}, the Expasy ScanProsite tool~\cite{scanprosite} and Unipept at the moment all have the possibility to find matches in the UniProtKB database.
+        There are some major differences though.
 
         Feature wise, the UniProt Peptide Search tool is identical to the new suffix array index developed for Unipept.
         They can both find all matches in UniProtKB, and have the option to equalize I and L\@.
@@ -163,7 +170,11 @@
         \end{Table}
 
 %        \section{Discussion}\label{sec:discussion}
+
+        \printbibliography[heading=bibintoc]
     \end{multicols}
+
+
 
 
 \end{document}
