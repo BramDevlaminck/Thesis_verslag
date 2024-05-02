@@ -1,6 +1,6 @@
 \chapter{Conclusie \& future work}\label{ch:conclusie}
 In deze masterproef hebben we verschillende opties verkend om de huidige Unipept index voor UniProtKB te vervangen.
-Hierbij lag de hoofdfocus op het vinden van een nieuwe indexstructuur die aan volgende opties voldeed.
+Hierbij lag de hoofdfocus op het vinden van een nieuwe indexstructuur die aan volgende opties voldeed:
 \begin{enumerate}
     \item De index moet het mogelijk maken om arbitraire peptiden te kunnen zoeken.
     \item Het geheugenverbruik van de index moet beperkt zijn, zodat het mogelijk is niet enkel kleinere proteïnedatabanken te indexeren, maar ook de volledige UniProtKB database\@.
@@ -8,7 +8,7 @@ Hierbij lag de hoofdfocus op het vinden van een nieuwe indexstructuur die aan vo
 \end{enumerate}
 
 \section{Conclusie}
-Een eerste indexstructuur die we bekekenen waren \textbf{suffixbomen}.
+Een eerste indexstructuur die we bekekenen hebben waren \textbf{suffixbomen}.
 Hierbij hebben we een eigen Rust implementatie gemaakt van het algoritme van Ukkonen.
 Deze suffixbomen bieden een extreem grote vrijheid, en het zoeken gaat bovendien extreem snel.
 Ze zijn echter \textbf{onbruikbaar} voor grote proteïnedatabanken te indexeren vanwege het \textbf{geheugengebruik}.
@@ -41,7 +41,7 @@ Een derde luik van de indexstructuur zijn de functionele annotaties die 11 GB gr
 Tot slot moeten we ook nog de mapping van de suffixen naar de proteïnen bijhouden.
 Dit is één 32 bit integer per proteïne, aangezien er ongeveer $250\thinspace000\thinspace000 < 2^{32}$ proteïnen zitten in UniProtKB\@.
 Dit resulteert in een mapping van 1 GB\@.
-Hierdoor zou de totale resulterende index van $235 + 87 + 11 + 1 = 334$ GB naar $136 + 54 + 11 + 1 = 202$ GB gaan, wat iets meer dan \textbf{1/3 winst} oplevert.
+Hierdoor zou de totale resulterende index van $235 + 87 + 11 + 1 = 334$ GB naar $136 + 54 + 11 + 1 = 202$ GB gaan, wat iets meer dan \textbf{33\% winst} oplevert.
 Merk op dat dit de nodige hoeveelheid geheugen tijdens het opbouwen niet verkleint, aangezien we in die fase wel gebruik moeten maken van 64 bit integers en 8 bit karakters.
 \\ \\
 Ook tijdens het opbouwen zijn er nog interessante pistes om te verkennen.
@@ -51,7 +51,7 @@ Indien deze constante vrij groot is, zal de winst verloren gaan ten opzichte van
 Een andere aanpak zou kunnen zijn via een online algoritme waarbij we een bestaande SSA kunnen uitbreiden met nieuwe eiwitten.
 Zo kunnen we tijdens het opbouwen één eiwit per keer toevoegen aan de suffix array, maar kunnen we ook nieuwere UniProtKB releases efficiënt afhandelen door te vertrekken van de index uit de vorige release.
 \\ \\
-Een derde duidelijk punt van verbetering, is tijdens het \textbf{berekenen van de LCA*}.
+Een derde duidelijk punt van verbetering, zit in het \textbf{berekenen van de LCA*}.
 Indien deze voorberekend wordt tijdens het opbouwen van de index zal dit niet enkel de performantie ten goede komen, het zal ook de nood voor de drempelwaarde B (die standaard op 10\thinspace000 staat) sterk verminderen.
 De meest duidelijke piste hiervoor is aan de hand van Enhanced Suffix Arrays (ESAs).
 In deze masterproef hebben we deze piste niet verder verkend vanwege de eerste indicatie dat het berekenen van de extra tabellen het geheugenverbruik zou verdubbelen, en dat het \textit{on the fly} berekenen van de LCA* een acceptabele overhead met zich mee brengt.
