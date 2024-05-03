@@ -8,10 +8,13 @@
 \usepackage[english]{babel}
 \usepackage{subfloat}
 \usepackage{float}
-\usepackage{biblatex}
+\usepackage[style=ieee, backend=biber]{biblatex}
+\addbibresource{abstract_bibliography.bib}
+\renewcommand*{\bibfont}{\footnotesize}
+
+
 \usepackage{multicol}
 \usepackage{caption}
-\addbibresource{abstract_bibliography.bib}
 \usepackage[hyperfootnotes=true]{hyperref}
 \usepackage{xcolor}
 \hypersetup{
@@ -24,12 +27,13 @@
 \usepackage{geometry}
 \geometry{
     a4paper,
-    left=25mm,
-    right=25mm,
-    top=25mm,
+    left=15mm,
+    right=15mm,
+    top=15mm,
     bottom=25mm,
 }
 \usepackage{graphicx}
+\graphicspath{{./figures/}}
 
 \newenvironment{Figure}
 {\par\medskip\noindent\minipage{\linewidth}}
@@ -39,6 +43,9 @@
 \newenvironment{Table}
 {\par\medskip\noindent\minipage{\linewidth}}
 {\endminipage\par\medskip}
+
+\babelhyphenation[english]{Uni-Prot-KB}
+
 % Document
 \begin{document}
 
@@ -72,8 +79,8 @@
         Similar to peptides with missed cleavages, these will not be present in the index, but there exists no workaround for this.
 
         This restriction has not been a significant problem since Unipept was originally created for the metaproteomics field, where trypsin is widely used.
-        However, we have the field such as the immunopeptidomics field frequently work with non-tryptic peptides.
-        We aspire to broaden the usecases of Unipept, which requires a new search index with the following properties:
+        However, other fields such as the immunopeptidomics field frequently work with non-tryptic peptides.
+        We aspire to broaden the use cases of Unipept, which requires a new search index with the following properties:
 
         \begin{enumerate}
             \item For every peptide (tryptic or non-tryptic), all matches in UniProtKB should be found.
@@ -113,22 +120,32 @@
 
 
         \section{Results}\label{sec:results} % TODO: mention hardware specifics
-        There are three aspects to consider.
+        Three main aspects are considered during testing.
         The memory usage and speed during building, the resulting index size while hosting and search performance.
 
         \subsection{Building the Index}
-        Building the suffix array for the complete UniProtKB database requires maximum 735 GB of RAM and 5 hours of computing time using the libdivsufsort algorithm.
-        This operation is performed once for each UniProtKB release and requires the use of the HPC at Ghent University, after which the resulting index is written to a file, and moved to the Unipept servers.
-        These servers each have 0.5 TB of RAM available.
-        This determines the sparseness factor $k$ that we use on the suffix array.
-        The full suffix array is 700 GB, plus another 88 GB of text.
-        To makes this fit on the Unipept servers we take $k = 3$, which translates to a total index size of $\frac{700}{3} + 88 \approx 322$ GB\@.
+        Building the suffix array for the complete UniProtKB database requires around 735 GB of RAM and 5 hours of computing time using the libdivsufsort library.
+        Because of the high-memory needs, we use the HPC of Ghent University, where the high-memory cluster has 16 nodes with each 2\times 64-core AMD EPYC 7773X (Milan-X @ 2.2 GHz) and 940 GB of RAM\@.
+        We use one core of a single node since the construction phase is single threaded.
+        The resulting full suffix array is around 700 GB large (+ another 88 GB for the text).
+        Our goal is to host this new index on Unipept servers, which have around 0.5 TB of available memory.
+        To make this possible, we immediately perform a sampling phase with sparseness factor $k = 3$ at the end of the construction process on the HPC\@.
+        This results in a search index size of $\frac{700}{3} + 88 \approx 322$ GB\@.
+        Next to this search index Unipept needs some extra information (such as the UniProt accession number, NCBI taxon ID and functional annotations per protein).
+        This results in another 25 GB of needed RAM\@.
+
+        \begin{Figure}
+            \centering
+            \resizebox{\textwidth}{!}{
+            \includegraphics{uniprot_memory_treemap}
+            }
+            \captionof{figure}{Visualisation of the size of each part of the new Unipept index for UniProtKB 2024\_01.}
+            \label{fig:uniprot_memory_treemap}
+        \end{Figure}
 
         \subsection{Querying the index}
-        TODO
+        TODO: gebruik SIHUMIx files
 
-        \subsection{Overview Memory Usage}
-        TODO
 
 
         \section{Comparison}\label{sec:comparison}
@@ -160,7 +177,7 @@
                     \hline\hline
                     Used Prot.   & all    & all          & ref. prot. & all            \\
                     Approx Match & [IL]   & [IL]         & flexible   & [IL]           \\
-                    time         & < 5 ms & 1 s - 20 min & 5 min      & < 5 ms         \\
+                    time         & $<$ 5 ms & 1 s - 20 min & 5 min      & $<$ 5 ms         \\
                     Valid pept.  & all    & all          & all        & $\sim$ tryptic \\
                     \hline
                 \end{tabular}
