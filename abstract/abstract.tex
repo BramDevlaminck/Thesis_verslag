@@ -2,7 +2,7 @@
 %! Date = 30/04/2024
 
 % Preamble
-\documentclass[10pt]{article}
+\documentclass[11pt]{article}
 
 % Packages
 \usepackage[english]{babel}
@@ -12,9 +12,13 @@
 \addbibresource{abstract_bibliography.bib}
 \renewcommand*{\bibfont}{\footnotesize}
 
-
+\usepackage[small]{titlesec}
+\titlespacing*{\section}{0pt}{3ex}{1ex}
+\titlespacing*{\subsection}{0pt}{3ex}{0.5ex}
+\titlespacing*{\subsubsection}{0pt}{3ex}{0.5ex}
 \usepackage{multicol}
 \usepackage{caption}
+\captionsetup{font=footnotesize}
 \usepackage[hyperfootnotes=true]{hyperref}
 \usepackage{xcolor}
 \hypersetup{
@@ -55,10 +59,16 @@
     \large Bram Devlaminck\\[2em]
     \endgroup
 
+    \par\noindent\rule{\linewidth}{.5pt}
+    \section*{Abstract}\label{sec:test-section}
+    Unipept is an ecosystem developed for fast metaproteomics data-analyses.
+    In the past few years Unipept has been optimized for tryptic peptides, with a slow workaround for peptides with missed cleavages.
+    Unipept 6.0 introduces a new index structure which allows fast peptide matching for arbitrary peptides.
+    This makes Unipept applicable in domains where trypsin is not the protease of choice, but also removes the performance introduced penalty when dealing with missed cleavages.
+    All while outperforming competing tools.
+    \par\noindent\rule{\linewidth}{.5pt}
+
     \begin{multicols}{2}
-        \section*{Abstract}\label{sec:test-section}
-
-
         \section{Introduction}\label{sec:introduction}
         Traditionally, the most used protease in the (meta)proteomics field is trypsin.
         Because of this, Unipept~\cite{unipept_desktop, unipept_api, unipept_4, unipept_orig, unipept_tutorial, unipept_web, unipept_cli, unipept_desktop_2} was specifically developed with this in mind.
@@ -104,7 +114,7 @@
         This results in a sparse suffix array (SSA) which is only $\frac{1}{k}$th of the original suffix array size.
 
         \subsection{Equalizing Isoleucine and Leucine}
-        Our solution to treat isoleucine and leucine as equal consists out of 2 parts.
+        Our solution to treat isoleucine and leucine as equal consists of 2 parts.
         Firstly, we don't index the original text, but a slightly modified version.
         We replace every occurrence of Leucine by Isoleucine, which essentially equalizes them during the construction of the suffix array.
         During the search, we perform the same translation on every peptide, and as a result we find every match with I and L equalized.
@@ -118,8 +128,13 @@
         A mismatch indicates that I and L were wrongfully equalized.
         Only these I and L locations have to be checked since the suffix array search already ensures that all other characters match in the original text.
 
+        \subsection{Analyses}
+        Our solution performs the functional and taxonomic analysis at runtime.
+        While it would be advantageous to precompute this, the suffix array and text do not contain enough information to do this.
+        This is a trade-off we made during development between max memory usage and speed.
+        In practice, this is not a big limitation.
 
-        \section{Results}\label{sec:results} % TODO: mention hardware specifics
+        \section{Results}\label{sec:results}
         Three main aspects are considered during testing.
         The memory usage and speed during building, the resulting index size while hosting and search performance.
 
@@ -144,9 +159,27 @@
         \end{Figure}
 
         \subsection{Querying the index}
-        TODO: gebruik SIHUMIx files
-
-
+        To evaluate the performance we use 6 files with each around 25\thinspace000 peptides.
+        These are samples from the SIHUMIx experiment, where trypsin is used as a protease.
+        This means that as well as tryptic peptides, there are also peptides with naturally occurring missed cleavages present.
+        Figure~\ref{fig:new_vs_old_unipept} shows the execution time for both the new and old unipept index.
+        To make the comparison as fair as possible the \textit{filter duplicate peptides} setting is turned off, and \textit{advanced missed cleavage handling} is turned on.
+        This way the old unipept index also searches for all entries (including duplicates), while still finding matches for peptides with missed cleavages.
+        Note that the old Unipept index will not find peptides that are created by another protease, while this makes no difference for the new index.
+        \begin{Figure}
+            \centering
+            \resizebox{\textwidth}{!}{
+                \includegraphics{new_vs_old_unipept}
+            }
+            \captionof{figure}{Execution time for the new and old Unipept index while searching different SIHUMIx samples. Each sample consists of approximately 25\thinspace000 peptides. The old Unipept index searches with the \textit{filter duplicate peptides} setting turned off, and \textit{advanced missed cleavage handling} turned on. This way both indices search all peptides (included duplicates), and missed cleavages are handled by both.}
+            \label{fig:new_vs_old_unipept}
+        \end{Figure}
+        When we compare the new index to the old index when only searching for tryptic peptides, we notice that the new index is around 1.5 times slower.
+        This is mainly the impact from the analyses that has to be performed during search, instead of just being able to retrieve it.
+        Furthermore, it is clearly visible that the extra filtering step has a performance impact on the big peptide files.
+        This effect was not clearly visible in Figure~\ref{fig:new_vs_old_unipept}, where the reverse seems to be visible.
+        However, this reverse effect is because searching with I = L finds more matches, which requires more output to be serialized to JSON\@.
+        In the bigger tests the extra time spend during search compensates for this. % TODO: figure about tryptic search
 
         \section{Comparison}\label{sec:comparison}
         To compare our new index we need to take multiple aspects in to account.
@@ -186,9 +219,34 @@
             \label{tab:tool_comparison}
         \end{Table}
 
-%        \section{Discussion}\label{sec:discussion}
+        \section{Conclusion}\label{sec:discussion}
+        With a new core index structure at the heart of Unipept we have broadened Unipept's possible use cases.
+        The new index structure makes searching peptides with missed cleavages around 10 to 100 times faster.
+        While adding the possibility to search arbitrary peptides, regardless of the used protease.
+        From our testing, Unipept greatly outperforms its closest competitors at finding all occurrences for an arbitrary peptide longer than 2 amino acids in UniProtKB\@.
+        The disadvantage of this new index is that searching tryptic peptides is slightly slower than before.
+        This slowdown is created by the analyses that has to be performed during search itself, while this could all be precalculated once in the old index.
 
-        \printbibliography[heading=bibintoc]
+        Another advantage of the new index is that there are no extra steps required to retrieve the NCBI taxon ID for each matched protein.
+        The current index requires extra steps to retrieve this, with a significant impact on the performance.
+        This restriction creates a bottleneck in the new Peptonizer2000 tool.
+
+        \section{Future work}
+        The new index solves the pre-set targets, but still leaves room for improvement in several areas.
+
+        A significant part of the current computation time is invested in performing the taxonomic and functional analyses.
+        Modifying the new index to support the pre-calculation of these analyses, while still maintaining a peak memory usage which is manageable would drastically improve the performance.
+
+        The index size could be reduced even more by making the text and suffix array even more compact.
+        Both of these structures don't utilize all bits from the allocated bytes.
+        The suffix array only needs 37 of the 64 bits used by every entry, while the text only needs 5 bits out of each byte per character.
+        This would reduce the total index size from 364 GB to around 225 GB\@.
+        However, this would introduce extra steps to decode every access to any of these data structures.
+        This could introduce non-negligible performance penalty.
+
+        Lastly, Unipept does not perform any form of inexact matching, except for I and L\@.
+        Introducing inexact matching into Unipept could allow us to deal with small mutations or read-errors introduced by a mass spectrometer.
+        \printbibliography
     \end{multicols}
 
 
