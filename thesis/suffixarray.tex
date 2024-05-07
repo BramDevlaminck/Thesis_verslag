@@ -197,7 +197,7 @@ Dit zal op zijn beurt ook de overhead van de sparse mapping beperkt houden.
 \begin{figure}[H]
     \centering
     \subfloat[Tijd nodig om alle matches te zoeken.]{\includegraphics[width=\linewidth]{dense_vs_sparse_time}}\\[4ex] % [4ex] om wat extra vertical spacing in te voegen
-
+    \centering
     \subfloat[Maximaal gebruikt geheugen tijdens het zoeken naar alle matches.]{\includegraphics[width=\linewidth]{dense_vs_sparse_memory}}
     \caption{Zoektijd en geheugengebruik bij het gebruik bij een \textit{dense} of \textit{sparse mapping} van de suffixen naar de proteïnes.}\label{fig:dense_vs_sparse}
 \end{figure}
@@ -333,7 +333,7 @@ Bij het Human-Prot zoekbestand zijn er ook kortere peptiden die we moeten oversl
 \\
 \begin{figure}[H]
     \centering
-    \subfloat[Zoektijd voor het Swiss-Prot peptidebestand met en zonder \textit{missed cleavages}. De zoekoperaties zijn uitgevoerd op een sparse suffix array gebouwd op basis van de Swiss-Prot eiwitdatabank, met $k = 1, 2, 3, 4, 5$.]{\includegraphics[width=\linewidth]{swissprot_searchtime_sparseness}}\\[4ex] % [4ex] om wat extra vertical spacing in te voegen
+    \subfloat[Zoektijd voor het Swiss-Prot peptidebestand met en zonder \textit{missed cleavages}. De zoekoperaties zijn uitgevoerd op een sparse suffix array gebouwd op basis van de Swiss-Prot eiwitdatabank, met $k = 1, 2, 3, 4, 5$.]{\includegraphics[width=0.9\linewidth]{swissprot_searchtime_sparseness}}\\[4ex] % [4ex] om wat extra vertical spacing in te voegen
 
     \subfloat[Grootte van de volledige index en SSA voor de Swiss-Prot databank met sparseness factor $k = 1, 2, 3, 4, 5$.]{\includegraphics[width=0.8\linewidth]{index_size_SSA}}
     \caption{Zoektijd en indexgrootte van een SSA voor Swiss-Prot met $k = 1, 2, 3, 4, 5$.}\label{fig:search_sparseness}
@@ -402,12 +402,17 @@ In de eigen implementatie kreeg elke thread simpelweg $\frac{1}{x}$ van alle pep
 De resultaten moeten daarna aan de hand van enkele stappen uit de thread-scope gehaald worden zodat deze terug beschikbaar zijn voor de rest van het programma.
 Rayon maakt gebruik van een ingewikkelder systeem aan de hand van \textit{work stealing}~\cite{rayon_stealing} om de data over de threads te verdelen.
 
+
+
 \begin{figure}[H]
     \centering
-    \subfloat[Absolute uitvoeringstijd voor 1--12 threads.]{\includegraphics[width=0.7\linewidth]{threading_default_vs_rayon}}\\[4ex] % [4ex] om wat extra vertical spacing in te voegen
-
+    \subfloat[Absolute uitvoeringstijd voor 1--12 threads.]{\includegraphics[width=0.7\linewidth]{threading_default_vs_rayon}}
+    \label{fig:threading_default_vs_rayon_1}
+\end{figure}
+\begin{figure}[H]\ContinuedFloat
+    \centering
     \subfloat[Relatieve versnelling ten opzichte van uitvoering op 1 thread.]{\includegraphics[width=0.7\linewidth]{threading_default_vs_rayon_relative}}
-    \caption{Tijdsmeting om het Swiss-Prot peptidebestand zonder \textit{missed cleavages} te zoeken in een index met sparseness factor 3 voor 5\% van UniProtKB.}\label{fig:threading_default_vs_rayon}
+    \caption{Tijdsmeting om het strikt tryptische Swiss-Prot peptidebestand te zoeken in een index met sparseness factor 3 voor 5\% van UniProtKB.}\label{fig:threading_default_vs_rayon}
 \end{figure}
 
 Naast het verschil in performantie zijn er nog andere voordelen verbonden aan het gebruik van Rayon.
@@ -464,15 +469,15 @@ Slechts voor 200 peptiden was er een resultaat op soortniveau.
     \caption{Berekenen van de LCA* (inclusief zoeken) voor alle peptiden (a) zonder en (b) met het gebruik van de drempelwaarde (B=10\thinspace000) op het Human-Prot en Swiss-Prot proteïnenbestand. De suffix array maakt gebruik van sparseness factor $k = 1$.}\label{fig:cutoff_humanprot}
 \end{figure}
 
-In Figuur~\ref{fig:cutoff_humanprot} is duidelijk te zien dat de \textbf{uitvoeringstijd drastisch daalt} wanneer de cut-off op 10000 matches geplaatst wordt.
+In Figuur~\ref{fig:cutoff_humanprot} is duidelijk te zien dat de \textbf{uitvoeringstijd drastisch daalt} wanneer de drempelwaarde op 10\thinspace000 matches geplaatst wordt.
 Als we dit specifiek bekijken voor de Human-Prot peptidebestanden en eiwitdatabank is de uitvoeringstijd maar liefst 300 keer sneller.
 Bovendien is ook hier het \textbf{informatieverlies minimaal}.
 Van de 250\thinspace000 peptiden zijn er 12 peptiden die een ander resultaat verkrijgen in de output.
 Deze 12 peptiden zijn echter slechts twee unieke peptiden (die gewoon meerdere keren voorkomen in het peptidebestand).
 Dit zijn de peptiden \texttt{EKP} en \texttt{SKE}.
-Indien we de LCA* effectief berekenen is het resultaat in beide gevallen 9606, terwijl we met een cut-off de root (1) terug geven.
+Indien we de LCA* effectief berekenen is het resultaat in beide gevallen 9606, terwijl we gebruikmakende van een drempelwaarde de root (1) terug geven.
 \\ \\
-Nu we het zoeken in de suffix array afgetopt hebben aan de hand van een cut-off, is het interessant om te kijken hoe de zoekperformantie zich verhoudt ten opzichte van het zoeken in een suffixboom.
+Nu we het zoeken in de suffix array afgetopt hebben aan de hand van een drempelwaarde, is het interessant om te kijken hoe de zoekperformantie zich verhoudt ten opzichte van het zoeken in een suffixboom.
 In de praktijk is het zoeken in een suffix array 5 tot 10 maal trager voor onze testbestanden.
 Een deel van deze extra zoektijd kan opgevangen worden door gebruik te maken van parallel zoeken.
 Indien we hier gebruik van maken, duurt het zoeken van 100\thinspace000 peptiden op de Human-Prot en Swiss-Prot databank opnieuw enkele tientallen tot honderden milliseconden.

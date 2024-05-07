@@ -1,14 +1,14 @@
 \chapter{Suffixbomen}\label{ch:suffix-bomen}
-Suffixbomen zijn een eerste datastructuur die het mogelijk maken om efficiënt te controleren of een korte string voorkomt in een andere, grotere string en waar deze mogelijke match zich bevindt.
+Suffixbomen zijn een eerste datastructuur die het mogelijk maken om efficiënt te controleren waar een korte string voorkomt in een andere, grotere string.
 Meer specifiek gaat het om een variant hiervan, de zogenaamde veralgemeende suffixboom.
 Deze laat toe om efficiënt te \textbf{controleren of een string deel is van één of meerdere strings uit een verzameling}.
 \\ \\
-We behandelen deze datastructuur als eerste, omdat hij vrij intuïtief en het minst complex is.
+We behandelen deze datastructuur als eerste omdat hij vrij intuïtief en het minst complex is.
 Bovendien kan een goede tijdscomplexiteit bereikt worden aangezien de zoektijd naar exacte matches in een suffixboom lineair is in de lengte van de zoekstring/peptide.
 Het opbouwen van de suffixboom kan ook in lineaire tijd gebeuren, maar dan lineair in de totale lengte van alle proteïnen in de databank.
 Hiervoor hebben we een \textbf{eigen Rust implementatie} geschreven.
 Aan de hand hiervan was het mogelijk om vertrouwd te raken met de programmeertaal Rust.
-Daar komt bij dat het ons ook de mogelijkheid geeft om enkele interessante implementatiedetails, specifiek voor deze programmeertaal, te bespreken samen met de bereikte performantie.
+Daar komt bij dat het ons ook de mogelijkheid geeft om enkele interessante implementatiedetails, specifiek voor deze programmeertaal, te bespreken naast de bereikte performantie.
 
 \section{Wat zijn suffixbomen?}\label{sec:wat-zijn-suffix-bomen?}
 Een suffixboom van een tekst $T$ wordt formeel gedefinieerd als volgt~\cite{CCB_course}:
@@ -161,7 +161,7 @@ Een boog met waarde \texttt{1,3} stelt dus de substring \texttt{ca} voor uit het
 
 \end{figure}
 
-Deze suffixbomen laten toe om in één string in $O(n)$ tijd substrings te zoeken.
+Deze suffixbomen laten toe om in $O(n)$ tijd substrings te zoeken binnen één string.
 Hierbij is $n$ de lengte van de gezochte substring.
 Indien we ook willen weten hoeveel voorkomens er exact zijn, en waar deze zich bevinden neemt dit $O(k)$ extra tijd.
 Hierbij is $k$ het aantal voorkomens van de substring in de tekst.
@@ -169,7 +169,8 @@ Zoals eerder vermeld willen we echter peptiden zoeken in een \textbf{verzameling
 Daarom wordt gebruikgemaakt van een \textbf{veralgemeende suffixboom}.
 Hierbij wordt de verzameling van eiwitten die geïndexeerd moet worden behandeld alsof het één grote tekst is.
 De manier waarop deze tekst gevormd wordt is echter erg belangrijk.
-Alle proteïnes moeten aan elkaar gehangen worden met ertussen een teken dat niet in de proteïnes en peptiden zelf voorkomt, en als eindteken moet er een ander uniek teken gebruikt worden.
+Alle proteïnen moeten aan elkaar gehangen worden met ertussen een teken dat niet in de proteïnes en peptiden zelf voorkomt.
+Als eindteken moet er een ander uniek teken gebruikt worden.
 Wanneer niet aan de eerste voorwaarde voldaan wordt, zullen we ongeldige matches vinden.
 Het zou namelijk mogelijk zijn om een match te vinden die over twee of meer proteïnes gespreid is.
 Wanneer niet aan de tweede voorwaarde voldaan wordt, dan breken we de eigenschap van suffixbomen waarbij elke suffix nooit een prefix van een andere suffix is.
@@ -188,7 +189,7 @@ Tijdens het implementeren was de referentiecode van prof.~Jan Fostier~\cite{Ukko
 \\ \\
 Het belangrijkste verschil tussen de Kotlin-implementatie en de referentie-implementatie is de manier waarop de kinderen voorgesteld worden.
 Bij de eerste is dit aan de hand van een HashMap terwijl de laatste gebruikmaakt van een pointer array.
-De reden voor de andere aanpak is om alles zo simpel mogelijk te houden.
+De reden voor de tweede aanpak is om alles zo simpel mogelijk te houden.
 Hierdoor kon een karakter rechtstreeks als sleutel gebruikt worden, en was een omzetting naar een index niet nodig.
 Om dit prototype te maken, heb ik gekozen voor Kotlin boven Python aangezien Kotlin performanter is en ook een aangename ontwikkelingservaring biedt.
 Hierdoor is het mogelijk om de testdatasets op te bouwen binnen de 10 minuten.
@@ -224,7 +225,7 @@ Dit volstaat niet tijdens het opbouwen van de boom aangezien wij wijzigingen moe
 Om dit toch mogelijk te maken, introduceert Rust het \textbf{\textit{interior mutability}} patroon~\cite{interior_mutability}.
 Hiervoor wordt gebruikgemaakt van het \texttt{Refcell} datatype.
 Dit laat toe om data toch aan te passen, ook al is de referentie \textit{immutable}.
-Aangezien dit de standaard Rust regels doorbreekt, is dit \texttt{unsafe}\footnote{Dit is code waarvan de compiler niet kan nagaan als die aan alle voorwaarden voldoet die nodig zijn om \textit{memory safety} te kunnen garanderen. Dit sleutelwoord bestaat zodat de programmeur meer vrijheid zou kunnen krijgen om bepaalde patronen toch te kunnen toepassen. De verantwoordelijkheid om correct het geheugen te gebruiken wordt hier bij de programmeur gelegd. Een andere reden om \texttt{unsafe} te gebruiken is om bepaalde interacties met hardware uit te voeren. Deze zijn inherent onveilig en zouden anders onmogelijk zijn.} en kan Rust \textit{at compile-time} geen \textit{memory safety} meer garanderen.
+Aangezien dit de standaard Rust regels doorbreekt, is dit \texttt{unsafe}\footnote{Dit is code waarvan de compiler niet kan nagaan of die aan alle voorwaarden voldoet die nodig zijn om \textit{memory safety} te kunnen garanderen. Dit sleutelwoord bestaat zodat de programmeur meer vrijheid zou kunnen krijgen om bepaalde patronen toch te kunnen toepassen. De verantwoordelijkheid om correct het geheugen te gebruiken wordt hier bij de programmeur gelegd. Een andere reden om \texttt{unsafe} te gebruiken is om bepaalde interacties met hardware uit te voeren. Deze zijn inherent onveilig en zouden anders onmogelijk zijn.} en kan Rust \textit{at compile-time} geen \textit{memory safety} meer garanderen.
 \texttt{Refcell} zal gelukkig de nodige code invoegen zodat runtime memory safety wel gegarandeerd is.
 Mogelijke foutieve geheugenoperaties zullen dus tijdens het uitvoeren van het programma gedetecteerd worden, ten koste van performantie.
 \\ \\
@@ -243,8 +244,8 @@ Gelukkig is er een alternatieve manier waar ik op gestoten ben: een \textbf{\tex
 Het idee hierbij is dat er één arena gemaakt wordt waarbij ownership erg simpel is.
 In mijn implementatie is dit bijvoorbeeld een \texttt{Vector}.
 Alle toppen worden hierbij in deze ene vector opgeslagen.
-In plaats van pointers naar elkaar bij te houden, zullen de toppen indexen bijhouden.
-Deze indexen stellen de indexen in de arena van de top voor, waarnaar anders een pointer wordt bijgehouden.
+In plaats van pointers naar elkaar bij te houden, zullen de toppen getallen bijhouden.
+Deze getallen stellen de indices in de arena van de top voor, waarnaar anders een pointer wordt bijgehouden.
 \\ \\
 Aangezien we alles in één vector opslaan, is het mogelijk om de nodige hoeveelheid geheugen onmiddellijk aan te vragen bij het opstarten van het programma.
 Zoals in sectie~\ref{sec:wat-zijn-suffix-bomen?} beschreven staat zijn er ten hoogste $2n - 1$ toppen voor een tekst van lengte $n$.
@@ -259,7 +260,7 @@ Uiteindelijk viel dit vrij makkelijk uit te zoeken, gebruikmakende van de foutme
 Het omzetten van de resterende Kotlin-code naar Rust was erg simpel en bijna een één-op-één vertaling.
 Hier heb ik er echter voor gekozen om kinderen voor te stellen op dezelfde manier als in de C++-referentiecode.
 Er wordt dus een array bijgehouden per top waarin plaats voorzien wordt voor alle mogelijke kinderen van die top.
-Dit gebeurt ook indien een top geen, of slechts een klein aantal, kinderen bevat.
+Dit gebeurt ook indien een top geen, of slechts een klein aantal kinderen bevat.
 Dit heeft als gevolg dat de \textbf{voorstelling van elke top even groot} is.
 
 \subsubsection{Geheugenefficiëntie}
@@ -336,7 +337,7 @@ Uiteindelijk heb ik één aanpassing moeten maken in deze C++ code om een eerlij
 Oorspronkelijk werd er in elke top ruimte voorzien voor 256 mogelijke kinderen.
 Dit was veel te hoog voor onze usecase.
 Er zijn namelijk slechts 20 aminozuren en enkele \textit{wildcard characters}.
-Dit verklaart onmiddellijk waarom het geheugengebruik initieel ongeveer een factor 10 hoger was dan nodig.
+Dit verklaart onmiddellijk waarom het geheugengebruik initieel ongeveer tien keer hoger hoger was dan nodig.
 Uiteindelijk ben ik gegaan voor een implementatie (zowel in Rust als C++) waar plaats is voor \textbf{28 kinderen}.
 De 26 letters van het alfabet en de karakters \texttt{\#} en \texttt{\$}.
 \texttt{\#} en \texttt{\$} die gebruikt worden als resp.~scheidingsteken en eindteken in veralgemeende suffixbomen.
@@ -345,7 +346,7 @@ De exacte waarden van het scheidings- en eindteken zijn niet belangrijk, de enig
 \\ \\
 Een andere aanpak zou kunnen zijn om HashMaps te gebruiken.
 Het totale geheugengebruik zal hierdoor afnemen naar ongeveer 60\% van het huidige verbruik.
-Dit gaat echter ten koste van performantie tijdens het zoeken (wat net erg belangrijk is).
+Dit gaat echter ten koste van performantie tijdens het zoeken, aangezien voor elke opvraging van een kind een hash berekend moet worden.
 Hoe dan ook blijft het \textbf{geheugengebruik extreem hoog}, welke implementatie ook gekozen wordt.
 \\ \\
 Het vergelijken van de implementaties heb ik opgesplitst in twee stukken:
@@ -368,7 +369,7 @@ De resultaten hiervan zijn terug te vinden in Figuur~\ref{fig:tree_building}.
     \caption{Vergelijking tusen C++ en Rust implementaties voor het opbouwen van de suffixboom a.d.h.v.~het algoritme van Ukkonen. De tijd en het geheugengebruik zijn gemeten met het Unix \texttt{time} commando. Als invoerbestand gebruiken we hier de Swiss-Prot en Human-Prot eiwitdatabank.}\label{fig:tree_building}
 \end{figure}
 
-Uit deze grafieken vallen 2 duidelijke conclusies te trekken.
+Uit deze grafieken vallen twee duidelijke conclusies te trekken.
 \begin{enumerate}
     \item De implementatie in Rust is $\pm$ 33\% sneller.
     \item Het geheugengebruik is erg vergelijkbaar.
@@ -404,12 +405,12 @@ Toch kunnen we besluiten dat de \textbf{C++ implementatie een beetje performante
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\linewidth]{search_match_performance_tree}
-    \caption{Uitvoeringstijd in milliseconden voor het zoeken tot een match voor alle peptidebestanden. Deze resultaten zijn het gemiddelde van 5000 uitvoeringen. Eén iteratie wordt gezien als één maal elke peptide die deel is van het peptidebestanden te zoeken in de suffixboom, en te stoppen wanneer er een (mis)match gevonden is. Het meten van de tijd is gebeurd in de code zelf.}
+    \caption{Uitvoeringstijd in milliseconden voor het zoeken tot een match voor alle peptidebestanden. Deze resultaten zijn het gemiddelde van 5000 uitvoeringen. Eén iteratie wordt gezien als eenmaal elke peptide die deel is van het peptidebestanden te zoeken in de suffixboom, en te stoppen wanneer er een (mis)match gevonden is. Het meten van de tijd is gebeurd in de code zelf.}
     \label{fig:performance_match_tree}
 \end{figure}
 
 Het verschil met de huidige implementatie van Unipept is aanzienlijk.
-Daar duurt het op dit moment 2 minuten en 12 seconden om alle peptiden van het Swiss-Prot peptidebestand zonder \textit{missed cleavages} te zoeken,
+Daar duurt het op dit moment 2 minuten en 12 seconden om alle peptiden van het strikt tryptische Swiss-Prot peptidebestand te zoeken,
 en maar liefst 30 minuten en 37 seconden voor het peptidebestand met \textit{missed cleavages}.
 Dit is resp.~$\frac{132\thinspace000}{152.98} = 857$ en $\frac{1\thinspace837\thinspace000}{140.64} = 13 000$ keer trager.
 Het gebruik van de suffixboom heeft echter ook nadelen ten opzichte van de huidige implementatie.
@@ -440,9 +441,9 @@ Eén van de belangrijkste analyses die Unipept aanbiedt, is de \textbf{taxonomis
 Aangezien peptiden kunnen matchen met proteïnen uit verschillende organismen, moet er een manier gekozen worden om deze \textbf{informatie te aggregeren}.
 Een optie is om een schatting te maken en het organisme met de grootst mogelijke kans te nemen.
 Unipept kiest echter voor een andere aanpak waarbij de informatie \textbf{conservatief} veralgemeend wordt.
-Er is namelijk geen manier is om met zekerheid te zeggen uit welke proteïne de peptide effectief komt.
-Dit omdat gebruikers enkel een verzameling peptiden als input geven.
-Geen extra info die toelaat om te snoeien zonder mogelijks correcte informatie te verliezen.
+Er is namelijk geen manier om met zekerheid te zeggen uit welke proteïne de peptide effectief komt.
+Dit komt omdat gebruikers enkel een verzameling peptiden als input geven.
+Geen extra info die toelaat om te snoeien zonder mogelijk correcte informatie te verliezen.
 Anders gezegd: Unipept zal enkel info geven die geldt voor alle gematchte proteïnen.
 Eén van deze stukjes informatie is het taxon ID\@.
 Unipept zal niet de lijst van alle mogelijke taxon IDs teruggeven omdat dit twee nadelen heeft.
@@ -461,12 +462,12 @@ Het voordeel van LCA* ten opzichte van LCA is dat de resulterende data langer ex
 De LCA van een verzameling van taxon IDs zal namelijk altijd als waarde 1 hebben, dus de root zijn, zodra één element in de verzameling als root geannoteerd is.
 Dit gedrag willen we zo veel mogelijk vermijden.
 \\
-\begin{figure}[ht]
+\begin{figure}[H]
     \centering
         \begin{tikzpicture}
         [
-            level 1/.style = {sibling distance = 2.5cm, level distance = 2cm},
-            level 2/.style = {sibling distance = 3.5cm, level distance = 2cm}
+            level 1/.style = {sibling distance = 2.5cm, level distance = 1.5cm},
+            level 2/.style = {sibling distance = 3.5cm, level distance = 1.5cm}
         ]
             \node {root}
             child {node [gray] {Bacteria}
@@ -502,7 +503,7 @@ Onderstaande uitleg behandelt de werkwijze bij beide opties.
     De LCA van 9606 is gewoon zichzelf.
 \end{itemize}
 
-\begin{figure}[ht]
+\begin{figure}[h]
     \centering
     \subfloat[LCA* op basis van de bladeren.]{
         \begin{tikzpicture}
@@ -555,5 +556,7 @@ Rekening houdende met het lineaire gedrag van het geheugengebruik wil dit zeggen
 Dit zou echter vereisen dat we een server nodig hebben met ongeveer 45 TB aan RAM\@.
 We hebben echter geen dergelijke machine ter beschikking.
 Daarom moeten we op zoek naar andere indexstructuren die minder geheugen vereisen, eventueel met een impact op de zoeksnelheid.
-We hebben immers gezien dat suffixbomen niet enkel flexibeler zijn in het zoeken naar peptiden dan de huidige Unipept-index die enkel toelaat om tryptische peptiden te zoeken, maar ook dat ze het zoekproces meerdere grootteordes sneller maken.
+We hebben immers gezien dat suffixbomen niet enkel flexibeler zijn in het zoeken naar peptiden dan de huidige Unipept-index.
+Ze laten namelijk niet enkel toe om tryptische peptiden te zoeken.
+Ze maken het zoekproces ook meerdere grootteordes sneller.
 Dat betekent dat we in de praktijk wat marge hebben om aan zoeksnelheid in te boeten, als we er zouden in slagen om UniProtKB volledig te indexeren.

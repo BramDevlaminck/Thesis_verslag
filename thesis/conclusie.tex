@@ -1,6 +1,6 @@
 \chapter{Conclusie \& future work}\label{ch:conclusie}
 In deze masterproef hebben we verschillende opties verkend om de huidige Unipept index voor UniProtKB te vervangen.
-Hierbij lag de hoofdfocus op het vinden van een nieuwe indexstructuur die aan volgende opties voldeed:
+Hierbij lag de hoofdfocus op het vinden van een nieuwe indexstructuur die aan volgende opties voldoet:
 \begin{enumerate}
     \item De index moet het mogelijk maken om arbitraire peptiden te kunnen zoeken.
     \item Het geheugenverbruik van de index moet beperkt zijn, zodat het mogelijk is niet enkel kleinere proteïnedatabanken te indexeren, maar ook de volledige UniProtKB database\@.
@@ -10,22 +10,23 @@ Hierbij lag de hoofdfocus op het vinden van een nieuwe indexstructuur die aan vo
 \section{Conclusie}
 Een eerste indexstructuur die we bekekenen hebben waren \textbf{suffixbomen}.
 Hierbij hebben we een eigen Rust implementatie gemaakt van het algoritme van Ukkonen.
-Deze suffixbomen bieden een extreem grote vrijheid, en het zoeken gaat bovendien extreem snel.
+Suffixbomen bieden een extreem grote vrijheid, en het zoeken gaat bovendien extreem snel.
 Ze zijn echter \textbf{onbruikbaar} voor grote proteïnedatabanken te indexeren vanwege het \textbf{geheugengebruik}.
 \\ \\
 Een volgende optie die we verkend hebben zijn \textbf{suffix arrays}.
 Na testen bleek dat deze datastructuur ons een goeie \textbf{balans gaf tussen snelheid en geheugenverbruik}.
 Aan de hand hiervan zijn we er in geslaagd een nieuwe indexstructuur voor UniProtKB te ontwikkelen die de huidige Unipept index volledig kan vervangen, en alle bovenstaande doelstellingen haalt.
 Aan de hand van een aangepast zoeksysteem ondersteunen we zowel exacte als semi-exacte matching, waarbij efficiënt alle informatie van de gematchte peptides teruggegeven kan worden.
-Het grootste nadeel van deze manier van werken is dat de functionele en taxonomische analyses van Unipept \textit{on the fly} moeten gebeuren, wat een beperkte, negatieve impact heeft op de performantie.
+Het grootste nadeel van deze manier van werken is dat de functionele en taxonomische analyses van Unipept \textit{on the fly} moeten gebeuren.
+Dit heeft een beperkte, negatieve impact op de performantie.
 \\ \\
 Als derde en vierde indexstructuur hebben we kort de \textbf{FM- en R-index} getest.
-Na enkele testen bleek snel dat het \textbf{geheugengebruik} tijdens het bouwen hiervan \textbf{dubbel zo hoog lag} als bij suffix arrays.
+Na enkele testen bleek snel dat het \textbf{geheugengebruik} tijdens het bouwen hiervan \textbf{dubbel zo hoog lag} dan bij suffix arrays.
 Omwille hiervan hebben we deze opties niet verder uitgewerkt, ook al hebben beide indices interessante eigenschappen voor ons probleem.
-Zo laten bidirectionele FM-indices toe om algemenere inexacte matching uit te voeren, en is de resulterende index bij R-indices kleiner door het gebruik van run-length encoding.
+Zo laten bidirectionele FM-indices toe om algemenere inexacte matching uit te voeren en de index verder te verkleinen, en is de resulterende index bij R-indices kleiner door het gebruik van run-length encoding.
 
 \section{Future work}
-Ondanks dat we een index gevonden hebben die de huidige Unipept index kan vervangen, en willekeurige peptiden kan vinden in plaats van enkel tryptische peptiden, zijn er meerdere plaatsen waar nog extra onderzoek naar kan gebeuren.
+Ondanks dat we een index gevonden hebben die de huidige Unipept index kan vervangen, en willekeurige peptiden kan vinden in plaats van enkel tryptische peptiden, zijn er meerdere plaatsen waar nog extra onderzoek kan gebeuren.
 \\ \\
 De makkelijkste, en meest duidelijke verbetering is het verder \textbf{verkleinen van de resulterende index}.
 UniProt 2023\_04 bevat ongeveer 86.8 miljard aminozuren, waardoor we dus ook evenveel verschillende getallen moeten kunnen voorstellen in de suffix array.
@@ -48,10 +49,10 @@ Ook tijdens het opbouwen zijn er nog interessante pistes om te verkennen.
 Zo zou het extreem voordelig zijn om een manier te vinden om de suffix array onmiddellijk \textbf{sparse te maken tijdens het opbouwen}.
 Hierbij zal het bovendien belangrijk zijn dat deze implementatie een \textbf{lage constante factor heeft op vlak van geheugengebruik}.
 Indien deze constante vrij groot is, zal de winst verloren gaan ten opzichte van de huidige implementatie, aangezien we altijd een kleine sparseness factor $k$ gebruiken.
-Een andere aanpak zou kunnen zijn via een online algoritme waarbij we een bestaande SSA kunnen uitbreiden met nieuwe eiwitten.
-Zo kunnen we tijdens het opbouwen één eiwit per keer toevoegen aan de suffix array, maar kunnen we ook nieuwere UniProtKB releases efficiënt afhandelen door te vertrekken van de index uit de vorige release.
+Als alternatief kunnen we mogelijk het maximale geheugengebruik beperken via een online algoritme.
+Zo kan tijdens het opbouwen één eiwit per keer toegevoegd worden aan de suffix array, maar kunnen nieuwere UniProtKB releases ook efficiënt afhandelen door te vertrekken van de index uit de vorige release.
 \\ \\
-Een derde duidelijk punt van verbetering, zit in het \textbf{berekenen van de LCA*}.
+Een derde punt van verbetering, zit in het \textbf{berekenen van de LCA*}.
 Indien deze voorberekend wordt tijdens het opbouwen van de index zal dit niet enkel de performantie ten goede komen, het zal ook de nood voor de drempelwaarde B (die standaard op 10\thinspace000 staat) sterk verminderen.
 De meest duidelijke piste hiervoor is aan de hand van Enhanced Suffix Arrays (ESAs).
 In deze masterproef hebben we deze piste niet verder verkend vanwege de eerste indicatie dat het berekenen van de extra tabellen het geheugenverbruik zou verdubbelen, en dat het \textit{on the fly} berekenen van de LCA* een acceptabele overhead met zich mee brengt.

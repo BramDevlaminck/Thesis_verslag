@@ -20,8 +20,8 @@ De FM-index laat dus toe om een \textbf{kleinere resulterende index} te bekomen,
 Tot slot kan men via een variant van de FM-index, de bidirectionele FM-index, bovendien gebruikmaken van zogenaamde \textbf{zoekschema's} om \textbf{inexacte matching}, waarbij maximaal $x$ mismatches toegelaten zijn, uit te voeren.
 
 \subsection{Verschillende implementaties}\label{subsec:verschillende-implementaties}
-Om een goed beeld te krijgen over het geheugenverbruik tijdens het opbouwen hebben we verschillende bestaande FM-index implementaties getest.
-Opnieuw focussen we ons vooral op het geheugenverbruik aangezien dit de primaire restrictie is tijdens het opbouwen.
+Om een goed beeld te krijgen over het geheugengebruik tijdens het opbouwen hebben we verschillende bestaande FM-index implementaties getest.
+Opnieuw focussen we ons vooral op het geheugengebruik aangezien dit de primaire restrictie is tijdens het opbouwen.
 Tabel~\ref{tab:fm_index_building} geef een overzicht van de geteste implementaties.
 Omdat ons einddoel bestaat uit het indexeren van UniProtKB, kunnen we ons opnieuw enkel focussen op de 64-bit implementaties.
 UniProtKB bevat namelijk meer tekens dan door de maximale 32 bit integer voorgesteld kan worden.
@@ -59,8 +59,8 @@ R-indices~\cite{r_index2, r_index1} zijn een verdere evolutie van de FM-index wa
 De index heeft grootte $O(r)$ met $r$ het aantal BWT runs van de input tekst van lengte $n$.
 Vanwege het gebruik van RLE op de BWT, zal de \textbf{resulterende index kleiner} zijn naarmate er \textbf{meer herhaling} voorkomt in de geïndexeerde tekst.
 Om na te gaan wat het effect hiervan is op de onze eiwitdatabanken, hebben we de R-index getest op de eerste 0.5\%, 1\%,\ldots\space van de volledige UniProtKB databank.
-Figuur~\ref{fig:sa_vs_r_index} visualiseert het geheugenverbruik en de resulterende indexgrootte in vergelijking met suffix arrays.
-Merk op dat het geheugenverbruik tijdens het opbouwen en de grootte van de resulterende R-index meer dan verdubbelt bij het overgaan van 2\% (1\thinspace651\thinspace521\thinspace046 tekens) naar 4\% (3\thinspace319\thinspace904\thinspace170 tekens) van UniProtKB\@.
+Figuur~\ref{fig:sa_vs_r_index} visualiseert het geheugengebruik en de resulterende indexgrootte in vergelijking met suffix arrays.
+Merk op dat het geheugengebruik tijdens het opbouwen en de grootte van de resulterende R-index meer dan verdubbelt bij het overgaan van 2\% (1\thinspace651\thinspace521\thinspace046 tekens) naar 4\% (3\thinspace319\thinspace904\thinspace170 tekens) van UniProtKB\@.
 De oorzaak hiervan is het overschakelen van 32-bit naar 64-bit integers binnen de R-index.
 Bij de indices tot en met 2\% maakt de R-index implementatie gebruik van 32-bit integers omdat er minder tekens in de geïndexeerde tekst staan dan de maximale 32-bit integer waarde.
 Bij grotere databanken wordt deze 32-bit integer limiet overschreden, waardoor de R-index implementatie moet overschakelen naar het gebruik van 64-bit integers.
