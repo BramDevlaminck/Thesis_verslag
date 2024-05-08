@@ -37,12 +37,9 @@ Voor de huidige UniProtKB database hebben we dus slechts 37 bits per waarde in d
 Aangezien de huidige sparse suffix array (met sparseness factor $k = 3$) ongeveer 235 GB groot is, zou deze na deze aanpassing slechts 136 GB groot zijn.
 Bij de tekst kunnen we dezelfde aanpassing maken.
 Daar hebben we 26 + 2 = 28 verschillende tekens, wat aan de hand van 5 bits voorgesteld kan worden.
-Aangezien de huidige tekst ongeveer 87 GB groot is, zou dit resulteren in een tekst die slechts $87 \cdot \frac{5}{8} \approx 54$ GB groot is.
-Een derde luik van de indexstructuur zijn de functionele annotaties die 11 GB groot zijn na compressie.
-Tot slot moeten we ook nog de mapping van de suffixen naar de proteïnen bijhouden.
-Dit is één 32 bit integer per proteïne, aangezien er ongeveer $250\thinspace000\thinspace000 < 2^{32}$ proteïnen zitten in UniProtKB\@.
-Dit resulteert in een mapping van 1 GB\@.
-Hierdoor zou de totale resulterende index van $235 + 87 + 11 + 1 = 334$ GB naar $136 + 54 + 11 + 1 = 202$ GB gaan, wat iets meer dan \textbf{33\% winst} oplevert.
+Aangezien de huidige tekst ongeveer 88 GB groot is, zou dit resulteren in een tekst die slechts $88 \cdot \frac{5}{8} \approx 55$ GB groot is.
+Hierbij komt nog taxonomische en functionele informatie in combinatie met de UniProt accession numbers en de suffix naar proteïne mapping.
+Hierdoor zou de totale resulterende index van $235 + 88 + 23 = 346$ GB naar $136 + 55 + 23 = 214$ GB gaan, wat iets meer dan \textbf{33\% winst} oplevert.
 Merk op dat dit de nodige hoeveelheid geheugen tijdens het opbouwen niet verkleint, aangezien we in die fase wel gebruik moeten maken van 64 bit integers en 8 bit karakters.
 \\ \\
 Ook tijdens het opbouwen zijn er nog interessante pistes om te verkennen.

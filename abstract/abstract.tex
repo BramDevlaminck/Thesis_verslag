@@ -90,17 +90,19 @@
         Similar to peptides with missed cleavages, these will not be present in the index, but no workaround exists in this case.
 
         This restriction has not been a significant problem since Unipept was originally created for the metaproteomics field, where trypsin is widely used.
-        However, other fields, such as the immunopeptidomics field, frequently work with non-tryptic peptides.
-        We aspire to broaden the use cases of Unipept, which requires a new search index with the following properties:
+        However, other fields, such as the immunopeptidomics field~\cite{immunopeptidomics}, frequently work with non-tryptic peptides.
+        Tools such as MS$^2$Rescore~\cite{ms2rescore} and MS$^2$PIP~\cite{ms2pip} have been adding support for immunopeptidomics research.
+        As we aspire to broaden the use cases of Unipept, adding support these upcoming research fields is important.
+        This requires a new index structure with the following properties:
 
         \begin{enumerate}
             \item For every peptide (tryptic or non-tryptic), all matches in UniProtKB should be found.
             \item The maximum memory usage when building the index for the complete UniProtKB database should be around 1 to 2 TB\@.
-            \item Search performance should be on par with the current Unipept tryptic peptide search.
-            \item The new index should facilitate all the current Unipept features.
+            \item Search performance should be on par with the Unipept 5.x tryptic peptide search.
+            \item The new index should facilitate all the Unipept 5.x features.
         \end{enumerate}
 
-        In short, we want an index that does not remove any of the current features, while eliminating the restriction that only tryptic peptides can efficiently be found by the current index.
+        In short, we want an index that does not remove any of the features from Unipept 5.x, while eliminating the restriction that only tryptic peptides can efficiently be found.
         This also means that our new index will need to provide a way to equalize the amino acids isoleucine and leucine, as this is a core feature.
 
 
@@ -165,28 +167,28 @@
             \label{fig:uniprot_memory_treemap}
         \end{Figure}
 
-        \subsection{Querying the Index} % TODO: redo performance timing on new unipept server, or mention this difference
+        \subsection{Querying the Index}
         To evaluate the search performance we use 6 files with each around 25\thinspace000 peptides.
         These are samples from the SIHUMIx experiment~\cite{SIHUMI_frequently_used, SIHUMI_first_introduction}, where trypsin is used as a protease.
         This means that as well as tryptic peptides, there are also peptides present with naturally occurring missed cleavages.
-        Figure~\ref{fig:new_vs_old_unipept} shows the execution time for both the new and old unipept index.
+        Figure~\ref{fig:new_vs_old_unipept} shows the execution time for both Unipept 6.x and 5.x.
         To make the comparison as fair as possible, the \textit{filter duplicate peptides} setting is turned off, and \textit{advanced missed cleavage handling} is turned on.
-        This ensures that both the old and new index search every peptide from the input file (including duplicates and peptides with missed cleavages).
-        The new index is 10 to 100 times faster, which clearly removes the performance penalty that was currently associated with handling missed cleavages.
+        This ensures that both indices search every peptide from the input file (including duplicates and peptides with missed cleavages).
+        Unipept 6.x is 10 to 100 times faster, which clearly removes the performance penalty that was currently associated with handling missed cleavages.
         Note that the old Unipept index will not find peptides created by a different protease, while this makes no difference for the new index.
         \begin{Figure}
             \centering
             \resizebox{\textwidth}{!}{
                 \includegraphics{new_vs_old_unipept}
             }
-            \captionof{figure}{Execution time for the new and old Unipept index while searching different SIHUMIx samples. Each sample consists of approximately 25\thinspace000 peptides. The old Unipept index searches with the \textit{filter duplicate peptides} setting turned off, and \textit{advanced missed cleavage handling} turned on. This way both indices search all peptides (included duplicates), and missed cleavages are handled by both. The used test files can be found back in our GitHub repository \url{https://github.com/BramDevlaminck/Thesis_benchmarkdata/tree/master/SIHUMI}}
+            \captionof{figure}{Execution time for Unipept 6.x and Unipept 5.x while searching different SIHUMIx samples. Each sample consists of approximately 25\thinspace000 peptides. Unipept 5.x searches with the \textit{filter duplicate peptides} setting turned off, and \textit{advanced missed cleavage handling} turned on. This way both indices search all peptides (included duplicates), and missed cleavages are handled by both. The used test files can be found back in our GitHub repository \url{https://github.com/BramDevlaminck/Thesis_benchmarkdata/tree/master/SIHUMI}}
             \label{fig:new_vs_old_unipept}
         \end{Figure}
 
         Another interesting case to consider is when searching strictly tryptic peptides.
-        This that case, missed cleavage handling can be disabled on the old index, which significantly improves the performance.
+        This that case, missed cleavage handling can be disabled in Unipept 5.x, which significantly improves the performance.
         Figure~\ref{fig:new_vs_old_unipept_tryptic} visualizes the search time for 100\thinspace000 tryptic peptides.
-        It is visible that the performance is comparable when I and L are equalized, while the old index is around a third faster than the new index when I and L are not equalized.
+        It is visible that the performance is comparable when I and L are equalized, while Unipept 5.x is around a third faster than Unipept 6.x when I and L are not equalized.
 
         Furthermore, it is clearly visible that the extra filtering step, when I $\neq$ L, has a performance impact in the new index.
         This effect was not visible in Figure~\ref{fig:new_vs_old_unipept}, where the reverse seems to be visible.
@@ -198,18 +200,18 @@
             \resizebox{\textwidth}{!}{
                 \includegraphics{new_vs_old_unipept_tryptic}
             }
-            \captionof{figure}{Search time for 100\thinspace000 tryptic peptides for the new and old Unipept index. This is the best case scenario for the old index where missed cleavages are \textbf{not} handled.}
+            \captionof{figure}{Search time for 100\thinspace000 tryptic peptides for Unipept 6.x and 5.x. This is the best case scenario for Unipept 5.x where missed cleavages are \textbf{not} handled.}
             \label{fig:new_vs_old_unipept_tryptic}
         \end{Figure}
 
 
         \section{Comparison}\label{sec:comparison}
-        Tools such as the Uniprot peptide search tool~\cite{uniprot_search_site, uniprot_search_paper}, the Expasy ScanProsite tool~\cite{scanprosite} and the current Unipept release all have the possibility to find matches in the UniProtKB database.
+        Tools such as the Uniprot peptide search tool~\cite{uniprot_search_site, uniprot_search_paper}, the Expasy ScanProsite tool~\cite{scanprosite} and the Unipept 5.x all have the possibility to find matches in the UniProtKB database.
         Next to the performance, we also compare the provided features.
         Because of the limited performance of some tools, we limited testing to the randomly chosen peptide \texttt{ISPAVLFVIVILAVLFFISGLLHLLVR}.
-        The new suffix array uses the above described settings and finds all matches for our test peptide in less than 5 ms.
+        Unipept 6.x uses the above described settings and finds all matches for our test peptide in less than 5 ms.
 
-        Feature wise, the UniProt Peptide Search tool is identical to the new suffix array index developed for Unipept.
+        Feature wise, the UniProt Peptide Search tool is identical to Unipept 6.x.
         They both find all matches in UniProtKB, and have the option to equalize I and L\@.
         The only difference is in the performance.
         Searching our test peptide in the SA only takes a few milliseconds, while the UniProt tool takes a few seconds up to multiple minutes.
@@ -222,7 +224,7 @@
         Lastly, searching our test peptide takes around 5 minutes.
         As expected, since not the whole UniProtKB database is index, only a subset of the matches is found.
 
-        The last major tool we compare with, is the current Unipept index.
+        The last major tool we compare with, is Unipept 5.x.
         The new Unipept index is feature wise identical to the current index, with the addition of removing the restriction where Unipept can only quickly find tryptic peptides.
         This means that every non-tryptic peptide will result in 0 matches in the current index, while the new index will find all matches that are in UniProtKB\@.
         Searching our test peptide took less than 5 ms, and found the same matches because our test peptide is tryptic.
@@ -233,7 +235,7 @@
             \centering
             \resizebox{\textwidth}{!}{
                 \begin{tabular}{ l l l l l }
-                    & SSA      & UPS          & ESP        & UP             \\
+                    & UP6      & UPS          & ESP        & UP5            \\
                     \hline\hline
                     Used proteins    & all      & all          & ref. prot. & all            \\
                     Approx. match    & [IL]     & [IL]         & flexible   & [IL]           \\
@@ -242,7 +244,7 @@
                     \hline
                 \end{tabular}
             }
-            \captionof{table}{Comparison of the new suffix array (SA), UniProt Peptide Search (UPS) tool, Expasy ScanProSite (ESP) tool and the current Unipept (UP) index. \texttt{[IL]} in the approximate matching row means that only I and L can be equalized. while \texttt{$\sim$ tryptic} in the searchable peptide row means that only tryptic or tryptic peptides with missed cleavages can be found.}
+            \captionof{table}{Comparison of Unipept 6.x (UP6), UniProt Peptide Search (UPS) tool, Expasy ScanProSite (ESP) tool and Unipept 5.x (UP5) index. \texttt{[IL]} in the approximate matching row means that only I and L can be equalized. while \texttt{$\sim$ tryptic} in the searchable peptide row means that only tryptic or tryptic peptides with missed cleavages can be found.}
             \label{tab:tool_comparison}
         \end{Table}
 
@@ -250,21 +252,20 @@
         \section{Conclusion}\label{sec:discussion}
         With a new index structure at the heart of Unipept, we have broadened Unipept's possible use cases.
         The new index structure makes searching peptides with missed cleavages around 10 to 100 times faster.
-        While adding the possibility to search arbitrary peptides, regardless of the used protease.
-        From our testing, Unipept greatly outperforms its closest competitors at finding all occurrences for an arbitrary peptide longer than 2 amino acids in UniProtKB\@.
+        While adding the possibility to search arbitrary peptides, regardless of the used protease, without any performance difference.
+        From our testing, Unipept 6.x greatly outperforms its closest competitors at finding all occurrences for an arbitrary peptide longer than 2 amino acids in UniProtKB\@.
 
         Another advantage of the new index is that there are no extra steps required to retrieve the NCBI taxon ID for each matched protein.
-        The current index requires extra steps to retrieve this, with a significant impact on the performance.
+        Extra steps are required in Unipept 5.x to retrieve all the separate taxon IDs, with a significant impact on the performance.
         This restriction creates a bottleneck in the new Peptonizer2000 tool~\cite{pep_gm}.
 
-        The main disadvantage of this new index is that searching tryptic peptides is slightly slower than before.
+        The main disadvantage of Unipept 6.x compared to Unipept 5.x is that searching tryptic peptides is slightly slower than before.
         This slowdown is introduced by the analyses performed during search itself, while this could all be precalculated in the old index.
         However, this slowdown is limited and acceptable.
-        Especially when keeping in mind that real life samples always have some missed cleavages, which would not have been found before, without a significant performance hit.
-
+        Especially when keeping in mind that real life samples always have some missed cleavages, which would not have been found before, without a performance hit.
 
         \section{Future Work}
-        The new index meets the pre-established targets, but still leaves room for improvement in several areas.
+        Our new index meets the pre-established targets, but still leaves room for improvement in several areas.
 
         A significant part of the current computation time is invested in performing the taxonomic and functional analyses.
         Modifying the new index to support the pre-calculation of these analyses, while still maintaining a peak memory usage which is manageable would drastically improve the performance.
@@ -274,7 +275,7 @@
         The index size could be reduced even more by making the text and suffix array more compact.
         Both of these components don't utilize all the bits from the allocated bytes.
         The suffix array only needs 37 of the 64 bits used by every entry, while the text only needs 5 bits out of each byte per character.
-        This would reduce the total index size from 364 GB to around 225 GB\@.
+        This would reduce the total index size from 346 GB to around 215 GB\@.
         However, this would introduce extra steps to decode every access to any of these data structures.
         This could introduce a non-negligible performance penalty.
 
@@ -283,7 +284,7 @@
 
         Lastly, Unipept does not perform any form of inexact matching, except for I and L\@.
         Introducing inexact matching into Unipept could allow us to deal with small mutations or read-errors introduced by a mass spectrometer.
-        Possible interesting routes to explore are regex matching using suffix arrays, or inexact matching using bidirectional FM-indices.
+        Possible interesting routes to explore are regex matching using suffix arrays~\cite{regex_sa}, or inexact matching using bidirectional FM-indices.
         \printbibliography
     \end{multicols}
 

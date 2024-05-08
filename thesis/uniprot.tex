@@ -204,7 +204,7 @@ Volgende sectie bevat de gestelde vragen, met de gegeven antwoorden.
     \item[What percentage of requests treat isoleucine and leucine as equivalent? ]
     Answer: Around 6\% of the cases treat isoleucine=leucine.
     \item[What is the average time needed to handle 1 request? During our own testing we noticed that the performance can vary a lot from request to request. Is there an explanation for this?]
-    Answer: if you are using the tool on our website, response times can vary due to several reasons:
+    Answer: If you are using the tool on our website, response times can vary due to several reasons:
     \begin{enumerate}
         \item Load of the server running PeptideSearch (currently running at PIR in Delaware, US)
         \item Load/availability of the dispatching server which is located at the EBI, UK)
@@ -233,8 +233,8 @@ Hierbij zijn er slechts 30 resp. 32 matches gevonden, wegens de deelverzameling 
 
 \subsection{Huidige Unipept index}
 De bestaande Unipept index laat toe om, \textbf{op voorwaarde dat je peptide tryptisch is}, alle matches te vinden in UniProtKB met de optie om I en L gelijk te stellen.
-De peptide die we hier gebruiken is tryptisch, dus zou deze index hiervoor dezelfde matches moeten vinden.
-Dit is inderdaad het geval, en gebeurt bovendien gebruikmakende van een API call in \textbf{$\pm$ 4 milliseconden}, wat duidelijk extreem veel sneller is dan de andere bestaande opties.
+De peptide die we hier gebruiken is tryptisch, dus vindt deze index alle zoals verwacht alle matches.
+Bovendien gebeurt dit gebruikmakende van een API call in \textbf{$\pm$ 4 milliseconden}, wat duidelijk extreem veel sneller is dan de andere bestaande opties.
 Opnieuw is de zoektijd hier al zo klein dat de invloed van het gelijkstellen van I en L niet te meten valt.
 Het is echter een grote beperking dat dit enkel werkt voor tryptische peptiden, of peptiden met zogenaamde \textit{missed cleavages}.
 Volgend voorbeeld illustreert dit.
@@ -316,7 +316,7 @@ Deze webserver laadt de indexstructuur in bij het opstarten, en blijft daarna wa
 Op deze manier is dit probleem elegant opgelost, en kunnen we bovendien aan de hand van \textbf{JSON bestanden} erg makkelijk de input verwerken, en de resultaten terugsturen.
 Codefragment~\ref{fig:webserver_json_input} en~\ref{fig:webserver_json_output} geven een voorbeeld input en output.
 
-\begin{listing}[h!]
+\begin{listing}[H]
     \begin{minted}[frame=lines,framesep=2mm,linenos]{JSON}
 {
   "peptides": [
