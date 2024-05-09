@@ -165,14 +165,14 @@ Deze suffixbomen laten toe om in $O(n)$ tijd substrings te zoeken binnen één s
 Hierbij is $n$ de lengte van de gezochte substring.
 Indien we ook willen weten hoeveel voorkomens er exact zijn, en waar deze zich bevinden neemt dit $O(k)$ extra tijd.
 Hierbij is $k$ het aantal voorkomens van de substring in de tekst.
-Zoals eerder vermeld willen we echter peptiden zoeken in een \textbf{verzameling van proteïnes}.
+Zoals eerder vermeld willen we echter peptiden zoeken in een \textbf{verzameling van proteïnen}.
 Daarom wordt gebruikgemaakt van een \textbf{veralgemeende suffixboom}.
-Hierbij wordt de verzameling van eiwitten die geïndexeerd moet worden behandeld alsof het één grote tekst is.
+Hierbij wordt de verzameling van proteïnen die geïndexeerd moet worden behandeld alsof het één grote tekst is.
 De manier waarop deze tekst gevormd wordt is echter erg belangrijk.
-Alle proteïnen moeten aan elkaar gehangen worden met ertussen een teken dat niet in de proteïnes en peptiden zelf voorkomt.
+Alle proteïnen moeten aan elkaar gehangen worden met ertussen een teken dat niet in de proteïnen en peptiden zelf voorkomt.
 Als eindteken moet er een ander uniek teken gebruikt worden.
 Wanneer niet aan de eerste voorwaarde voldaan wordt, zullen we ongeldige matches vinden.
-Het zou namelijk mogelijk zijn om een match te vinden die over twee of meer proteïnes gespreid is.
+Het zou namelijk mogelijk zijn om een match te vinden die over twee of meer proteïnen gespreid is.
 Wanneer niet aan de tweede voorwaarde voldaan wordt, dan breken we de eigenschap van suffixbomen waarbij elke suffix nooit een prefix van een andere suffix is.
 Dit zou als gevolg hebben dat niet elke suffix een eigen blad in de boom krijgt.
 
@@ -245,7 +245,7 @@ Het idee hierbij is dat er één arena gemaakt wordt waarbij ownership erg simpe
 In mijn implementatie is dit bijvoorbeeld een \texttt{Vector}.
 Alle toppen worden hierbij in deze ene vector opgeslagen.
 In plaats van pointers naar elkaar bij te houden, zullen de toppen getallen bijhouden.
-Deze getallen stellen de indices in de arena van de top voor, waarnaar anders een pointer wordt bijgehouden.
+Elk getal stelt de index van een top in de arena voor, waarnaar anders een pointer wordt bijgehouden.
 \\ \\
 Aangezien we alles in één vector opslaan, is het mogelijk om de nodige hoeveelheid geheugen onmiddellijk aan te vragen bij het opstarten van het programma.
 Zoals in sectie~\ref{sec:wat-zijn-suffix-bomen?} beschreven staat zijn er ten hoogste $2n - 1$ toppen voor een tekst van lengte $n$.
@@ -279,7 +279,7 @@ enum Option<T> {
 }
 \end{minted}
 
-Deze enum heeft 2 mogelijke waarden: \texttt{None} en \texttt{Some(T)}.
+Deze enum heeft twee mogelijke waarden: \texttt{None} en \texttt{Some(T)}.
 \texttt{None} is het equivalent van \textit{null}, terwijl \texttt{Some(T)} wil zeggen dat de waarde verschillend is van \textit{null}.
 Meer specifiek heeft de waarde type \texttt{T}.
 Aangezien het grootste deel van wat bijgehouden wordt per top pointers zijn, maakte ik veelvoudig gebruik van deze \texttt{Option} enum.
@@ -291,7 +291,7 @@ Tot slot moeten de suffix links nullable zijn aangezien niet elke top een suffix
 \\ \\
 Dit werkt perfect en kon mooi afgehandeld worden op de idiomatische manier die overeenkomt met goede Rust-code.
 Na de eerste benchmarks bleek het \textbf{geheugengebruik} echter \textbf{problematisch}.
-Bijna exact \textbf{2\times zo hoog als de equivalente C++ implementatie}.
+Bijna exact \textbf{2\times\ zo hoog als de equivalente C++ implementatie}.
 Om zo'n drastisch verschil in geheugengebruik te kunnen verklaren, moest er wel iets fundamenteel verschillen aan de manier waarop toppen hun data bijhouden.
 Al snel bleek dat het gebruik van \textbf{\texttt{Option<usize>}}\footnote{\texttt{usize}: \textit{The pointer-sized unsigned integer type \cite{usize}}. De grootte van dit datatype is het aantal bytes nodig om een referentie naar elk mogelijke locatie in het geheugen bij te kunnen houden. Voor 32- en 64-bit machines zijn dit resp.~4 en 8 bytes.} de boosdoener was.
 Het gebruik van \texttt{Option<>} zorgt namelijk voor \textbf{8 bytes aan overhead}.
@@ -366,7 +366,7 @@ De resultaten hiervan zijn terug te vinden in Figuur~\ref{fig:tree_building}.
     \subfloat[Tijd nodig om de suffixboom op te bouwen.]{\includegraphics[width=\linewidth]{building_tree_time}}\\[4ex] % [4ex] om wat extra vertical spacing in te voegen
 
     \subfloat[Maximaal gebruikt geheugen tijdens het opbouwen van de suffixboom.]{\includegraphics[width=\linewidth]{building_tree_memory}}
-    \caption{Vergelijking tusen C++ en Rust implementaties voor het opbouwen van de suffixboom a.d.h.v.~het algoritme van Ukkonen. De tijd en het geheugengebruik zijn gemeten met het Unix \texttt{time} commando. Als invoerbestand gebruiken we hier de Swiss-Prot en Human-Prot eiwitdatabank.}\label{fig:tree_building}
+    \caption{Vergelijking tusen C++ en Rust implementaties voor het opbouwen van de suffixboom a.d.h.v.~het algoritme van Ukkonen. De tijd en het geheugengebruik zijn gemeten met het Unix \texttt{time} commando. Als invoerbestand gebruiken we hier de Swiss-Prot en Human-Prot proteïnedatabank.}\label{fig:tree_building}
 \end{figure}
 
 Uit deze grafieken vallen twee duidelijke conclusies te trekken.
@@ -485,7 +485,7 @@ Dit gedrag willen we zo veel mogelijk vermijden.
 
 Om het geaggregeerde taxon ID van elke interne top in de boomstructuur efficiënt voor te berekenen, was het idee om dit te doen op basis van de directe kinderen van die top.
 Hiermee bedoelen we de eerstegraads kinderen.
-Deze liggen 1 niveau lager in de boomstructuur, en hebben als ouder allemaal dezelfde top waarvan we het taxon ID willen berekenen.
+Deze liggen één niveau lager in de boomstructuur, en hebben als ouder allemaal dezelfde top waarvan we het taxon ID willen berekenen.
 De andere, tragere optie is om dit te doen op basis van de bladeren van de subboom van de top.
 Door het te doen aan de hand van de directe kinderen van de top kunnen we in één bottom-up sweep van de boom alle taxon IDs berekenen.
 Dit bleek echter niet mogelijk in combinatie met LCA* omdat gebruikmaken van de directe kinderen een ander resultaat geeft dan gebruikmaken van de bladeren van de subboom.
@@ -529,19 +529,19 @@ Onderstaande uitleg behandelt de werkwijze bij beide opties.
 \end{figure}
 
 Het berekenen van de \textbf{LCA* op de eerste manier is echter niet schaalbaar voor de volledige suffixboom}.
-Om een idee van grootorde te geven: de suffixboom voor de Swiss-Prot dataset bevat in totaal 328 922 516 toppen, waarvan 206 523 693 bladeren.
+Om een idee van grootorde te geven: de suffixboom voor de Swiss-Prot dataset bevat in totaal 328\thinspace922\thinspace516 toppen, waarvan 206\thinspace523\thinspace693 bladeren.
 \\ \\
-Daarom hebben we \textbf{voorlopig toch voor de standaard LCA aggregatiemanier} gekozen.
+Daarom hebben we \textbf{voorlopig toch voor de standaard LCA aggregatie manier} gekozen.
 Deze laat wel toe de toppen op deze efficiëntere manier te aggregeren.
 UMGAP biedt 2 implementaties aan om de LCA te berekenen voor een gegeven verzameling van taxa.
 Gebruikmakende van RMQs\footnote{Range Minimum Queries} of een boomstructuur.
-Mijn implementatie maakt gebruik van de RMQ implementatie aangezien deze ssignificant sneller is (8 min 58 sec vs 20 min en 25 sec voor de Swiss-Prot databank) in mijn toepassing.
+Mijn implementatie maakt gebruik van de RMQ implementatie aangezien deze significant sneller is (8 min 58 sec vs 20 min en 25 sec voor de Swiss-Prot databank) in mijn toepassing.
 Tot slot heb ik voor Swiss-Prot ook eens vergeleken hoe groot de behaalde tijdswinst is als we de LCAs aggregeren aan de hand van de directe kinderen, vergeleken met aggregatie op basis van de bladeren.
 Bij het aggregeren op basis van de bladeren met de RMQ implementatie was de uitvoeringstijd maar liefst 12 uur, 19 minuten en 16 seconden.
 Dit is dus een extreem groot verschil.
 
 \section{Conclusie}\label{sec:conclusie-suffix-bomen}
-Het is duidelijk dat suffixbomen erg \textbf{performant} zijn voor het zoeken van willekeurige peptiden in een grote verzameling van proteïnes.
+Het is duidelijk dat suffixbomen erg \textbf{performant} zijn voor het zoeken van willekeurige peptiden in een grote verzameling van proteïnen.
 Zelfs als we alle bladeren onder een interne knoop voor een match willen afgaan, valt dit mee.
 Bovendien is ook het opbouwen van de indexstructuur iets wat relatief snel gaat.
 \\ \\

@@ -125,7 +125,7 @@ Voor sommige werden verschillende implementaties getest.
             radixSA\footnote{\url{https://github.com/mariusmni/radixSA64}}                                             & C++                  & 9.74     & 11.26    & 2.11     & 3.52     \\
             \hline
         \end{tabular}
-        \caption{Uitvoeringstijd en maximaal geheugengebruik voor het opbouwen van een suffix array aan de hand van verschillende algoritmen voor de Swiss-Prot eiwitdatabank.
+        \caption{Uitvoeringstijd en maximaal geheugengebruik voor het opbouwen van een suffix array aan de hand van verschillende algoritmen voor de Swiss-Prot proteïnedatabank.
         Indien er een 32-bit en 64-bit integer implementatie beschikbaar was, werden deze allebei getest. Een - staat voor niet getest. Deze testen werden lokaal uitgevoerd op een M1 Pro MacBook Pro. De specificaties hiervan zijn terug te vinden in tabel~\ref{tab:macbook_hardware}.}
         \label{tab:sa_building}
     \end{minipage}
@@ -136,14 +136,14 @@ We kunnen concluderen dat \textbf{libsais duidelijk de snelste implementatie is 
 Een ander voordeel dat libsais en libdivsufsort gemeen hebben, naast hun minimale geheugengebruik, is dat ze allebei een 64-bit integer implementatie hebben.
 Dit is belangrijk voor het indexeren van UniprotKB omdat de totale tekst langer is dan het grootste 32-bit integer.
 Dit zorgt ervoor dat alle 32-bit integer implementaties onbruikbaar zijn voor dit einddoel.
-Tot slot valt ook te zien dat het verschil tussen de C en Rust versie die bindings heeft naar de C code klein is.
-De overhead van het oproepen van de C code uit Rust is dus minimaal.
+Tot slot valt ook te zien dat het verschil tussen de C en Rust versie die bindings heeft naar de C-code klein is.
+De overhead van het oproepen van de C-code uit Rust is dus minimaal.
 
 \subsection{Enhanced suffix arrays}\label{subsec:enhanced-suffix-arrays}
 Om een indicatie te hebben van de extra hoeveelheid geheugen die nodig is om gebruik te maken van Enhanced Suffix Arrays kunnen we via de libsais bibliotheek LCP array berekenen.
 Deze LCP array is slechts één van de drie extra tabellen die deel zijn van ESAs, maar het is voor ons wel de meest interessante.
 De baseline waarmee we willen vergelijken is de hoeveelheid geheugen die we nodig hebben om enkel de SA op te bouwen.
-Voor de Swiss-Prot eiwitdatabank was dit 2.3 GB\@.
+Voor de Swiss-Prot proteïnedatabank was dit 2.3 GB\@.
 Als we ook de LCP array berekenen, loopt het maximale geheugengebruik op naar 5.72 GB\@.
 \textbf{Het berekenen van deze extra array vraagt dus ongeveer dubbel zoveel geheugen, waardoor we deze optie niet verder verkennen}.
 Bovendien berekenen we deze LCP array om het voorberekenen van de geaggregeerde taxon ID voor elke interne top van de overeenkomstige suffixboom mogelijk te maken.
@@ -151,19 +151,19 @@ Daarna moet er op basis van deze SA en LCP array nog een compacte representatie 
 Dit is niet vanzelfsprekend.
 
 
-\section{Toepassen van suffix arrays op een eiwitdatabank}\label{sec:toepassen-van-suffix-arrays-op-een-eiwitdatabank}
+\section{Toepassen van suffix arrays op een proteïnedatabank}\label{sec:toepassen-van-suffix-arrays-op-een-eiwitdatabank}
 Het moeilijkste deel van onze probleemstelling is het opbouwen van de suffix array.
 Dit kunnen we oplossen aan de hand van de algoritmen uit sectie~\ref{sec:bestaande-implementaties}.
 Eens we die suffix array opgebouwd hebben, blijft er echter nog een stuk van ons probleem over.
-Eerst moeten we nog een mapping maken van de gevonden suffixen naar het bijbehorende eiwit.
-Op basis van dit eiwit wordt daarna de LCA gezocht.
+Eerst moeten we nog een mapping maken van de gevonden suffixen naar de bijbehorende proteïne.
+Op basis van deze proteïne wordt daarna de LCA gezocht.
 
 \subsection{Bouwen van de suffix array}\label{subsec:bouwen-van-de-suffix-array}
 Zoals in de inleiding van sectie~\ref{sec:probleemstelling} beschreven wordt, willen we Rust gebruiken vanwege de combinatie tussen \textit{memory safety} en hoge performantie.
 We willen echter gebruikmaken van de al bestaande geoptimaliseerde algoritmen om een suffix array op te bouwen.
 Om beide doelen te bereiken, maken we gebruik van de interoperabiliteit tussen Rust en C/C++.
 Zo bestaan er al bindings\footnote{\url{https://crates.io/crates/libdivsufsort-rs}} van Rust naar de originele implementatie van libdivsufsort\cite{libdivsufsort} (in C).
-Ook al blijkt uit het testen dat dit algoritme voor het opbouwen van de indexstructuur over een kleinere eiwitdatabank niet het snelste is, is het geheugengebruik wel minimaal.
+Ook al blijkt uit het testen dat dit algoritme voor het opbouwen van de indexstructuur over een kleinere proteïnedatabank niet het snelste is, is het geheugengebruik wel minimaal.
 Dit laat toe om te experimenteren met het opbouwen van een SA zonder al te veel extra werk, en al onmiddellijk te zien hoe het geheugengebruik evolueert.
 \\ \\
 Later hebben we zelf nog een simple Rust wrapper geschreven rond de libsais C-code.
@@ -199,7 +199,7 @@ Dit zal op zijn beurt ook de overhead van de sparse mapping beperkt houden.
     \subfloat[Tijd nodig om alle matches te zoeken.]{\includegraphics[width=\linewidth]{dense_vs_sparse_time}}\\[4ex] % [4ex] om wat extra vertical spacing in te voegen
     \centering
     \subfloat[Maximaal gebruikt geheugen tijdens het zoeken naar alle matches.]{\includegraphics[width=\linewidth]{dense_vs_sparse_memory}}
-    \caption{Zoektijd en geheugengebruik bij het gebruik bij een \textit{dense} of \textit{sparse mapping} van de suffixen naar de proteïnes.}\label{fig:dense_vs_sparse}
+    \caption{Zoektijd en geheugengebruik bij het gebruik bij een \textit{dense} of \textit{sparse mapping} van de suffixen naar de proteïnen.}\label{fig:dense_vs_sparse}
 \end{figure}
 
 \subsection{Berekenen van de LCA}\label{subsec:berekenen-van-de-lca}
@@ -207,7 +207,7 @@ Zoals eerder vermeld, bevat een suffix array geen informatie over de interne top
 Dit zorgt ervoor dat het niet mogelijk is om op basis hiervan de LCA van de organismen voor te berekenen voor al deze interne toppen.
 Dit moet nu \textit{on the fly} gebeuren tijdens het zoekproces zelf.
 Hierdoor is er ook \textbf{geen reden meer om LCA te gebruiken in de plaats van LCA*}.
-LCA* was namelijk onze eerste keuze aangezien het resultaat hierbij minder onderhevig is aan eiwitten die een te algemene annotatie hebben.
+LCA* was namelijk onze eerste keuze aangezien het resultaat hierbij minder onderhevig is aan proteïnen die een te algemene annotatie hebben.
 Bij suffixbomen zijn we daar echter van af moeten stappen om het voorberekenen efficiënter te maken.
 
 
@@ -265,7 +265,7 @@ Bij het zoeken met sparseness factor $k$ moeten we $k$ verschillende zoekopdrach
 In zoekopdracht $i$ worden de eerste $i - 1$ tekens van de zoekstring overgeslagen.
 In plaats van de zoekstring, zoeken we dus een suffix van de zoekstring in de sparse indexstructuur.
 \\ \\
-Voor elke matchende suffix (stel dat dit suffix $s$ is) moet daarna gecontroleerd worden of de overgeslagen prefix van $i$ tekens matcht met de $i$ tekens die op posities $[s - i, i[$ in de geïndexeerde tekst staan.
+Voor elke matchende suffix (stel dat dit suffix $s$ is) moet daarna gecontroleerd worden of de overgeslagen prefix van $i$ tekens matcht met de $i$ tekens die op posities $[s - i, s[$ in de geïndexeerde tekst staan.
 Naast de SSA moet dus ook de volledige tekst in het werkgeheugen bijgehouden om te zoeken in de (sparse) SA\@.
 Als dit zo is, dan matcht suffix $s - i$ met de gezochte string.
 Het eindresultaat is de unie van de resultaten van elke iteratie.
@@ -305,7 +305,7 @@ Hierbij wordt gebruikgemaakt van een SA met sparseness factor $k$ = 3.
     We vinden geen matches.
     \item Sla 1 teken over.
     Dit wil zeggen dat we \texttt{cg} zoeken met de SSA\@.
-    Dit levert één match op met suffix 3 (op index 1 in de SSA).
+    Dit levert één match op met suffix 3 (op index 2 in de SSA).
     \begin{enumerate}
         \item Controleer of de suffix die deels gematcht is ook volledig matcht met onze zoekstring.
         Dit wil zeggen dat we de overgeslagen prefix van $i = 1$ tekens (in dit geval de letter \texttt{a}) moeten kunnen matchen met de eerste $i$ tekens van suffix $3 - 1 = 2$.
@@ -323,17 +323,17 @@ Hierbij wordt gebruikgemaakt van een SA met sparseness factor $k$ = 3.
 Aangezien de sparseness factor $k$ impact heeft op de zoekperformantie is het belangrijk te zien hoe groot deze impact is, zodat we een goede keuze kunnen maken.
 Op het eerste gezicht lijkt het vergroten van deze factor enkel meer iteraties toe te voegen, maar dit heeft zware gevolgen.
 Deze extra iteraties zullen ervoor zorgen dat er \textbf{kortere strings} in de SSA gezocht worden, die in het algemeen \textbf{meer matches} opleveren.
-Zeker wanneer de zoekstrings zelf al vrij kort zijn, wat voor unipept typisch het geval is.
-Voor tryptische peptiden zijn er bijvoorbeeld veel peptiden met lengte 5.
+Zeker wanneer de zoekstrings zelf al vrij kort zijn, wat voor Unipept typisch het geval is.
+In het tryptische Swiss-Prot peptidebestand zitten er bijvoorbeeld veel peptiden met lengte 5.
 Voor al deze matches moeten we controleren of de tekens die ervoor komen matchen met de overgeslagen prefix.
 Figuur~\ref{fig:search_sparseness}~(a) visualiseert de impact op de zoektijd van het Swiss-Prot peptidebestand met en zonder \textit{missed cleavages}.
 Deze bestanden worden hiervoor gebruikt omdat de kortste sequentie die ze bevatten 5 aminozuren lang is.
-Hierdoor blijft voor het gebruikte interval nog steeds elke peptide zoekbaar.
+Hierdoor blijft nog steeds elke peptide zoekbaar.
 Bij het Human-Prot zoekbestand zijn er ook kortere peptiden die we moeten overslaan, waardoor dit een slechte representatie is voor de evolutie van de zoektijd.
 \\
 \begin{figure}[H]
     \centering
-    \subfloat[Zoektijd voor het Swiss-Prot peptidebestand met en zonder \textit{missed cleavages}. De zoekoperaties zijn uitgevoerd op een sparse suffix array gebouwd op basis van de Swiss-Prot eiwitdatabank, met $k = 1, 2, 3, 4, 5$.]{\includegraphics[width=0.9\linewidth]{swissprot_searchtime_sparseness}}\\[4ex] % [4ex] om wat extra vertical spacing in te voegen
+    \subfloat[Zoektijd voor het Swiss-Prot peptidebestand met en zonder \textit{missed cleavages}. De zoekoperaties zijn uitgevoerd op een sparse suffix array gebouwd op basis van de Swiss-Prot proteïnedatabank, met $k = 1, 2, 3, 4, 5$.]{\includegraphics[width=0.9\linewidth]{swissprot_searchtime_sparseness}}\\[4ex] % [4ex] om wat extra vertical spacing in te voegen
 
     \subfloat[Grootte van de volledige index en SSA voor de Swiss-Prot databank met sparseness factor $k = 1, 2, 3, 4, 5$.]{\includegraphics[width=0.8\linewidth]{index_size_SSA}}
     \caption{Zoektijd en indexgrootte van een SSA voor Swiss-Prot met $k = 1, 2, 3, 4, 5$.}\label{fig:search_sparseness}
@@ -420,7 +420,7 @@ De \textbf{code is namelijk veel simpeler en daarom ook beter te onderhouden}.
 Dit motiveert onze keuze om finaal gebruik te maken van Rayon.
 
 
-\section{Suffix arrays vs Suffixbomen}\label{sec:performantie}
+\section{Suffix arrays vs suffixbomen}\label{sec:performantie}
 Nu we verschillende manier verkend hebben om suffix arrays op te bouwen, is het interessant om suffix arrays te vergelijken met suffixbomen.
 Op basis hiervan kunnen we vaststellen welke verbeteringen we gemaakt hebben, of deze indexstructuur goed genoeg schaalt om toepasbaar te zijn op de volledige UniProtKB databank en in welke tijd de peptiden gezocht kunnen worden.
 
@@ -443,7 +443,7 @@ Zo bieden zowel Amazon via AWS, google via GCP en Microsoft via Azure instanties
     \subfloat[Tijd nodig om de indexstructuur op te bouwen.]{\includegraphics[width=\linewidth]{building_array_libsais_time}}\\[4ex] % [4ex] om wat extra vertical spacing in te voegen
 
     \subfloat[Maximaal geheugengebruik om de indexstructuur op te bouwen.]{\includegraphics[width=\linewidth]{building_array_libsais_memory}}
-    \caption{Vergelijking tussen de nodige tijd en hoeveelheid geheugen om een suffix array met libsais of een suffixboom in onze eigen Rust implementatie op te bouwen. De tijd en het geheugengebruik zijn gemeten met het Unix \texttt{time} commando. Als invoerbestand gebruiken we hier de Swiss-Prot of Human-Prot eiwitdatabank.}\label{fig:array_building}
+    \caption{Vergelijking tussen de nodige tijd en hoeveelheid geheugen om een suffix array met libsais of een suffixboom in onze eigen Rust implementatie op te bouwen. De tijd en het geheugengebruik zijn gemeten met het Unix \texttt{time} commando. Als invoerbestand gebruiken we hier de Swiss-Prot of Human-Prot proteïnedatabank.}\label{fig:array_building}
 \end{figure}
 
 \subsection{Zoeken}\label{subsec:zoeken}
@@ -454,10 +454,10 @@ Figuur~\ref{fig:cutoff_humanprot}~(a) toont de zoekperformantie met suffix array
 Hier is onmiddellijk zichtbaar de de performantie voor het Human-Prot zoekbestand significant slechter is.
 Na wat onderzoek bleek dat het berekenen van de LCA* erg traag werd indien er een groot aantal matches was.
 Daarom is er besloten om een \textbf{drempelwaarde} (laten we deze B, van bovengrens, noemen) in te stellen.
-Indien een peptide meer dan dan B matches heeft, wordt verondersteld dat de wortel de laagste gemeenschappelijke voorouder is van alle matches.
+Indien een peptide meer dan dan B matches heeft, wordt verondersteld dat de root van de NCBI taxonomy de laagste gemeenschappelijke voorouder is van alle matches.
 Uit eerder onderzoek uitgevoerd door het Unipept-team~\cite{unipept_cutoff} op de Unipept index die gebouwd was op basis van UniProt 2023\_03 bleek dat dit in de praktijk in de overgrote meerderheid van de gevallen ook effectief het geval is.
 De resultaten hiervan kunnen teruggevonden worden in de tabellen in appendix~\ref{ch:appendix-unipept-protein-counts-distribution}.
-Zo zijn er slechts $\pm$ 13\thinspace000 van de 1.3 miljard tryptische peptiden die meer dan 10\thinspace000 eiwitten matchen.
+Zo matchen slechts $\pm$ 13\thinspace000 van de 1.3 miljard tryptische peptiden met meer dan 10\thinspace000 proteïnen.
 Hierbij was voor 95\% van de peptiden de LCA gelijk aan de wortel.
 Slechts voor 200 peptiden was er een resultaat op soortniveau.
 \\
@@ -470,7 +470,7 @@ Slechts voor 200 peptiden was er een resultaat op soortniveau.
 \end{figure}
 
 In Figuur~\ref{fig:cutoff_humanprot} is duidelijk te zien dat de \textbf{uitvoeringstijd drastisch daalt} wanneer de drempelwaarde op 10\thinspace000 matches geplaatst wordt.
-Als we dit specifiek bekijken voor de Human-Prot peptidebestanden en eiwitdatabank is de uitvoeringstijd maar liefst 300 keer sneller.
+Als we dit specifiek bekijken voor de Human-Prot peptidebestanden en proteïnedatabank is de uitvoeringstijd maar liefst 300 keer sneller.
 Bovendien is ook hier het \textbf{informatieverlies minimaal}.
 Van de 250\thinspace000 peptiden zijn er 12 peptiden die een ander resultaat verkrijgen in de output.
 Deze 12 peptiden zijn echter slechts twee unieke peptiden (die gewoon meerdere keren voorkomen in het peptidebestand).

@@ -39,8 +39,8 @@ De focus van deze masterproef ligt vooral binnen het veld van de \textbf{metapro
 Het prefix \textit{meta} geeft aan dat de te analyseren stalen niet van één organisme afkomstig zijn, maar van \textbf{meerdere organismen} (typisch binnen hetzelfde ecosysteem).
 Dit maakt de analyse moeilijker aangezien proteïnen van verschillende organismen gelijkaardige aminozuursequenties kunnen hebben (al dan niet door toeval).
 Binnen het metaproteomica veld gaan onderzoekers op zoek naar welke organismes er in een ecosysteem aanwezig zijn en wat deze daar dan doen.
-Dit doet men door een verzameling van eiwitfragmenten te analyseren.
-Deze eiwitfragmenten noemen we peptiden wanneer ze bestaan uit twee of meer aminozuren en hun lengte beperkt blijft.
+Dit doet men door een verzameling van proteïnefragmenten te analyseren.
+Deze proteïnefragmenten noemen we peptiden wanneer ze bestaan uit twee of meer aminozuren en hun lengte beperkt blijft.
 In de praktijk gaat dit over sequenties van ongeveer 2 tot 50 aminozuren lang.
 Idealiter kunnen we deze analyses uitvoeren met volledige proteïnen, en niet met peptiden.
 Dit is echter niet mogelijk vanwege beperkingen bij de huidige generatie aan machines die proteïnen inlezen.
@@ -60,7 +60,7 @@ Tryptische peptiden ontstaan na het knippen van proteïnen aan de hand van \text
 Dit is een protease (eiwitafbrekend enzym) dat proteïnen opsplitst in meerdere peptiden.
 Er bestaan nog andere proteases, maar trypsine is veruit de populairste door zijn eenduidig gedrag en efficiëntie.
 \\ \\
-Trypsine zal eiwitten knippen na elk voorkomen van lysine (K) of arginine (R) indien het eerstvolgende aminozuur geen proline (P) is.
+Trypsine zal proteïnen knippen na elk voorkomen van lysine (K) of arginine (R) indien het eerstvolgende aminozuur geen proline (P) is.
 Deze vuistregel is echter niet perfect.
 Soms mist trypsine een locatie waar volgens deze regel geknipt moet worden.
 Dit noemen we een \textit{missed cleavage}.
@@ -79,7 +79,7 @@ Eerst wordt de massa/ladingsverhouding (m/z) van peptiden aan de hand van een ma
 Daarna worden deze resultaten aan de hand van diverse zoekprocessen (via zogenaamde zoekmachines) omgezet naar de stringvoorstelling van de peptide.
 Deze sequenties vormen de input voor tools zoals Unipept.
 \\ \\
-Eén belangrijke consequentie van het gebruik van een massaspectrometer is dat Isoleucine (I) en Leucine (L) niet uit elkaar gehouden kunnen worden.
+Eén belangrijke consequentie van het gebruik van een massaspectrometer is dat isoleucine (I) en leucine (L) niet uit elkaar gehouden kunnen worden.
 Deze aminozuren bestaan uit dezelfde atomen (C\textsubscript{6}H\textsubscript{13}NO\textsubscript{2}), maar hebben niet dezelfde structuur.
 Bijgevolg hebben ze een identieke massa, en zijn ze niet te onderscheiden van elkaar.
 
@@ -89,10 +89,10 @@ Unipept~\cite{unipept_orig} biedt een ecosysteem van tools aan om stalen uit het
 
 \begin{itemize}
     \item \textbf{Unipept Web application~\cite{unipept_orig, unipept_web, unipept_tutorial, unipept_4}} Dit is de originele Unipept tool en is publiek beschikbaar op \url{https://unipept.ugent.be}.
-    Met de gebruiksvriendelijke \textit{user interface} wordt analyseren van metaproteomica data beschikbaar gesteld.
+    Met de gebruiksvriendelijke \textit{user interface} wordt het analyseren van metaproteomica data beschikbaar gesteld.
     De resultaten van deze analyse worden aan de hand van visualisaties en tabellen aan de gebruiker voorgesteld.
     Deze kunnen vervolgens makkelijk geëxporteerd worden (bijv.~voor analyse in andere tools).
-    \item \textbf{Unipept CLI\footnote{\textit{command-line interface}}~\cite{unipept_cli}} Dit is een \textit{power-user} tool om analyses uit te voeren via de commandolijn op grotere stalen en laat toe om de Unipept analyses in een grotere \textit{pipeline} op te nemen.
+    \item \textbf{Unipept CLI\footnote{\textit{command-line interface}}~\cite{unipept_cli}} Dit is een \textit{power-user} tool om via de commandolijn analyses op grotere stalen uit te voeren en laat toe om de Unipept analyses in een grotere pijplijn op te nemen.
     \item \textbf{Unipept API\footnote{\textit{application programming interface}}~\cite{unipept_api, unipept_cli}} Dit is een collectie van \textit{endpoints} die andere applicaties (inclusief de Unipept CLI), toelaat om de functionaliteit van Unipept te integreren.
     \item \textbf{Unipept Desktop~\cite{unipept_desktop, unipept_desktop_2}} Dit is de recentste toevoeging aan het Unipept ecosysteem en laat toe dat onderzoekers niet noodzakelijk met de Unipept servers moeten communiceren om analyses uit te voeren.
     Deze applicatie combineert de voordelen van de web app, CLI en API en laat toe om lokaal grote stalen te analyseren, gebruikmakende van een gebruiksvriendelijke UI\@.
@@ -110,7 +110,7 @@ Het opbouwen van de huidige indexstructuur gaat in grote lijnen als volgt:
 
 Deze aanpak heeft als voordeel dat we op een efficiënte manier tryptische peptiden kunnen opzoeken (samen met de bijbehorende annotaties).
 Er is echter een belangrijke keerzijde aan deze manier van werken.
-Het zoeken van niet-tryptische peptiden (hieronder vallen ook peptiden met \textit{missed cleavage}) is problematisch.
+Het zoeken van niet-tryptische peptiden (hieronder vallen ook peptiden met \textit{missed cleavages}) is problematisch.
 Dit komt doordat tijdens het opbouwen van de Unipept indexstructuur de vuistregel strikt gevolgd wordt, en elke peptide in de indexstructuur strikt tryptisch is.
 Op basis hiervan worden de taxonomische en functionele annotaties voor elke tryptische peptide voorberekend.
 \\ \\
@@ -130,10 +130,10 @@ Dit vormde een duidelijke en goede basis voor deze inleiding.
 
 
 \section{Probleemstelling}\label{sec:probleemstelling}
-In deze masterproef zoeken we een oplossing voor het snel terugvinden van \textbf{willekeurige peptiden}\footnote{Hiermee bedoelen we peptiden die tryptisch zouden moeten zijn, maar één of meerdere gemiste splitsingen hebben. Daarnaast omvat dit ook peptiden die niet-tryptisch zijn, en dus op een andere manier gesplitst worden.} in een eiwitdatabank.
+In deze masterproef zoeken we een oplossing voor het snel terugvinden van \textbf{willekeurige peptiden}\footnote{Hiermee bedoelen we peptiden die tryptisch zouden moeten zijn, maar één of meerdere gemiste splitsingen hebben. Daarnaast omvat dit ook peptiden die niet-tryptisch zijn, en dus op een andere manier gesplitst worden.} in een proteïnedatabank.
 Bij het vinden van een match moet het daarna mogelijk zijn de informatie op te halen die hoort bij alle proteïnen waarin de peptide voorkomt.
 Binnen het onderzoeksgebied van de informatica kunnen we dit probleem als volgt herformuleren:
-``In een grote verzameling van middellange strings (alle eiwitten in onze databank), moeten we voor een verzameling van korte strings (peptiden) terugvinden in welke van deze middellange strings ze voorkomen.''
+``In een grote verzameling van middellange strings (alle proteïnen in onze databank), moeten we voor een verzameling van korte strings (peptiden) terugvinden in welke van deze middellange strings ze voorkomen.''
 We willen echter niet alleen maar vinden van welke proteïnen een peptide deel uitmaakt.
 Ook de bijbehorende taxonomische en functionele annotaties van de gematchte proteïne moeten zo snel mogelijk te vinden zijn.
 Deze gevonden annotaties moeten efficiënt verwerkt kunnen worden om zo vlot het eindresultaat te bekomen.
@@ -146,7 +146,7 @@ Voor grotere stalen waarvan de analyse op de Unipept servers uitgevoerd wordt mi
 Dit komt overeen met een realistische configuratie voor een server die gericht is op het uitvoeren van geheugenintensieve taken.
 \\ \\
 Tot slot willen we ook \textbf{semi-exacte matching} toevoegen tijdens het zoeken.
-Hierbij willen we de mogelijkheid aanbieden om Isoleucine (I) en Leucine (L) gelijk te stellen aan elkaar.
+Hierbij willen we de mogelijkheid aanbieden om isoleucine (I) en leucine (L) gelijk te stellen aan elkaar.
 Wanneer deze gelijkgesteld zijn wil dit zeggen dat op elke plaats waar een I staat, ook een L toegelaten wordt, en omgekeerd.
 Door dit te doen kunnen we de beperkingen van een massaspectrometer opvangen.
 \\ \\
@@ -169,11 +169,11 @@ Alle bestanden die in de volgende secties besproken worden, kunnen teruggevonden
 
 \subsection{Proteïnedatabanken}\label{subsec:proteine-databanken}
 Om te testen hoe goed een implementatie is en hoe deze zich verhoudt ten opzichte van bestaande implementaties, is het belangrijk om representatieve datasets te gebruiken.
-Deze datasets zijn allemaal eiwitdatabanken die een subset vormen van \textbf{UniProtKB} (meer specifiek UniProtKB 2023\_04)~\cite{UniprotKB}.
+Deze datasets zijn allemaal proteïnedatabanken die een subset vormen van \textbf{UniProtKB} (meer specifiek UniProtKB 2023\_04)~\cite{UniprotKB}.
 UniProtKB zelf bestaat uit twee onderdelen (gegeven statistieken zijn voor release 2023\_04).
 \begin{enumerate}
-    \item \textbf{Swiss-Prot}: Dit is een kleinere, manueel gecureerde dataset met 570\thinspace157 eiwitsequenties.
-    \item \textbf{TrEMBL}: Deze dataset bevat 251\thinspace600\thinspace768 sequenties en is dus veel groter dan Swiss-Prot.
+    \item \textbf{Swiss-Prot}: Dit is een kleinere, manueel gecureerde dataset met 570\thinspace157 proteïnen.
+    \item \textbf{TrEMBL}: Deze dataset bevat 251\thinspace600\thinspace768 proteïnen en is dus veel groter dan Swiss-Prot.
     Een bijkomend verschil is dat deze dataset \textbf{niet} manueel gecureerd is, maar geautomatiseerd geannoteerd werd.
 \end{enumerate}
 Uiteindelijk is het doel om een indexstructuur voor UniProtKB op te bouwen waarbij de probleemstelling opgelost is.
@@ -224,7 +224,7 @@ In Figuur~\ref{fig:uniprot_aminozuur} en~\ref{fig:uniprot_length} is een gedetai
     \caption{Lengtedistributie van de proteïnen in de UniProtKB (2023\_04) databank. De kleinere grafiek bevat een gedetailleerder overzicht van de distributie in het interval $[0, 1000[$.}\label{fig:uniprot_length}
 \end{figure}
 
-\paragraph{Swiss-Prot} Deze databank is één van de twee standaardonderdelen van UniProtKB\@.
+\paragraph{Swiss-Prot} De Swiss-Prot databank is één van de twee standaardonderdelen van UniProtKB\@.
 Een kort overzicht van alle statistieken is terug te vinden in Tabel~\ref{tab:swissprot_eigenschappen}.
 Figuur~\ref{fig:swissprot_aminozuur} en Figuur~\ref{fig:swissprot_length} geven meer inzicht in de distributie van de aminozuren en lengte van de proteïnen.
 
@@ -267,9 +267,8 @@ Figuur~\ref{fig:swissprot_aminozuur} en Figuur~\ref{fig:swissprot_length} geven 
 Doordat het gebruikte invoerbestand reeds verwerkt werd door een deel van de Unipept pipeline, is er een klein verschil tussen het totaal aantal sequenties in Tabel~\ref{tab:swissprot_eigenschappen} en wat eerder aangegeven werd.
 Hierbij worden onder andere sequenties met een onbekend taxon id verwijderd (538 in totaal), wat het kleine verschil verklaart.
 
-\paragraph{Human-Prot} Deze dataset is samengesteld aan de hand van drie referentiedatabanken afkomstig uit UniProtKB\@.
+\paragraph{Human-Prot} De Human-Prot databank is samengesteld aan de hand van drie referentiedatabanken afkomstig uit UniProtKB\@.
 Dit zijn de Human Genome~\cite{proteomes_homo_sapiens}, Influenza B~\cite{proteomes_infuenza_b} en Human Papillomavirus~\cite{proteomes_human_papillomavirus} databank.
-Deze zij ook allemaal afkomstig uit UniProtKB 2023\_04.
 \\ \\
 Deze Human-Prot databank is kleiner dan Swiss-Prot, waardoor het testen tijdens ontwikkeling sneller is.
 Tabel~\ref{tab:humanprot_eigenschappen} somt enkele belangrijke metrieken op over deze dataset.
@@ -316,11 +315,11 @@ Zo staat ``X'' voor elk mogelijk aminozuur, ``Z'' voor ``Q'' of ``E'',\ldots~\ci
 \\ \\
 Verder valt ook te zien dat de verdeling van de proteïnelengtes in de UniProtKB, Swiss-Prot en Human-Prot datasets vergelijkbaar zijn.
 Met andere woorden: \textbf{Swiss-Prot en Human-Prot zijn een representatieve kleinere voorstelling van UniProtKB\@}.
-Dit laat ons toe om gebruik te maken van de Swiss-Prot en Human-Prot eiwitdatabanken en later de resultaten te veralgemenen en op te schalen naar UniProtKB\@.
+Dit laat ons toe om gebruik te maken van de Swiss-Prot en Human-Prot proteïnedatabanken en later de resultaten te veralgemenen en op te schalen naar UniProtKB\@.
 
 \subsection{Peptidebestanden}\label{subsec:peptide-zoek-bestanden}
 De zoekperformantie van onze indexstructuur is een erg belangrijk aspect.
-Om dit te meten, hebben we bij elke eiwitdatabank een lijst aan peptiden die we proberen te zoeken.
+Om dit te meten, hebben we bij elke proteïnedatabank een lijst van peptiden die we proberen te zoeken.
 Zowel voor de Swiss-Prot als Human-Prot databank zijn enkele datasets opgesteld.
 
 \subsubsection{Swiss-Prot}
@@ -347,7 +346,7 @@ Tabel~\ref{tab:artifiele_bestanden_statistieken} bevat in kolom twee en drie een
         Aantal tryptische peptiden & 100\thinspace000               & 4107                           & 102\thinspace659                            \\
         \hline
     \end{tabular}
-    \caption{Eigenschappen van de verschillende peptidebestanden. \textit{Swiss-Prot-TRYP} bevat de statistieken voor het Swiss-Prot peptidebestand met enkel tryptische peptiden. Hierbij komen er dus geen \textit{missed cleavages} voor. \textit{Swiss-Prot-MC} bevat net wel \textit{missed cleavages}. De laatste kolom bevat de statistieken voor het peptidebestand dat hoort bij de Human-Prot eiwitdatabank. De afkorting \textit{AA} staat voor \textit{amino acids}.}
+    \caption{Eigenschappen van de verschillende peptidebestanden. \textit{Swiss-Prot-TRYP} bevat de statistieken voor het Swiss-Prot peptidebestand met enkel tryptische peptiden. Hierbij komen er dus geen \textit{missed cleavages} voor. \textit{Swiss-Prot-MC} bevat net wel \textit{missed cleavages}. De laatste kolom bevat de statistieken voor het peptidebestand dat hoort bij de Human-Prot proteïnedatabank. De afkorting \textit{AA} staat voor \textit{amino acids}.}
     \label{tab:artifiele_bestanden_statistieken}
 \end{table}
 
@@ -382,7 +381,7 @@ Deze peptidebestanden worden in combinatie met de Swiss-Prot proteïnedatabank g
 
 \subsubsection{Human-Prot}
 Voor deze databank hebben we één peptidebestand waarin we HLA-peptiden simuleren.
-Dit zijn \textbf{korte, niet-tryptische peptiden} waarin men typisch geïnteresseerd is in het immunopeptidomics onderzoeksveld.
+Dit zijn \textbf{korte, niet-tryptische peptiden} waarin men typisch geïnteresseerd is in het immunopeptidomics onderzoeksveld~\cite{immunopeptidomics}.
 Dit betekent dat Unipept op dit moment niet gebruikt kan worden om dit soort stalen te analyseren.
 Elke peptide in dit peptidebestand is een sample van een proteïne uit de Human-Prot databank.
 Hierdoor zijn alle peptiden die we zoeken effectief vindbaar in de dataset.
@@ -463,7 +462,7 @@ Indien we de lange tekst indexeren, kan het opbouwen in $O(m)$ tijd en het zoeke
 Hierbij is het mogelijk om één keer de indexstructuur te bouwen voor de lange tekst, waarna elke korte string \textbf{in lineaire tijd ten opzichte van zijn eigen lengte gezocht} kan worden.
 Het nadeel is echter dat het opbouwen van de indexstructuur voor een grote tekst traag kan worden, en bovendien veel geheugen kan innemen.
 \\ \\
-We hebben een grote databank met erg veel proteïnes (een lange tekst) waarin we erg veel peptiden (korte strings) zoeken, wat overeenkomt met de tweede aanpak.
+We hebben een grote databank met erg veel proteïnen (een lange tekst) waarin we erg veel peptiden (korte strings) zoeken, wat overeenkomt met de tweede aanpak.
 Daarom verkennen we in deze masterproef die aanpak.
 In de eerste instantie willen we \textbf{exacte matches} kunnen zoeken, maar later willen we ook \textbf{inexacte} \textit{matching} uitvoeren.
 \\ \\

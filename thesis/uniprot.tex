@@ -1,12 +1,12 @@
 \chapter{Een nieuwe UniProtKB-index voor Unipept}\label{ch:een-nieuwe-uniprotkb-index-voor-unipept}
-In de vorige hoofdstukken hebben we suffixbomen, suffix arrays, FM-indices en R-indices verkend als indexstructuren die toegepast kunnen worden om een eiwitdatabank te indexeren.
+In de vorige hoofdstukken hebben we suffixbomen, suffix arrays, FM-indices en R-indices verkend als indexstructuren die toegepast kunnen worden om een proteïnedatabank te indexeren.
 Hieruit bleek dat een suffix array de laagste geheugenvereisten heeft tijdens het opbouwen.
 In dit hoofdstuk gaan we dieper in op het opbouwen van een index voor UniProtKB gebruikmakende van een suffix array, en het in productie brengen ervan.
 Aangezien we de huidige Unipept index willen vervangen door deze nieuwe indexstructuur behandelen we bovendien ook nog enkele extra gewenste features.
 
 \section{Opbouwen van de SA}\label{sec:opbouwen-van-de-sa}
 Zoals vermeld in sectie~\ref{subsec:opbouwen} levert een ruwe extrapolatie op dat we 1.2 TB RAM nodig hebben om een suffix array op te bouwen voor UniProtKB\@.
-Hierbij wordt er echter van uitgegaan dat UniProtKB 500 keer meer eiwitten dan Swiss-Prot bevat.
+Hierbij wordt er echter van uitgegaan dat UniProtKB 500 keer meer proteïnen dan Swiss-Prot bevat.
 Dit is een overschatting van de realiteit waar UniProtKB op dit moment \textit{slechts} $\pm$ 440 keer groter is.
 Dit zorgt ervoor dat het opbouwen mogelijks al \textbf{haalbaar is op de HPC van UGent} waar nodes beschikbaar zijn tot 940 GB RAM\@.
 Na dit te proberen bleek \textit{slechts} 740 GB RAM nodig.
@@ -48,9 +48,9 @@ Dit op zich zou nog net in de machine passen, maar laat niet genoeg ruimte voor 
     \label{fig:uniprot_index_size_sparsenessfactors}
 \end{figure}
 
-\section{Isoleucine en Leucine gelijkstellen}\label{sec:isoleucine-en-leucine-equivalentie}
+\section{Isoleucine en leucine gelijkstellen}\label{sec:isoleucine-en-leucine-equivalentie}
 Naast het vinden van exacte matches is het vinden van inexacte matches ook interessant.
-Vooral het vinden van matches waarbij we de aminozuren I (Isoleucine) en L (Leucine) aan elkaar gelijkstellen is een belangrijke optie in de huidige Unipept index.
+Vooral het vinden van matches waarbij we de aminozuren I (isoleucine) en L (leucine) aan elkaar gelijkstellen is een belangrijke optie in de huidige Unipept index.
 \textbf{Deze twee aminozuren kunnen niet gedifferentieerd worden door een massaspectrometer omdat ze een identieke massa hebben}.
 Door deze restrictie is het voor onderzoekers erg nuttig om alle matches te vinden waar een I ook een L kan zijn, of omgekeerd.
 Om deze vorm van inexacte matching toe te voegen aan de index gebruikmakende van een suffix array zijn er meerdere opties:
@@ -62,14 +62,14 @@ Om deze vorm van inexacte matching toe te voegen aan de index gebruikmakende van
     Deze optie wordt niet verder uitgewerkt omdat we willen vermijden dat we twee volledig aparte indices moeten hosten, waardoor het geheugengebruik zou verdubbelen.
     \item \textbf{Index waarbij I $\neq$ L:} Genereer de varianten van de gezochte peptide \textit{on the fly} tijdens het zoekproces.
     Hierbij kan gebruikgemaakt worden van het feit dat twee peptiden die identiek zijn, behalve dat elke locatie waar een I een L kan staan (of vice versa), een gelijkaardig zoekpad afleggen in de SA\@.
-    Deze zoekpaden splitsen enkel wanneer het teken dat verwerkt wordt (uit de eiwitdatabank) tijdens de binary search een I, J, K of L is.
+    Deze zoekpaden splitsen enkel wanneer het teken dat verwerkt wordt (uit de proteïnedatabank) tijdens de binary search een I, J, K of L is.
     Dit zorgt ervoor dat voor een willekeurig patroon een groot stuk van de zoekboom gemeenschappelijk zal zijn.
     Ook al zal dit ervoor zorgen dat we tijdens het zoekproces meestal snel kunnen snoeien, we zullen steeds $2^{q}$ opties moeten verkennen.
     Hierbij is $q$ de som van het aantal I's en L'en is in de peptide.
     \item \textbf{Index waarbij I = L:} Bouw de index voor een variant van de UniProtKB database.
     Hierbij vervangen we elke I door een L, of vice versa, en bouwen we dus een index op waarbij I gelijkgesteld is aan L\@.
     Tijdens het zoeken van een peptide doen we dezelfde vervanging, waarna we alle matches hebben waarbij I gelijkgesteld is aan L\@.
-    Indien we I niet gelijk willen stellen aan L, kunnen we achteraf de foute matches wegfilteren aan de hand van de originele eiwitdatabank.
+    Indien we I niet gelijk willen stellen aan L, kunnen we achteraf de foute matches wegfilteren aan de hand van de originele proteïnedatabank.
 \end{enumerate}
 
 In de volgende secties worden de tweede en derde aanpak verder uitgewerkt.
@@ -110,7 +110,7 @@ Aangezien het zoeken multithreaded is, moeten we dus zeker 20 GB aan vrij geheug
 In de praktijk vertaalt het gelijkstellen van I en L op deze manier zich naar een \textbf{vrij kleine overhead}.
 Deze beperkte overhead valt te zien in Figuur~\ref{fig:uniprot_search}.
 Deze figuur toont ook onmiddellijk de zoekperformantie waarbij I $\neq$ L op UniProtKB\@.
-Zoals verwacht op basis van de resultaten voor de kleinere Swiss-Prot en Human-Prot eiwitbestanden, is dit zoeken inderdaad extreem snel.
+Zoals verwacht op basis van de resultaten voor de kleinere Swiss-Prot en Human-Prot proteïnedatabanken, is dit zoeken inderdaad extreem snel.
 % TODO: schrijf hier iets bij in vergelijking met de huidige unipept index qua snelheid
 
 \begin{figure}[ht]
@@ -123,7 +123,7 @@ Zoals verwacht op basis van de resultaten voor de kleinere Swiss-Prot en Human-P
 \subsection{Index waarbij I = L}
 Een andere optie om zoeken waarbij I en L gelijkgesteld zijn mogelijk te maken is door de index specifiek voor dit geval op te bouwen.
 Hierbij wordt in de originele tekst elke L vervangen door een I, of vice versa, om op deze aangepaste tekst een index te bouwen.
-Wanneer we in de gezochte peptides hetzelfde doen, vinden we alle matches, waarbij een I en L gelijkgesteld zijn.
+Wanneer we in de gezochte peptiden hetzelfde doen, vinden we alle matches, waarbij een I en L gelijkgesteld zijn.
 Dit is duidelijk erg simpel, en bovendien efficiënt.
 \\ \\
 Door het zoekproces licht aan te passen, kunnen we bovendien nog steeds de matches vinden waarbij I $\neq$ L\@.
@@ -172,7 +172,7 @@ Wanneer we I en L gelijkstellen duurt dit opnieuw ongeveer 3 milliseconden, maar
 Hierbij wordt natuurlijk geen extra tijd geïntroduceerd door een API call over het internet aangezien deze index (nog) niet publiek beschikbaar is.
 
 \subsection{UniProt peptide search tool}
-De UniProt peptide search tool~\cite{uniprot_search_paper, uniprot_search_site} is een onderdeel van de UniProt site en laat toe om alle voorkomens van een bepaald eiwit te vinden in de volledige UniProtKB databank.
+De UniProt peptide search tool~\cite{uniprot_search_paper, uniprot_search_site} is een onderdeel van de UniProt site en laat toe om alle voorkomens van een bepaalde peptide te vinden in de volledige UniProtKB databank.
 Als opties kunnen we kiezen om enkel in Swiss-Prot te zoeken, of in Swiss-Prot en TrEMBL\@.
 Voor beide databanken kunnen we kiezen of we I en L aan elkaar willen gelijkstellen.
 Deze features komen exact overeen met de eigenschappen van onze nieuwe indexstructuur.
@@ -217,7 +217,7 @@ Het zal echter zoveel geheugen proberen gebruiken als het toegewezen krijgt, om 
 Dit verklaart waarschijnlijk ook deels de variabele performantie.
 Afhankelijk van eerdere zoekopdrachten zijn verschillende stukken van de index waarschijnlijk sneller doorzoekbaar.
 \\ \\
-Interessant is ook dat 80\% van de zoekopdrachten uit 1 peptide bestaan, en dat slechts in 6\% van de gevallen I en L gelijkgesteld worden.
+Interessant is ook dat 80\% van de zoekopdrachten uit één peptide bestaan, en dat slechts in 6\% van de gevallen I en L gelijkgesteld worden.
 Dit is net het tegenovergestelde van de geregistreerde requests bij Unipept.
 Vermoedelijk komt het verschil bij het gelijkstellen van I en L doordat dit standaard aan staat bij Unipept, terwijl dit bij UniProt net standaard uit staat.
 
@@ -226,10 +226,10 @@ De Expasy ScanProsite tool~\cite{scanprosite} laat toe om aan de hand van motiev
 De beschrijving van motieven laat toe om onder andere wildcards, karakterklassen\footnote{Hiermee bedoelen we het toelaten van een reeks aan tekens op een bepaalde plaats. Dit is gelijkaardig aan de \texttt{[ABC]} syntax uit reguliere expressies, waar we een A, B of C toelaten.}, inverse klassen en herhalingen te specificeren.
 De flexibiliteit van dit systeem is dus een sterk voordeel.
 Een nadeel van deze tool is dat niet de volledige UniProtKB databank doorzocht wordt.
-Er wordt enkel rekening gehouden met proteïnes die deel uit maken van een reference proteome\footnote{Deze zogenaamde reference proteomes zijn een collectie van eiwitten die door een bepaald organisme gemaakt kunnen worden, en die bovendien taxonomisch belangrijk bevonden worden. Deze laatste voorwaarde wil dus zeggen dat dit niet zomaar van elk organisme is, enkel van een selecte groep organismes die op basis van verschillende factoren belangrijk bevonden wordt. Een voorbeeld hiervan is de \textit{human reference proteome}. Dit zijn alle eiwitten die door een mens aangemaakt kunnen worden.}.
-Dit komt erop neer dat ze bij UniProt 2024\_01 \textbf{slechts rekening houden met 85\thinspace152\thinspace388 van de 249\thinspace751\thinspace891 proteïnes}.
+Er wordt enkel rekening gehouden met proteïnen die deel uit maken van een reference proteome\footnote{Deze zogenaamde reference proteomes zijn een collectie van proteïnen die door een bepaald organisme gemaakt kunnen worden, en die bovendien taxonomisch belangrijk bevonden worden. Deze laatste voorwaarde wil dus zeggen dat dit niet zomaar van elk organisme is, enkel van een selecte groep organismes die op basis van verschillende factoren belangrijk bevonden wordt. Een voorbeeld hiervan is de \textit{human reference proteome}. Dit zijn alle proteïnen die door een mens aangemaakt kunnen worden.}.
+Dit komt erop neer dat ze bij UniProt 2024\_01 \textbf{slechts rekening houden met 85\thinspace152\thinspace388 van de 249\thinspace751\thinspace891 proteïnen}.
 Wanneer we de zoekperformantie testen, duurt het zoeken van de ene peptide zo'n \textbf{5.5 minuten} zonder gelijkstellen van I en L en 10 minuten met het gelijkstellen van I en L\@.
-Hierbij zijn er slechts 30 resp. 32 matches gevonden, wegens de deelverzameling van proteïnes die gebruikt wordt.
+Hierbij zijn er slechts 30 resp. 32 matches gevonden, wegens de deelverzameling van proteïnen die gebruikt wordt.
 
 \subsection{Huidige Unipept index}
 De bestaande Unipept index laat toe om, \textbf{op voorwaarde dat je peptide tryptisch is}, alle matches te vinden in UniProtKB met de optie om I en L gelijk te stellen.
@@ -275,6 +275,8 @@ Om dit op te lossen heeft Tibo Vande Moortele een simpele compressiebibliotheek\
 Hierbij worden 2 karakters uit een annotatie gecomprimeerd naar 1 byte, en kunnen bovendien enkele tekens weggelaten worden.
 Na het gebruik van deze bibliotheek resulteert dit in \textbf{10.5 GB extra geheugengebruik}, wat in de context van de al 320 GB grote index (wanneer de tekst ook meegerekend wordt) bijna verwaarloosbaar is.
 
+% TODO: tekstje over het feit dat dit nog wat extra overhead introduceert op vlak van uitvoeringstijd. En geef hier ook een grafiek, mogelijks vergelijking met de originele Unipept als performantie conclusie?
+
 \section{Overzicht geheugenverbruik}
 In de vorige secties zijn verschillende extra onderdelen besproken om de functionaliteiten van Unipept toe te voegen aan de nieuwe index.
 Al deze extra onderdelen vragen extra geheugen, wat het totale geheugengebruik laat oplopen tot net geen 350 GB\@.
@@ -283,12 +285,13 @@ De volgende opsomming herhaalt kort voor elk onderdeel en welke rol deze speelt 
 
 \begin{itemize}
     \item Sparse suffix array: De sparse suffix array die opgebouwd werd op basis van de volledige UniProtKB databank.
+    Op basis hiervan zoeken we efficiënt alle suffixen waarmee een peptide matcht.
     \item Tekst: Dit is de UniProtKB databank, waarbij alle proteïnen geconcateneerd worden tot één lange string.
     Tussen elke proteïne hangt hetzelfde, unieke scheidingsteken, en op het einde van de tekst een ander uniek teken.
     \item Functionele annotaties: De gecomprimeerde functionele annotaties die beschreven zijn in sectie~\ref{sec:functionele-analyse}.
     Op basis van deze annotaties wordt de functionele analyse van Unipept uitgevoerd.
     \item UniProt accession numbers: Elke proteïne in UniProtKB heeft een uniek ID (accession number).
-    Voor elk eiwit dat matcht met de gezochte peptide wordt dit ID als onderdeel van de output teruggegeven.
+    Voor elke proteïne die matcht met de gezochte peptide wordt dit ID als onderdeel van de output teruggegeven.
     \item Taxonomische annotaties: Het taxon ID dat per proteïne bijgehouden wordt.
     Op basis van deze taxon IDs wordt de LCA* van alle gevonden matches berekend.
     \item Suffix → proteïne: De sparse mapping die beschreven is in sectie~\ref{subsec:mapping-van-suffix-naar-proteine}.
@@ -299,10 +302,10 @@ De volgende opsomming herhaalt kort voor elk onderdeel en welke rol deze speelt 
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.95\linewidth]{uniprot_memory_treemap}
+    \includegraphics[width=0.85\linewidth]{uniprot_memory_treemap}
     \caption{Visualisatie van het totale geheugenverbruik voor de index gebouwd op basis van UniProtKB 2024\_01, gebruikmakende van sparseness factor $k = 3$ voor de SSA.
-    In het totaal vraagt deze index 346.5 GB RAM, waarvan het grootste stuk gebruikt wordt door SSA en de proteïne sequenties (de tekst) zelf.
-    Naast de twee onderdelen die nodig zijn voor het matchen van de suffixen, is er nog een kleine 25 GB extra geheugenverbruik voor het uitvoeren van de Unipept analyses, of om de ID's van de gevonden matches terug te kunnen geven.}
+    In het totaal vraagt deze index 346.5 GB RAM, waarvan het grootste stuk gebruikt wordt door de SSA en de proteïne sequenties (de tekst) zelf.
+    Naast de twee onderdelen die nodig zijn voor het matchen van de suffixen, is er nog een kleine 25 GB extra RAM nodig om de Unipept analyses aan te kunnen bieden, of om de ID's van de gevonden matches terug te kunnen geven.}
     \label{fig:uniprot_memory_treemap}
 \end{figure}
 
@@ -313,7 +316,7 @@ Dit alleen duurt 20 tot 25 minuten.
 We willen dit inladen slechts eenmalig doen om dan alle requests onmiddellijk te kunnen afhandelen.
 Dit doen we aan de hand van een simpele \textbf{webserver} met de Axum crate~\cite{axum}.
 Deze webserver laadt de indexstructuur in bij het opstarten, en blijft daarna wachten op HTTP-requests die een JSON-object bevatten met daarin de peptiden die we willen zoeken.
-Op deze manier is dit probleem elegant opgelost, en kunnen we bovendien aan de hand van \textbf{JSON bestanden} erg makkelijk de input verwerken, en de resultaten terugsturen.
+Op deze manier is dit probleem elegant opgelost, en kunnen we bovendien aan de hand van \textbf{JSON-bestanden} erg makkelijk de input verwerken, en de resultaten terugsturen.
 Codefragment~\ref{fig:webserver_json_input} en~\ref{fig:webserver_json_output} geven een voorbeeld input en output.
 
 \begin{listing}[H]
@@ -329,7 +332,7 @@ Codefragment~\ref{fig:webserver_json_input} en~\ref{fig:webserver_json_output} g
     \end{minted}
     \caption{Voorbeeld JSON-input voor de webserver waarbij de peptiden \texttt{LAKLFISAV} en \texttt{ACCISDJLSDAAC} gezocht worden.
     Tijdens het zoeken worden I en L gelijkgesteld, en wordt de drempelwaarde B=10\thinspace000 gebruikt.
-    Indien er meer matches zijn dan de drempelwaarde B worden er slechts B matches terug gegeven en de resulterende LCA op 1 gezet.
+    Indien er meer matches zijn dan de drempelwaarde B, worden er slechts B matches terug gegeven en de resulterende LCA op 1 gezet.
     Dit laatste argument zou ook weggelaten kunnen worden aangezien de standaardwaarde gebruikt wordt.}
     \label{fig:webserver_json_input}
 \end{listing}
@@ -378,7 +381,7 @@ Codefragment~\ref{fig:webserver_json_input} en~\ref{fig:webserver_json_output} g
     \end{minted}
     \caption{Output van de input gebruikt in Codefragment~\ref{fig:webserver_json_input}.
     Hierbij bevat de sleutel \texttt{result} één element voor elke peptide die minstens één match opleverde.
-    Peptides zonder match worden dus simpelweg weggelaten in de output.
+    Peptiden zonder match worden dus simpelweg weggelaten in de output.
     Elk element bevat de berekende LCA voor alle matches, het taxon ID dat overeenkomt met elke match en het UniProt accession number voor elke match.
     Verder bevat de sleutel \texttt{fa} de functionele analyse zoals deze op dit moment door de Unipept API al teruggegeven wordt.
     Tot slot is er ook nog een extra sleutel \texttt{cutoff\_used} die aanduidt als de bovengrens voor maximaal aantal matches gebruikt is.
@@ -390,7 +393,7 @@ Codefragment~\ref{fig:webserver_json_input} en~\ref{fig:webserver_json_output} g
 \section{Productiepijplijn}
 Om een nieuwe versie van de index voor UniProtKB in productie te brengen zijn verschillende stappen nodig.
 Een groot deel hiervan valt buiten het domein van deze masterproef.
-Zo moet de nieuwe databank eerst gedownload worden, alle data die Unipept nodig heeft geëxtraheerd worden, om daarna een reeks aan transformaties uit te voeren.
+Zo moet de nieuwe databank eerst gedownload worden, moet alle data die Unipept hieruit nodig heeft geëxtraheerd worden, om daarna een reeks aan transformaties uit te voeren.
 De masterproef van medestudent Stijn De Clercq gaat hier dieper op in, en welke verbetering hieraan toegebracht zijn het afgelopen jaar.
 Dankzij zijn werk is het veel gemakkelijker geworden om deze nieuwe index te integreren in de Unipept pijplijn.
 De output van deze pijplijn levert een reeks \texttt{tsv}\footnote{Tab-Separated Values} bestanden op, die gebruikt worden als input om de indexstructuur op te bouwen.
