@@ -98,7 +98,7 @@
         \begin{enumerate}
             \item For every peptide (tryptic or non-tryptic), all matches in UniProtKB should be found.
             \item The maximum memory usage when building the index for the complete UniProtKB database should be around 1 to 2 TB\@.
-            \item Search performance should be on par with the Unipept 5.x tryptic peptide search.
+            \item Search performance should be on par with Unipept 5.x for tryptic peptides.
             \item The new index should facilitate all the Unipept 5.x features.
         \end{enumerate}
 
@@ -129,7 +129,7 @@
         During the search, we perform the same translation on every peptide.
         As a result, we find every match with I and L equalized.
         This search is performed using the original, unmodified text.
-        This is important, since the original text is needed in an additional second step when a search has to be performed where I and L are not equalized.
+        This is important, since the original text is needed in an additional second step we don't want to equalize I and L\@.
 
         During this second step, we filter away unwanted matches from the first stage.
         This is achieved by checking every I and L location in the original, unmodified peptide with the matching amino acid in the original, unmodified text.
@@ -205,10 +205,10 @@
         \end{Figure}
 
 
-        \section{Comparison}\label{sec:comparison}
-        Tools such as the Uniprot peptide search tool~\cite{uniprot_search_site, uniprot_search_paper}, the Expasy ScanProsite tool~\cite{scanprosite} and the Unipept 5.x all have the possibility to find matches in the UniProtKB database.
-        Next to the performance, we also compare the provided features.
-        Because of the limited performance of some tools, we limited testing to the randomly chosen peptide \texttt{ISPAVLFVIVILAVLFFISGLLHLLVR}.
+        \section{Other Tools}\label{sec:comparison}
+        Tools such as the Uniprot peptide search tool~\cite{uniprot_search_site, uniprot_search_paper}, the Expasy ScanProsite tool~\cite{scanprosite} and Unipept 5.x all have the possibility to find matches in the UniProtKB database.
+        In this section we compare the performance and feature set of alternative tools.
+        Because of the limited performance of some of these tools, we limited testing to the randomly chosen peptide \texttt{ISPAVLFVIVILAVLFFISGLLHLLVR}.
         Unipept 6.x uses the above described settings and finds all matches for our test peptide in less than 5 ms.
 
         Feature wise, the UniProt Peptide Search tool is identical to Unipept 6.x.
@@ -225,8 +225,8 @@
         As expected, since not the whole UniProtKB database is index, only a subset of the matches is found.
 
         The last major tool we compare with, is Unipept 5.x.
-        The new Unipept index is feature wise identical to the current index, with the addition of removing the restriction where Unipept can only quickly find tryptic peptides.
-        This means that every non-tryptic peptide will result in 0 matches in the current index, while the new index will find all matches that are in UniProtKB\@.
+        Unipept 6.x supports all options provided by Unipept 5.x, while removing the restriction that only tryptic peptides can efficiently be searched.
+        This means that every non-tryptic peptide will result in 0 matches in Unipept 5.x, while Unipept 6.x will find all matches that are in UniProtKB\@.
         Searching our test peptide took less than 5 ms, and found the same matches because our test peptide is tryptic.
         It is important to note though, if we had chosen a non-tryptic peptide we would not have found any matches.
         Table~\ref{tab:tool_comparison} gives an overview of the described differences between the tools.

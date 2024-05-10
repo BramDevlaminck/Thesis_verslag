@@ -162,12 +162,48 @@ Deze extra resultaten moeten allemaal meegenomen worden in het berekenen van de 
 Bovendien zorgt een grotere hoeveelheid data ook voor een tragere doorstroming van de index naar de Unipept API\@.
 Bij de grotere testbestanden wordt er in verhouding meer tijd aan het zoeken gespendeerd, waardoor daar de verwachte tijdwinst wel zichtbaar is.
 
+\section{Taxonomische analyse}\label{sec:taxonomische-analyse}
+Door het gebruik van suffix arrays moet de taxonomische analyse volledig uitgevoerd worden tijdens het zoekproces zelf.
+Dit heeft zowel voor- als nadelen.
+\\ \\
+Het grootste nadeel is de \textbf{extra overhead per zoekopdracht}.
+In de oude index was het enkel nodig alle matches te zoeken, waarna de voorberekende LCA onmiddellijk opgehaald kon worden.
+Nu moeten we deze LCA ook nog berekenen.
+Indien we dit zouden willen oplossen is er nood aan een manier om de boomstructuur te reconstrueren op een geheugenefficiënte manier.
+Hiervoor zijn de extra tabellen van Enhanced Suffix Arrays nodig.
+\\ \\
+Anderzijds zijn er ook enkele voordelen verbonden met het berekenen tijdens het zoekproces zelf.
+Zo hebben we \textbf{minder geheugen} nodig, wat erg belangrijk is aangezien het geheugengebruik al erg hoog is tijdens het opbouwen van de suffix array.
+Bovendien laat dit ook toe dat we vrij kunnen kiezen welke aggregatiemethode we gebruiken.
+De oude Unipept index maakte gebruik van een (minder interessante) variant van \textbf{LCA*}.
+Dit werd gedaan om het voorberekenen efficiënter te maken.
+Bij suffixbomen hebben we zelf gebruik moeten maken van de standaard LCA methode om dit op te lossen.
+Bij suffix arrays kunnen we vrij gebruik maken van LCA*, en blijft de performantie bovendien erg goed.
+Een laatste, belangrijk, voordeel is dat er \textbf{geen extra werk nodig is om de taxon IDs van alle matches op te halen}.
+In de huidige Unipept index is hier een significante hoeveelheid extra werk voor nodig, wat resulteert in een bottleneck bij de Peptonizer2000 tool~\cite{pep_gm}.
+
+
+\section{Functionele analyse}\label{sec:functionele-analyse}
+Een laatste feature die de nieuwe index moet ondersteunen is de functionele analyse uit Unipept.
+Deze analyse wordt uitgevoerd door de verschillende GO, EC en INTERPRO termen die horen bij de gevonden matches te tellen.
+Elk van deze termen is een korte string van 5 à 10 karakters lang, en kan vrij eenvoudig mee ingelezen worden en per proteïne bijgehouden worden.
+Al deze annotaties samen, maken het databankbestand dat ingelezen wordt om de index mee op te bouwen ongeveer 24 GB groter.
+Wanneer we deze informatie allemaal ingeladen hadden, bleek het programma echter ongeveer 105 GB extra RAM te gebruiken.
+De verklaring hiervoor is dat Rust 24 bytes overhead heeft per vector, en 24 bytes overhead per string.
+Om deze annotaties bij te houden, hadden we net één vector per proteïne nodig, en die vector bevatte een reeks aan korte strings (de annotaties zelf).
+Om dit op te lossen heeft Tibo Vande Moortele een simpele compressiebibliotheek\footnote{\url{https://github.com/unipept/unipept-index/tree/main/fa-compression}} ontwikkeld voor deze annotaties.
+Hierbij worden 2 karakters uit een annotatie gecomprimeerd naar 1 byte, en kunnen bovendien enkele tekens weggelaten worden.
+Na het gebruik van deze bibliotheek resulteert dit in \textbf{10.5 GB extra geheugengebruik}, wat in de context van de al 320 GB grote index (wanneer de tekst ook meegerekend wordt) bijna verwaarloosbaar is.
+Aangezien ook deze analyse \textit{on the fly} uitgevoerd wordt, heeft ook dit een negatieve impact op de performantie.
+De volgende sectie gaat dieper in op de performantie van de finale indexstructuur.
+
 \section{Vergelijking met andere tools}\label{subsec:vergelijking-met-andere-tools}
-Aangezien we erin geslaagd zijn om UniProtKB volledig te indexeren, is het nuttig om de performantie te vergelijken met bestaande tools.
-De tools die we bekijken zijn de \textbf{Uniprot Peptide search tool}, de \textbf{Expasy ScanProsite tool} en \textbf{Unipept} (met de bestaande indexstructuur).
+Naast Unipept zijn er nog andere tools die UniProtKB doorzoeken.
+In deze sectie vergelijken we de performantie en eigenschappen van Unipept met de \textbf{Uniprot Peptide search tool}, de \textbf{Expasy ScanProsite tool}.
+We zullen de versie van Unipept die de nieuwe index gebruikt Unipept 6.x noemen, aangezien de nieuwe index gebruikt zal worden vanaf Unipept 6.0, terwijl de oude versie Unipept 5.x genoemd wordt.
 Vanwege de beperkte performantie van een aantal van deze tools zullen we ons beperken tot het opzoeken van één willekeurige peptide \texttt{ISPAVLFVIVILAVLFFISGLLHLLVR}.
-Als referentie gebruiken we de zoektijd in de nieuwe indexstructuur gebruikmakende van een suffix array met sparseness factor $k = 3$.
-Hierin duurt het zoeken van de peptide \textbf{$\pm$ 3 milliseconden} en levert 50 matches op.
+Als referentie gebruiken we de zoektijd Unipept 6.x waarbij, zoals eerder vermeld, sparseness factor $k = 3$ gebruikt wordt.
+Hierbij duurt het zoeken van de peptide \textbf{$\pm$ 3 milliseconden} en levert deze 50 matches op.
 Wanneer we I en L gelijkstellen duurt dit opnieuw ongeveer 3 milliseconden, maar levert dit wel 52 matches op.
 Hierbij wordt natuurlijk geen extra tijd geïntroduceerd door een API call over het internet aangezien deze index (nog) niet publiek beschikbaar is.
 
@@ -175,7 +211,7 @@ Hierbij wordt natuurlijk geen extra tijd geïntroduceerd door een API call over 
 De UniProt peptide search tool~\cite{uniprot_search_paper, uniprot_search_site} is een onderdeel van de UniProt site en laat toe om alle voorkomens van een bepaalde peptide te vinden in de volledige UniProtKB databank.
 Als opties kunnen we kiezen om enkel in Swiss-Prot te zoeken, of in Swiss-Prot en TrEMBL\@.
 Voor beide databanken kunnen we kiezen of we I en L aan elkaar willen gelijkstellen.
-Deze features komen exact overeen met de eigenschappen van onze nieuwe indexstructuur.
+Deze features komen exact overeen met de eigenschappen van onze nieuwe indexstructuur, met de uitzondering dan Unipept extra analyses aanbiedt.
 Qua performantie is deze tool echter extreem onstabiel.
 Zo duurt het zoeken van \texttt{ISPAVLFVIVILAVLFFISGLLHLLVR} in de volledige UniProtKB databank \textbf{enkele seconden tot zelfs 20 minuten}.
 Bovendien vermoeden we ook dat er een vorm van caching toegepast wordt aangezien het zoeken voor een tweede keer zo goed als onmiddellijk het resultaat geeft.
@@ -226,14 +262,14 @@ De Expasy ScanProsite tool~\cite{scanprosite} laat toe om aan de hand van motiev
 De beschrijving van motieven laat toe om onder andere wildcards, karakterklassen\footnote{Hiermee bedoelen we het toelaten van een reeks aan tekens op een bepaalde plaats. Dit is gelijkaardig aan de \texttt{[ABC]} syntax uit reguliere expressies, waar we een A, B of C toelaten.}, inverse klassen en herhalingen te specificeren.
 De flexibiliteit van dit systeem is dus een sterk voordeel.
 Een nadeel van deze tool is dat niet de volledige UniProtKB databank doorzocht wordt.
-Er wordt enkel rekening gehouden met proteïnen die deel uit maken van een reference proteome\footnote{Deze zogenaamde reference proteomes zijn een collectie van proteïnen die door een bepaald organisme gemaakt kunnen worden, en die bovendien taxonomisch belangrijk bevonden worden. Deze laatste voorwaarde wil dus zeggen dat dit niet zomaar van elk organisme is, enkel van een selecte groep organismes die op basis van verschillende factoren belangrijk bevonden wordt. Een voorbeeld hiervan is de \textit{human reference proteome}. Dit zijn alle proteïnen die door een mens aangemaakt kunnen worden.}.
+Er wordt enkel rekening gehouden met proteïnen die deel uit maken van een \textit{reference proteome}\footnote{Deze zogenaamde \textit{reference proteomes} zijn een collectie van proteïnen die door een bepaald organisme gemaakt kunnen worden, en die bovendien taxonomisch belangrijk bevonden worden. Deze laatste voorwaarde wil dus zeggen dat dit niet zomaar van elk organisme is, enkel van een selecte groep organismes die op basis van verschillende factoren belangrijk bevonden wordt. Een voorbeeld hiervan is de \textit{human reference proteome}. Dit zijn alle proteïnen die door een mens aangemaakt kunnen worden.}.
 Dit komt erop neer dat ze bij UniProt 2024\_01 \textbf{slechts rekening houden met 85\thinspace152\thinspace388 van de 249\thinspace751\thinspace891 proteïnen}.
 Wanneer we de zoekperformantie testen, duurt het zoeken van de ene peptide zo'n \textbf{5.5 minuten} zonder gelijkstellen van I en L en 10 minuten met het gelijkstellen van I en L\@.
 Hierbij zijn er slechts 30 resp. 32 matches gevonden, wegens de deelverzameling van proteïnen die gebruikt wordt.
 
-\subsection{Huidige Unipept index}
-De bestaande Unipept index laat toe om, \textbf{op voorwaarde dat je peptide tryptisch is}, alle matches te vinden in UniProtKB met de optie om I en L gelijk te stellen.
-De peptide die we hier gebruiken is tryptisch, dus vindt deze index alle zoals verwacht alle matches.
+\subsection{Unipept 5.x}
+Unipept 5.x kan, \textbf{op voorwaarde dat je peptide tryptisch is}, alle matches te vinden in UniProtKB met de optie om I en L gelijk te stellen.
+Onze willekeurig gekozen test peptide is tryptisch, dus vindt deze index zoals verwacht alle matches.
 Bovendien gebeurt dit gebruikmakende van een API call in \textbf{$\pm$ 4 milliseconden}, wat duidelijk extreem veel sneller is dan de andere bestaande opties.
 Opnieuw is de zoektijd hier al zo klein dat de invloed van het gelijkstellen van I en L niet te meten valt.
 Het is echter een grote beperking dat dit enkel werkt voor tryptische peptiden, of peptiden met zogenaamde \textit{missed cleavages}.
@@ -241,42 +277,38 @@ Volgend voorbeeld illustreert dit.
 Stel dat we nu de peptide \texttt{ILAKLFIS} zoeken.
 Dit is geen tryptische peptide en bijgevolg kunnen er geen matches gevonden worden.
 De nieuwe indexstructuur vindt echter 14 matches zonder I en L gelijk te stellen, en 207 matches bij het gelijkstellen van I en L\@.
-
-\section{Taxonomische analyse}\label{sec:taxonomische-analyse}
-Door het gebruik van suffix arrays moet de taxonomische analyse volledig uitgevoerd worden tijdens het zoekproces zelf.
-Dit heeft zowel voor- als nadelen.
 \\ \\
-Het grootste nadeel is de \textbf{extra overhead per zoekopdracht}.
-In de oude index was het enkel nodig alle matches te zoeken, waarna de voorberekende LCA onmiddellijk opgehaald kon worden.
-Nu moeten we deze LCA ook nog berekenen.
-Indien we dit zouden willen oplossen is er nood aan een manier om de boomstructuur te reconstrueren op een geheugenefficiënte manier.
-Hiervoor zijn de extra tabellen van Enhanced Suffix Arrays nodig.
-\\ \\
-Anderzijds zijn er ook enkele voordelen verbonden met het berekenen tijdens het zoekproces zelf.
-Zo hebben we \textbf{minder geheugen} nodig, wat erg belangrijk is aangezien het geheugengebruik al erg hoog is tijdens het opbouwen van de suffix array.
-Bovendien laat dit ook toe dat we vrij kunnen kiezen welke aggregatiemethode we gebruiken.
-De oude Unipept index maakte gebruik van een (minder interessante) variant van \textbf{LCA*}.
-Dit werd gedaan om het voorberekenen efficiënter te maken.
-Bij suffixbomen hebben we zelf gebruik moeten maken van de standaard LCA methode om dit op te lossen.
-Bij suffix arrays kunnen we vrij gebruik maken van LCA*, en blijft de performantie bovendien erg goed.
-Een laatste, belangrijk, voordeel is dat er \textbf{geen extra werk nodig is om de taxon IDs van alle matches op te halen}.
-In de huidige Unipept index is hier een significante hoeveelheid extra werk voor nodig, wat resulteert in een bottleneck bij de Peptonizer2000 tool~\cite{pep_gm}.
+Tot slot vergelijken we de zoektijd van Unipept 6.x en 5.x in meer detail aangezien één peptide hier geen goed zicht op geeft.
+Hierbij berekenen beide indices ook de functionele en taxonomische analyses.
+Het is belangrijk dat dit meegenomen worden tijdens het meten van de zoektijd, aangezien dit fundamentele functies van Unipept zijn.
+We bekijken twee scenario's om zo een goed zicht op de performantie te krijgen.
+In het eerste geval houden we rekening met \textit{missed cleavages}.
+Dit is het meest realistische geval, aangezien stalen in de praktijk altijd \textit{missed cleavages} bevatten.
+Figuur~\ref{fig:new_vs_old_unipept} geeft een overzicht voor de zoektijd op de SIHUMI peptidebestanden.
+Hieruit blijkt dat Unipept 6.x 10 tot 100 keer sneller is dan Unipept 5.x.
+Het andere geval is wanneer we een peptidebestand verwerken waarin enkel tryptische peptiden voorkomen.
+Dit is niet realistisch, maar is het beste scenario voor Unipept 5.x aangezien de \textit{advanced missed cleavage handling} dan niet gebruikt moet worden.
+Figuur~\ref{fig:new_vs_old_unipept_tryptic} toont het verschil in zoektijd tussen Unipept 6.x en 5.x voor het tryptische Swiss-Prot peptidebestand.
+Ter herinnering: dit bestand bestaat uit 100\thinspace000 tryptische peptiden.
+Hieruit blijkt dat Unipept 6.x 33\% trager is dan Unipept 5.x wanneer I $\neq$ L, maar is de performantie erg gelijkaardig wanneer I = L\@.
+Dit verschil is erg acceptabel, vooral omdat we eigenlijk altijd rekening willen houden met \textit{missed cleavages}.
+De enige reden dit amper gedaan werd in Unipept 5.x, is vanwege de grote impact op de performantie.
+Bovendien kan Unipept 6.x ook ingezet worden voor niet-tryptische peptiden, wat niet mogelijk was voor Unipept 5.x en eerder.
 
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.85\linewidth]{new_vs_old_unipept}
+    \caption{Unipept 6.x vs Unipept 5.x voor de SIHUMI peptidebestanden. Unipept 5.x is uitgevoerd met \textit{filter duplicate peptides} af, en \textit{advanced missed cleavage handling} aan. Op deze manier zullen beide versies alle peptiden zoeken, en ook \textit{missed cleavages} afhandelen. Merk op dat Unipept 6.x altijd \textit{missed cleavages} zal zoeken, en bovendien zelfs peptiden zal vinden die op een arbitraire manier gesplitst zijn.}
+    \label{fig:new_vs_old_unipept}
+\end{figure}
 
-\section{Functionele analyse}\label{sec:functionele-analyse}
-Naast de taxonomische analyse ondersteunt Unipept ook een functionele analyse.
-Deze analyse wordt uitgevoerd door de verschillende GO, EC en INTERPRO termen die horen bij de gevonden matches te tellen.
-Elk van deze termen is een korte string van 5 à 10 karakters lang, en kan vrij eenvoudig mee ingelezen worden en per proteïne bijgehouden worden.
-Al deze annotaties samen, maken het databankbestand dat ingelezen wordt om de index mee op te bouwen ongeveer 24 GB groter.
-Wanneer we deze informatie allemaal ingeladen hadden, bleek het programma echter ongeveer 105 GB extra RAM te gebruiken.
-De verklaring hiervoor is dat Rust 24 bytes overhead heeft per vector, en 24 bytes overhead per string.
-Om deze annotaties bij te houden, hadden we net één vector per proteïne nodig, en die vector bevatte een reeks aan korte strings (de annotaties zelf).
-Om dit op te lossen heeft Tibo Vande Moortele een simpele compressiebibliotheek\footnote{\url{https://github.com/unipept/unipept-index/tree/main/fa-compression}} ontwikkeld voor deze annotaties.
-Hierbij worden 2 karakters uit een annotatie gecomprimeerd naar 1 byte, en kunnen bovendien enkele tekens weggelaten worden.
-Na het gebruik van deze bibliotheek resulteert dit in \textbf{10.5 GB extra geheugengebruik}, wat in de context van de al 320 GB grote index (wanneer de tekst ook meegerekend wordt) bijna verwaarloosbaar is.
-
-% TODO: tekstje over het feit dat dit nog wat extra overhead introduceert op vlak van uitvoeringstijd. En geef hier ook een grafiek, mogelijks vergelijking met de originele Unipept als performantie conclusie?
-
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.85\linewidth]{new_vs_old_unipept_tryptic}
+    \caption{Unipept 6.x vs Unipept 5.x voor het tryptische Swiss-Prot peptidebestand. Unipept 5.x is uitgevoerd met \textit{filter duplicate peptides} af, en \textit{advanced missed cleavage handling} af. Dit is het beste scenario voor Unipept 5.x, aangezien er geen \textit{missed cleavages} aanwezig zijn, en deze ook niet gezocht worden. Merk op dat Unipept 6.x wél \textit{missed cleavages} verwerkt, aangezien dit geen invloed heeft op de performantie bij de nieuwe indexstructuur.}
+    \label{fig:new_vs_old_unipept_tryptic}
+\end{figure}
+\newpage
 \section{Overzicht geheugenverbruik}
 In de vorige secties zijn verschillende extra onderdelen besproken om de functionaliteiten van Unipept toe te voegen aan de nieuwe index.
 Al deze extra onderdelen vragen extra geheugen, wat het totale geheugengebruik laat oplopen tot net geen 350 GB\@.
@@ -302,13 +334,13 @@ De volgende opsomming herhaalt kort voor elk onderdeel en welke rol deze speelt 
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.85\linewidth]{uniprot_memory_treemap}
+    \includegraphics[width=0.76\linewidth]{uniprot_memory_treemap}
     \caption{Visualisatie van het totale geheugenverbruik voor de index gebouwd op basis van UniProtKB 2024\_01, gebruikmakende van sparseness factor $k = 3$ voor de SSA.
     In het totaal vraagt deze index 346.5 GB RAM, waarvan het grootste stuk gebruikt wordt door de SSA en de proteïne sequenties (de tekst) zelf.
     Naast de twee onderdelen die nodig zijn voor het matchen van de suffixen, is er nog een kleine 25 GB extra RAM nodig om de Unipept analyses aan te kunnen bieden, of om de ID's van de gevonden matches terug te kunnen geven.}
     \label{fig:uniprot_memory_treemap}
 \end{figure}
-
+\newpage
 \section{Aanbieden van de nieuwe indexstructuur}\label{sec:aanbieden-van-de-nieuwe-indexstructuur}
 In alle eerder vermelde benchmarks bespraken we enkel de zoektijd van een peptidebestand.
 Bij het opstarten moeten we echter \textbf{eerst de indexstructuur inladen in RAM}.
