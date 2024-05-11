@@ -18,7 +18,9 @@ Na testen bleek dat deze datastructuur ons een goeie \textbf{balans gaf tussen s
 Aan de hand hiervan zijn we er in geslaagd een nieuwe indexstructuur voor UniProtKB te ontwikkelen die de huidige Unipept index volledig kan vervangen, en alle bovenstaande doelstellingen haalt.
 Aan de hand van een aangepast zoeksysteem ondersteunen we zowel exacte als semi-exacte matching, waarbij efficiënt alle informatie van de gematchte peptiden teruggegeven kan worden.
 Het grootste nadeel van deze manier van werken is dat de functionele en taxonomische analyses van Unipept \textit{on the fly} moeten gebeuren.
-Ondanks dit nadeel, is de nieuwe versie van Unipept 10 tot 100 maal sneller wanneer rekening gehouden wordt met \textit{missed cleavages}, en is de performantie gelijkaardig wanneer we hier geen rekening mee houden.
+Ondanks dit nadeel, is de nieuwe versie van Unipept 6.0 10 tot 100 maal sneller dan Unipept 5.x wanneer beide indices \textit{missed cleavages} verwerken.
+Wanneer \textit{advanced missed cleavages handling} uit gezet wordt op Unipept 5.x, is Unipept 6.x slechts een fractie trager.
+Dit wil zeggen dat Unipept 6.x willekeurige peptiden (al dan niet tryptisch of met \textit{missed cleavages}) kan verwerken in ongeveer dezelfde tijd die Unipept 5.x nodig heeft om enkel strikt tryptische peptiden te verwerken.
 \\ \\
 Als derde en vierde indexstructuur hebben we kort de \textbf{FM- en R-index} getest.
 Na enkele testen bleek snel dat het \textbf{geheugengebruik} tijdens het bouwen hiervan \textbf{dubbel zo hoog lag} als bij suffix arrays.

@@ -268,7 +268,7 @@ Wanneer we de zoekperformantie testen, duurt het zoeken van de ene peptide zo'n 
 Hierbij zijn er slechts 30 resp. 32 matches gevonden, wegens de deelverzameling van proteïnen die gebruikt wordt.
 
 \subsection{Unipept 5.x}
-Unipept 5.x kan, \textbf{op voorwaarde dat je peptide tryptisch is}, alle matches te vinden in UniProtKB met de optie om I en L gelijk te stellen.
+Unipept 5.x kan, \textbf{op voorwaarde dat een peptide tryptisch is}, alle matches vinden in UniProtKB met de optie om I en L gelijk te stellen.
 Onze willekeurig gekozen test peptide is tryptisch, dus vindt deze index zoals verwacht alle matches.
 Bovendien gebeurt dit gebruikmakende van een API call in \textbf{$\pm$ 4 milliseconden}, wat duidelijk extreem veel sneller is dan de andere bestaande opties.
 Opnieuw is de zoektijd hier al zo klein dat de invloed van het gelijkstellen van I en L niet te meten valt.
@@ -288,10 +288,11 @@ Figuur~\ref{fig:new_vs_old_unipept} geeft een overzicht voor de zoektijd op de S
 Hieruit blijkt dat Unipept 6.x 10 tot 100 keer sneller is dan Unipept 5.x.
 Het andere geval is wanneer we een peptidebestand verwerken waarin enkel tryptische peptiden voorkomen.
 Dit is niet realistisch, maar is het beste scenario voor Unipept 5.x aangezien de \textit{advanced missed cleavage handling} dan niet gebruikt moet worden.
+Merk op dat Unipept 6.x wél \textit{missed cleavages} zal verwerken, aangezien dit geen negatieve invloed op de performantie heeft bij de nieuwe indexstructuur.
 Figuur~\ref{fig:new_vs_old_unipept_tryptic} toont het verschil in zoektijd tussen Unipept 6.x en 5.x voor het tryptische Swiss-Prot peptidebestand.
 Ter herinnering: dit bestand bestaat uit 100\thinspace000 tryptische peptiden.
-Hieruit blijkt dat Unipept 6.x 33\% trager is dan Unipept 5.x wanneer I $\neq$ L, maar is de performantie erg gelijkaardig wanneer I = L\@.
-Dit verschil is erg acceptabel, vooral omdat we eigenlijk altijd rekening willen houden met \textit{missed cleavages}.
+Hieruit blijkt dat Unipept 6.x 33\% trager is dan Unipept 5.x wanneer I $\neq$ L, maar dat de zoektijd erg vergelijkbaar is wanneer I = L\@.
+Dit verschil is acceptabel omdat we eigenlijk altijd rekening willen houden met \textit{missed cleavages}.
 De enige reden dit amper gedaan werd in Unipept 5.x, is vanwege de grote impact op de performantie.
 Bovendien kan Unipept 6.x ook ingezet worden voor niet-tryptische peptiden, wat niet mogelijk was voor Unipept 5.x en eerder.
 
