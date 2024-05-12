@@ -1,4 +1,4 @@
-\documentclass[11pt,dutch,faculty=we,layout=titlefont,underline=false,titleUppercase=true,titleUnderline=true, numbers=noenddot]{ugent2016-report}
+\documentclass[11pt,dutch,faculty=we,layout=titlefont,underline=false,titleUppercase=true,titleUnderline=true,numbers=noenddot,twoside,headings=openright]{ugent2016-report}
 \usepackage[dutch]{babel}
 \usepackage{fontspec,unicode-math}
 \usepackage{amsmath}
@@ -8,6 +8,12 @@
 \usepackage{float}
 \usepackage[outputdir=../out]{minted}
 \usepackage{enumitem}
+\usepackage{afterpage}
+\newcommand\blankpage{%
+    \null
+    \thispagestyle{empty}%
+    \newpage}
+\raggedbottom
 
 \usepackage{booktabs,makecell}
 % Figures
@@ -48,8 +54,8 @@
 \email{bram.devlaminck@ugent.be}
 
 \titletext{%
-    Promotoren: prof.\ dr.\ Peter Dawyndt, prof. dr.\ ir.\ Bart Mesuere \\%
-    Begeleiders: dr.\ Pieter Verschaffelt, Tibo Vande Moortele
+    Promotoren: prof.~dr.~Peter Dawyndt, prof. dr.~ir.~Bart Mesuere \\%
+    Begeleiders: dr.~Pieter Verschaffelt, Tibo Vande Moortele
     \\ \\%
     {\small Masterproef ingediend tot het behalen van de academische graad van\\%
     Master of Science in de Informatica%

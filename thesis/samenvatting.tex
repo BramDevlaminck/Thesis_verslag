@@ -2,39 +2,41 @@
 Eiwitten zijn alomtegenwoordig en spelen een belangrijke rol in ons dagelijkse leven.
 Ze garanderen een correcte werking van belangrijke processen binnen elk organisme.
 Hieronder vallen de levensprocessen van ons eigen lichaam, maar ook die van dieren, planten, bacteriën en zelfs virussen.
-Omwille hiervan bestaan er databanken zoals UniProtKB, die voor miljoenen eiwitten bijhouden door welke organismen ze geproduceerd kunnen worden en wat hun gekende functies zijn.
+Daarom bestaan er gespecialiseerde databanken zoals UniProtKB, die voor miljoenen eiwitten bijhouden door welke organismen ze geproduceerd kunnen worden en wat hun gekende functies zijn.
 Gebruikmakende van deze databanken probeert men voor eiwitstalen te achterhalen welke organismen aanwezig zijn in een ecosysteem en wat ze doen.
 Er is echter een extra stap nodig.
-De machines die eiwitten inlezen, en omzetten naar een tekstueel formaat, kunnen dit slechts voor korte fragmenten van eiwitten, ook wel peptiden genoemd.
+De toestellen die eiwitten inlezen (massaspectrometers), en omzetten naar een tekstueel formaat, kunnen dit slechts voor korte fragmenten, ook wel peptiden genoemd.
 Daarom worden eerst proteases (eiwitafbrekende enzymen) aan een staal toegevoegd.
 Deze zullen de eiwitten ``knippen'', waarna we peptiden bekomen.
 \\ \\
-Doordat alle eiwitten verknipt zijn in peptiden, is er geen zekerheid meer over welke eiwitten er exact aanwezig zijn.
+Omdat alle eiwitten in een dataset verknipt zijn in peptiden, is er geen zekerheid meer over welke eiwitten er exact aanwezig zijn.
 Hier komen tools zoals Unipept van pas om te zoeken uit welke mogelijke eiwitten een peptide afkomstig kan zijn.
 Op basis van de gevonden eiwitten kan daarna afgeleid worden welke organismen mogelijks aanwezig zijn, en wat er op dat moment gebeurt in het staal.
-De precisie van deze conclusie kan erg variëren van peptide tot peptide.
+De precisie van deze conclusie varieert van peptide tot peptide.
 Sommige peptiden bestaan uit een uniek patroon, waardoor ze slechts uit een kleine groep mogelijke eiwitten kunnen komen.
-Andere peptiden zijn dan weer erg veelvoorkomend, waardoor ze deel uitmaken van duizenden eiwitten.
+Andere peptiden komen dan weer erg veel voor, waardoor ze deel uitmaken van duizenden eiwitten.
 \\ \\
-Zoals eerder vermeld, is Unipept één van de programma's die een onderzoeker kan helpen in het vinden van de eiwitten waar een peptide onderdeel van kan zijn.
-Additioneel geeft Unipept ook informatie over welke organismen die eiwitten kunnen produceren en wat de functies hiervan kunnen zijn.
-Unipept heeft echter één grote beperking op dit moment.
+Zoals eerder vermeld, is Unipept één van de tools die onderzoekers kan helpen bij het vinden van de eiwitten waarvan een peptide een onderdeel is.
+Bijkomend geeft Unipept ook informatie over welke organismen die eiwitten kunnen produceren en wat de functies hiervan kunnen zijn.
+Unipept heeft op dit moment echter één grote beperking.
 Enkel peptiden die ontstaan zijn na het knippen van de eiwitten door de protease trypsine kunnen gezocht worden.
-Dit was tot nu toe geen grote beperking omdat trypsine de meest gebruikte protease is in het onderzoeksveld waar Unipept origineel voor ontworpen was.
-Ons doel is echter om unipept breder toepasbaar te maken, bijvoorbeeld ook voor kankeronderzoek.
+Dit was tot nu toe geen grote beperking omdat trypsine in de praktijk veruit de meest gebruikte protease is.
+Daar komt echter stilaan verandering in.
+Daarom is ons doel is om Unipept breder toepasbaar te maken, bijvoorbeeld ook voor kankeronderzoek.
 Het wegwerken van deze beperking, waardoor alle soorten peptiden gezocht en gevonden kunnen worden, is de hoofdfocus van deze masterproef.
 \\ \\
-Om efficiënt alle eiwitten voor te stellen maakt onze oplossing gebruik van een datastructuur die we een \textit{suffix array} noemen.
-Deze datastructuur bestaat uit één lijst die alle mogelijke suffixen van alle eiwitten voorstelt.
+Om efficiënt alle eiwitten van UniProtKB te doorzoeken, maakt onze oplossing gebruik van een datastructuur die een \textit{suffix array} genoemd wordt.
+Deze datastructuur bestaat uit één lijst die de startpositie elke mogelijke suffix van alle eiwitten voorstelt.
 Een suffix van een woord is een deel van het woord, waarbij de eerste (0 of meerdere) tekens overgeslagen worden.
-Stel nu dat we het eiwit \texttt{ACGT} hebben, dan heeft dit eiwit vier verschillende suffixen.
-\texttt{ACGT} (dus zichzelf), \texttt{CGT}, \texttt{GT} en \texttt{T}.
-Deze lijst-representatie is een afweging tussen het bijhouden alle nuttige informatie, en efficiënt zoeken mogelijk maken.
-Er bestaan nog andere voorstellingen die meer informatie bevatten, waardoor onder andere het zoeken makkelijker wordt, maar deze vragen extra geheugen.
-Een groot deel van deze masterproef gaat over het vinden van de balans tussen geheugengebruik en snelheid.
+Stel bijvoorbeeld dat we het eiwit \texttt{ACGT} hebben, dan heeft dit eiwit vier verschillende suffixen:
+\texttt{ACGT}, \texttt{CGT}, \texttt{GT} en \texttt{T}.
+Deze lijstvoorstelling is een afweging tussen het bijhouden alle nuttige informatie, en de snelheid waarmee peptiden gezocht kunnen worden.
+Er bestaan nog andere voorstellingen waarmee het zoeken sneller wordt, maar deze gebruiken meer geheugen.
+Een groot deel van deze masterproef gaat over het vinden van deze balans tussen geheugengebruik en zoeksnelheid.
 \\ \\
-Uiteindelijk hadden we 740 GB RAM nodig op de supercomputer van UGent om deze suffix array-voorstelling op te bouwen.
+Uiteindelijk hadden we 740 GB RAM nodig op de supercomputer van UGent om een suffix array voor UniProtKB op te bouwen.
 Om de resulterende index op een server met minder geheugen beschikbaar te maken, worden er slechts fragmenten van de volledige suffix array opgeslagen.
-Op deze manier zijn we erin geslaagd om deze nieuwe indexstructuur ter grootte van 335 GB publiek te stellen op de Unipept servers.
-Gebruikmakende van de nieuwe aanpassingen kan Unipept 100\thinspace000 peptiden, onafhankelijk van hoe ze gesplitst zijn, zoeken in minder dan vijf minuten, wat erg snel is.
-Gelijkaardige programma's hebben enkele seconden tot minuten nodig om één peptide te zoeken.
+Zo zijn we erin geslaagd om een nieuwe indexstructuur ter grootte van 335 GB publiek te stellen op de Unipept servers.
+Gebruikmakende van de nieuwe aanpassingen kan Unipept in minder dan 5 minuten voor 100\thinspace000 peptiden vinden in welke eiwitten ze voorkomen.
+Dat is erg snel: gelijkaardige \textit{state-of-the-art} tools hebben enkele seconden tot minuten nodig om één peptide te zoeken.
+\afterpage{\blankpage}
