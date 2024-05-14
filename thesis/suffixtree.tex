@@ -201,7 +201,7 @@ Dit maakte het lokaliseren en oplossen van de laatste problemen vrij tijdsintens
 
 \subsection{Rust}\label{subsec:rust}
 Door het \textit{ownership} systeem van Rust zijn er enkele belangrijke nuances in het implementeren van het algoritme van Ukkonen in Rust.
-In de volgende secties bespreken we eerst enkele van deze nuances en hoe deze zich vertalen in onze eigen implementatie\footnote{\url{https://github.com/BramDevlaminck/Thesis_rust_implementations/tree/master/suffixtree}}.
+In de volgende secties bespreken we eerst enkele van deze nuances en hoe deze zich vertalen in onze eigen implementatie\footnote{\url{https://github.com/BramDevlaminck/FastPeptideMatching/tree/master/suffixtree}}.
 Daarna bespreken we de performantie op vlak van snelheid en geheugengebruik.
 
 \subsubsection{Boomstructuren}
@@ -412,7 +412,7 @@ Toch kunnen we besluiten dat de \textbf{C++ implementatie een beetje performante
 Het verschil met de huidige implementatie van Unipept is aanzienlijk.
 Daar duurt het op dit moment 2 minuten en 12 seconden om alle peptiden van het strikt tryptische Swiss-Prot peptidebestand te zoeken,
 en maar liefst 30 minuten en 37 seconden voor het peptidebestand met \textit{missed cleavages}.
-Dit is resp.~$\frac{132\thinspace000}{152.98} = 857$ en $\frac{1\thinspace837\thinspace000}{140.64} = 13 000$ keer trager.
+Dit is resp.~$\frac{132\thinspace000}{152.98} = 857$ en $\frac{1\thinspace837\thinspace000}{140.64} = 13\thinspace000$ keer trager.
 Het gebruik van de suffixboom heeft echter ook nadelen ten opzichte van de huidige implementatie.
 Deze laatste gebruikt slechts 6.7 GiB geheugen, en dit kan zelfs nog naar beneden.
 Het geheugenverbruik tijdens het opbouwen van de huidige Unipept index wordt namelijk gedomineerd door een merge sort stap.

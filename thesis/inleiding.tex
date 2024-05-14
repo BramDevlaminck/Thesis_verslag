@@ -110,11 +110,11 @@ Het opbouwen van de huidige indexstructuur gaat in grote lijnen als volgt:
 
 Deze aanpak heeft als voordeel dat we op een efficiënte manier tryptische peptiden kunnen opzoeken (samen met de bijbehorende annotaties).
 Er is echter een belangrijke keerzijde aan deze manier van werken.
-Het zoeken van niet-tryptische peptiden (hieronder vallen ook peptiden met \textit{missed cleavages}) is problematisch.
+Het \textbf{zoeken van niet-tryptische peptiden} (hieronder vallen ook peptiden met \textit{missed cleavages}) is \textbf{problematisch}.
 Dit komt doordat tijdens het opbouwen van de Unipept indexstructuur de vuistregel strikt gevolgd wordt, en elke peptide in de indexstructuur strikt tryptisch is.
 Op basis hiervan worden de taxonomische en functionele annotaties voor elke tryptische peptide voorberekend.
 \\ \\
-Op dit moment is er wel een \textit{workaround} die toelaat om peptiden met \textit{missed cleavages} toch op te zoeken.
+Op dit moment is er wel een \textbf{\textit{workaround}} die toelaat om peptiden met \textbf{\textit{missed cleavages}} toch op te zoeken.
 Hiervoor worden alle peptiden die een missed cleavage hebben opgesplitst, en worden de tryptische fragmenten apart gezocht.
 Daarna wordt de doorsnede genomen van de gematchte proteïnen per fragment, waarna we dus een verzameling van proteïnen bekomen die op zijn minst alle tryptische fragmenten bevatten.
 Voor deze verzameling van proteïnen moet nog gecontroleerd worden of de fragmenten weldegelijk na elkaar voorkomen (en dus verbonden zijn).
@@ -122,7 +122,7 @@ Dit doen we door \textit{brute-force} voor elke proteïne te controleren of de o
 Tot slot wordt de LCA van de gematchte proteïnen berekend.
 Dit moet gebeuren tijdens het zoeken zelf, in tegenstelling tot het zoeken van strikt tryptische peptiden.
 Indien we geen rekening houden met \textit{missed cleavages} zijn alle LCAs namelijk al voorberekend.
-Het is duidelijk dat al deze extra stappen een sterke, negatieve invloed hebben op de performantie.
+Het is duidelijk dat al deze extra stappen een sterke, \textbf{negatieve invloed hebben op de performantie}.
 Deze verminderde performantie bij \textit{missed cleavages}, in combinatie met het compleet ontbreken van een manier om willekeurig gesplitste peptiden te zoeken, verklaart de nood aan een nieuwe indexstructuur.
 \\ \\
 Voor een gedetailleerdere beschrijving van Unipept en het onderzoeksveld van metaproteomica is het aangeraden om de inleiding van het doctoraat van Dr.~Pieter Verschaffelt te lezen~\cite{phdPieterUnipept}.
