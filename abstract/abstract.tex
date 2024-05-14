@@ -144,8 +144,8 @@
 
         \subsection{Maximum Matches}
         A single peptides can occur in thousands of proteins.
-        Because of this, performing the analyses at runtime can become very slow.
-        Furthermore, in most cases the analyses for such peptides yields very a generic result.
+        Because of this, performing the analyses at runtime can become slow.
+        Furthermore, the analyses for such peptides yields very a generic result in most cases.
         More precisely, earlier research by the Unipept team~\cite{unipept_cutoff} has shown that out the 1.3 billion tryptic peptides in UniProtKB 2023\_03, only around 13\thinspace000 had more than 10\thinspace000 matches. % TODO: cite research
         From these 13\thinspace000 peptides, 95\% of the peptides had \texttt{root} as LCA\@.
         This allows, with minimal loss of information, to assume that every peptide with more than 10\thinspace000 matches has \texttt{root} as LCA\@.
@@ -159,7 +159,7 @@
         Constructing a suffix array for the complete UniProtKB database (release 2024\_01) requires around 735 GB of RAM and 5 hours of computing time using the libdivsufsort library.
         Because of the high memory needs, we use the HPC of Ghent University, where the high-memory cluster has 16 nodes with each 2\times 64-core AMD EPYC 7773X (Milan-X @ 2.2 GHz) and 940 GB of RAM\@.
         We use one core of a single node, since the construction phase is single threaded.
-        The resulting suffix array is around 700 GB in size (+ another 88 GB for the text).
+        The resulting suffix array is around 700 GB in size (+ an additional 88 GB for the text).
         Our goal is to host this new index on Unipept servers, which have around 0.5 TB of memory available.
         To make this possible, we immediately perform a sampling phase with sparseness factor $k = 3$ at the end of the construction process on the HPC\@.
         This results in a reduced index size of $\frac{700}{3} + 88 \approx 322$ GB\@.
@@ -177,12 +177,15 @@
         \end{Figure}
 
         \subsection{Querying the Index}
-        Unipept 6.x supports two types of search with the new index structure.
-        Most importantly, using the new index we can efficiently search and perform the taxonomic and functional analyses at runtime.
-        Additionally, it is now possible to retrieve all information about the matching proteins without any analysis.
-        Both options perform similar, but surprisingly the first option is slightly faster if the second option also retrieves the functional annotations.
-        This is caused by the extra data (around ten times as much) that needs to be serialized to a JSON at the end of the request.
-        In this section we only discuss the search with analyses, since this is what Unipept 5.x supports and the other search performs very similar.
+        Unipept 6.x supports two types of search.
+        Most importantly, we can efficiently search all matches and perform the taxonomic and functional analyses at runtime.
+        Since the analyses is executed at runtime, we already have all the information per matched protein.
+        With Unipept 6.x we provide search without analyses as a separate option.
+        This was not possible with Unipept 5.x since the analyses were precomputed and retrieving all information per protein was too slow.
+        Both search options in Unipept 6.x perform similar.
+        Surprisingly, the first option is slightly faster.
+        This is caused by the additional information per protein that needs to be serialized, since the functional annotations are not aggregated.
+        In this section we only discuss the search with analyses, since this is what Unipept 5.x supports and the other search option performs very similar.
 
         \paragraph{Missed cleavages}
         To evaluate the peptide search performance we use 6 files with around 25\thinspace000 peptides each.
@@ -230,7 +233,7 @@
         Unipept 6.x uses the settings described above and finds all matches for the test peptide in less than 5 ms.
 
         In terms of features, the UniProt peptide search tool is identical to Unipept 6.x.
-        They both find all matches in UniProtKB, and have the option to equalize I and L\@.
+        They both find all matches in UniProtKB, and have the option to equate I and L\@.
         The only difference is their performance.
         Searching the test peptide in Unipept 6.x only takes a few milliseconds, whereas the UniProt tool takes a few seconds up to multiple minutes.
 
@@ -269,10 +272,12 @@
         \section{Conclusion}\label{sec:discussion}
         With a new index structure at the heart of Unipept 6.x, we have broadened Unipept's possible use cases.
         The new index structure makes searching peptides with missed cleavages around 10 to 100 times faster, while adding the possibility to search arbitrary peptides, regardless of the used protease, without any performance difference.
-        From our benchmarks, Unipept 6.x strongly outperforms its closest competitors at finding all occurrences for an arbitrary peptide longer than 2 amino acids in UniProtKB\@.
+        In our benchmarks, Unipept 6.x strongly outperforms its closest competitors at finding all occurrences for an arbitrary peptide longer than 2 amino acids in UniProtKB\@.
 
-        Furthermore, the new index structure equates I and L during search without a performance impact.
-        Whenever we do not want to equate these amino acids, this is also possible with a small performance hit.
+        Our new index is optimized for search with leucine and isoleucine equated to each other.
+        This corresponds to the default search configuration of Unipept.
+        However, searching with I $\neq$ L only introduces a small performance penalty.
+        For smaller batches of peptides, the time needed to serialize the extra matches even outweighs the extra time spent during the search phase itself.
 
         Another advantage of the new index is that there are no extra steps required to retrieve the NCBI taxon ID for each matched protein.
         Extra steps are required in Unipept 5.x to retrieve all the individual taxon IDs, with a significant impact on the performance.
@@ -302,7 +307,7 @@
         Both the FM-index and R-index have shown promising results in this respect.
 
         Lastly, Unipept does not perform any form of inexact matching, except for equating I and L\@.
-        Introducing inexact matching into Unipept could allow us to deal with small mutations or read-errors introduced by a mass spectrometer.
+        Introducing inexact matching into Unipept could allow us to deal with small mutations or variations introduced during the transformation from mass spectrum to peptide.
         Possible interesting routes to explore are regex matching using suffix arrays~\cite{regex_sa}, or inexact matching using bidirectional FM-indices.
         \printbibliography
     \end{multicols}
