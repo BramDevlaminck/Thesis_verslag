@@ -104,7 +104,7 @@
         \end{enumerate}
 
         In short, we want an index that does not remove any of the features from Unipept 5.x, while eliminating the restriction that only tryptic peptides can be found efficiently.
-        This also means that our new index will need to provide a way to equate the amino acids isoleucine and leucine, as this is a core feature~\cite{unipept_orig}.
+        This also means that our new index will need to provide a way to equate the amino acids isoleucine and leucine, as this is a core feature of Unipept~\cite{unipept_orig}.
 
 
         \section{Methods}\label{sec:methods}
@@ -119,20 +119,20 @@
         This variant of a suffix array only stores every $k$-th suffix of the input text.
         This results in an SSA which is only $\frac{1}{k}$ of the original suffix array size.
         The disadvantage of using an SSA is that it becomes impossible to search for peptides having less than $k$ amino acids, and that searching in general becomes slower.
-        This trade-of does not introduce any problem, since Unipept already limits the search searching to peptides with 5 or more amino acids.
+        This trade-off does not introduce any problem, since Unipept already limits the search searching to peptides with 5 or more amino acids.
         This restriction was introduced to improve performance, while losing a minimum amount of information as short peptides occur in a lot of proteins.
-        Searching short peptides yields extremely generic functional and taxonomic analysis results, which is not very informative.
+        Subsequently, this yields extremely generic functional and taxonomic analysis results, which is not very informative.
 
         \subsection{Equating Isoleucine and Leucine}
         Our solution to equate isoleucine and leucine consists of two parts.
         Firstly, we don't index the original text, but a slightly modified version.
-        We replace every occurrence of leucine by isoleucine, which essentially equates them during the construction of the suffix array.
-        During the search, we perform the same translation on every peptide.
+        We replace every occurrence of leucine by isoleucine, which essentially equates them during construction of the suffix array.
+        During search, we perform the same translation on every peptide.
         As a result, we find every match with I and L equated.
         This search is performed using the original, unmodified text.
         This is important, since the original text is needed in an additional second step if we don't want to equate I and L\@.
 
-        During this second step, we filter away unwanted matches from the first step.
+        In this second step, we filter away unwanted matches from the first step.
         This is achieved by checking every I and L location in the original, unmodified peptide with the matching amino acid in the original, unmodified text.
         A mismatch indicates that I and L were wrongfully equated.
         Only the I and L locations have to be checked since the suffix array search already ensures that all other characters match in the original text.
@@ -156,11 +156,11 @@
         The memory usage and speed during construction, the resulting index size while hosting, and search performance.
 
         \subsection{Constructing the Index}
-        Constructing a suffix array for the complete UniProtKB database (release 2024\_01) requires around 735 GB of RAM and 5 hours of computing time using the libdivsufsort library.
+        Constructing a suffix array for UniProtKB 2024\_01 requires around 735 GB of RAM and 5 hours of computing time using the libdivsufsort library.
         Because of the high memory needs, we use the HPC of Ghent University, where the high-memory cluster has 16 nodes with each 2\times 64-core AMD EPYC 7773X (Milan-X @ 2.2 GHz) and 940 GB of RAM\@.
         We use one core of a single node, since the construction phase is single threaded.
         The resulting suffix array is around 700 GB in size (+ an additional 88 GB for the text).
-        Our goal is to host this new index on Unipept servers, which have around 0.5 TB of memory available.
+        Our goal is to host this new index on the Unipept servers, which have around 0.5 TB of memory available.
         To make this possible, we immediately perform a sampling phase with sparseness factor $k = 3$ at the end of the construction process on the HPC\@.
         This results in a reduced index size of $\frac{700}{3} + 88 \approx 322$ GB\@.
         Next to this peptide search index, Unipept needs extra information (such as the UniProt accession number, NCBI taxon ID and functional annotations per protein) to perform the provided analyses.
@@ -203,7 +203,7 @@
         Figure~\ref{fig:new_vs_old_unipept_tryptic} visualizes the processing time for 100\thinspace000 tryptic peptides.
         It is clear that the performance is comparable when I and L are equated, while Unipept 5.x is around a third faster than Unipept 6.x when I and L are not equated.
 
-        Furthermore, it is also clear that the extra filtering step, when I $\neq$ L, has a performance impact in the new index.
+        Furthermore, it is also clear that the extra filtering step when I $\neq$ L, has a performance impact in the new index.
         This effect was not visible in Figure~\ref{fig:new_vs_old_unipept}, where the reverse seems to be visible.
         However, this reverse effect can be explained by the fact that searching with I = L finds more matches, which requires more output to be serialized to a JSON file.
         When searching for larger files, there is proportionally more time spent in the search phase, which compensates for the longer serialization time.
@@ -230,7 +230,7 @@
         Tools such as the Uniprot peptide search tool~\cite{uniprot_search_site, uniprot_search_paper}, the Expasy ScanProsite tool~\cite{scanprosite} and Unipept 5.x all have the possibility to find matches in the UniProtKB database.
         In this section we compare the performance and feature sets of alternative tools with Unipept 6.x.
         Because of the poor performance of some of these tools, we limited testing to the randomly chosen tryptic peptide \texttt{ISPAVLFVIVILAVLFFISGLLHLLVR}.
-        Unipept 6.x uses the settings described above and finds all matches for the test peptide in less than 5 ms.
+        Unipept 6.x uses above settings and finds all matches for the test peptide in less than 5 ms.
 
         In terms of features, the UniProt peptide search tool is identical to Unipept 6.x.
         They both find all matches in UniProtKB, and have the option to equate I and L\@.
@@ -249,7 +249,6 @@
         Unipept 6.x supports all options provided by Unipept 5.x, while removing the restriction that only tryptic peptides can be searched.
         This means that all non-tryptic peptides will result in 0 protein matches in Unipept 5.x, whereas Unipept 6.x will find all protein matches that are in UniProtKB\@.
         Searching the test peptide took less than 5 ms, and found the same matches because our test peptide is tryptic.
-        It is important to note though, if we had chosen a non-tryptic peptide we would not have found any matches.
         Table~\ref{tab:tool_comparison} gives an overview of the described differences between the tools.
 
         \begin{Table}
@@ -307,7 +306,7 @@
         Both the FM-index and R-index have shown promising results in this respect.
 
         Lastly, Unipept does not perform any form of inexact matching, except for equating I and L\@.
-        Introducing inexact matching into Unipept could allow us to deal with small mutations or variations introduced during the transformation from mass spectrum to peptide.
+        Introducing inexact matching into Unipept could allow us to deal with small biological mutations or variations introduced during the transformation from mass spectrum to peptide.
         Possible interesting routes to explore are regex matching using suffix arrays~\cite{regex_sa}, or inexact matching using bidirectional FM-indices.
         \printbibliography
     \end{multicols}
