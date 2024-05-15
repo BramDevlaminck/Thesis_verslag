@@ -43,7 +43,7 @@ Aangezien de huidige tekst ongeveer 88 GB groot is, zou dit resulteren in een te
 Hierbij komt nog taxonomische en functionele informatie in combinatie met de UniProt accession numbers en de suffix naar proteïne mapping.
 Hierdoor zou de totale resulterende index van $235 + 88 + 23 = 346$ GB naar $136 + 55 + 23 = 214$ GB gaan, wat iets meer dan \textbf{33\% winst} oplevert.
 Merk op dat dit de nodige hoeveelheid geheugen tijdens het opbouwen niet verkleint, aangezien we in die fase wel gebruik moeten maken van 64-bit integers en 8-bit karakters.
-Door deze manier van compressie te gebruiken wordt het ook mogelijk om sparseness factor $k = 2$ te gebruiken op de Unipept servers.
+Door deze manier van compressie te gebruiken zou het ook mogelijk worden om sparseness factor $k = 2$ te gebruiken op de Unipept servers.
 In het totaal zou de index dan $353 \cdot \frac{37}{64} + 55 + 23 \approx 282$ GB groot zijn, wat comfortabel in 0.5 TB RAM past.
 Ondanks de overhead die de compressie introduceert, kan de performantie op deze manier mogelijk toch nog verbeterd worden.
 Bovendien zullen hierdoor ook peptiden die slechts uit twee aminozuren bestaan, gematcht kunnen worden aan de hand van de SSA\@.
