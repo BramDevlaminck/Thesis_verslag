@@ -16,7 +16,18 @@ Hierbij is $\text{occ}(P, T)$ de set van alle indices waar patroon $P$ matcht in
 In plaats van de originele tekst volledig bij te houden, wordt de BWT van de tekst bijgehouden.
 Door de extra informatie die in de BWT verwerkt zit (ten opzichte van de tekst zelf), is het mogelijk om een \textbf{grotere sparseness factor $k$} toe te passen op de SA, zonder dat dit impact heeft op de minimale lengte van zoekbare peptiden.
 Zo is het mogelijk om sparseness factor $k = 32$ te gebruiken, waarbij het nog steeds mogelijk is om peptiden die bestaan uit één aminozuur te zoeken, maar dit heeft natuurlijk een negatieve impact op de performantie.
-De FM-index laat dus toe om een \textbf{kleinere index} te bekomen, door het gebruik van een hogere sparseness factor $k$ op de SA, zonder verlies van functionaliteit.
+Als laatste onderdeel wordt er per karakter uit het alfabet één bitvector met ondersteuning voor de rank-operatie bijgehouden.
+Hierbij is deze bitvector even lang als de tekst $T$.
+De rank-operatie kan efficiënt ondersteund worden aan de hand van het rank9 algoritme~\cite{rank9}, wat ongeveer 25\% extra geheugen vraagt ten opzichte van een normale bitvector~\cite{CCB_course}.
+Op deze manier laat de FM-index zonder verlies van functionaliteit toe om een \textbf{kleinere index} te bekomen door een hogere sparseness factor $k$ op de SA toe te passen.
+Het is echter belangrijk ook de overhead van de bitvector per karakter uit het alfabet mee te rekenen.
+Voor een groot alfabet zullen deze bitvectoren een significante bijdrage leveren aan de totale indexgrootte.
+Meer precies: voor een tekst $T$ van lengte $n$ over een alphabet $\Sigma$, zullen deze bitvectoren samen ongeveer $\frac{(|\Sigma| - 1) \cdot n}{8} \cdot 1.25$ bytes groot zijn.
+Merk op dat we gebruik maken van $|\Sigma| - 1$ omdat we het unieke eindteken niet mee rekenen, aangezien deze slechts één maal voorkomt in de tekst.
+Omwille hiervan is het efficiënter de locatie van dit eindteken op te slaan in één integer.
+Om aan te tonen dat deze bitvectoren niet verwaarloosbaar zijn, werken we dit uit voor UniProtKB 2023\_04.
+De totale tekst, na het concateneren van alle proteïnen met het scheidingsteken, voor deze databank is ongeveer $88 \cdot 10^9$ tekens lang.
+Dit vertaalt zicht naar een totale grootte van de bitvectoren van $\frac{27 \cdot 88 \cdot 10^9}{8} \cdot 1.25 \approx 375$ GB\@.
 Tot slot kan men via een variant van de FM-index, de bidirectionele FM-index, en door gebruik te maken van zogenaamde \textbf{zoekschema's}, ook \textbf{inexacte matching} ondersteunen waarbij maximaal $x$ mismatches toegelaten zijn.
 
 \subsection{Verschillende implementaties}\label{subsec:verschillende-implementaties}
@@ -28,13 +39,8 @@ UniProtKB bevat namelijk meer tekens dan door de maximale 32-bit integer voorges
 Als referentie maken we gebruik van de resultaten uit Tabel~\ref{tab:sa_building}.
 Hieruit konden we concluderen dat er 1.86 GB RAM nodig is om een suffix array op te bouwen (met 64-bit integers).
 Wanneer we dit vergelijken met de resultaten voor de geteste FM-index implementaties, zien we dat deze \textbf{bijna twee maal zo veel geheugen nodig hebben}.
-Zelfs wanneer een sparseness factor geïntroduceerd wordt, zal dit steeds in een hoger geheugengebruik resulteren dan bij een suffix array.
+Zelfs wanneer een sparseness factor geïntroduceerd wordt, zal dit steeds in een hoger geheugengebruik resulteren tijdens het opbouwen dan bij een suffix array.
 De volledige suffix array is namelijk nodig om efficiënt de BWT af te leiden.
-Bovendien moeten we op basis van deze BWT nog een bitvector bijhouden voor elk teken in ons alfabet, behalve voor het unieke eindteken.
-Voor UniProtKB zou dit willen zeggen dat er al ongeveer $\frac{88 \cdot 27}{8} \approx 300$ GB RAM nodig hebben enkel hiervoor.
-Bovendien moeten deze bitvectoren ook allemaal de rank operatie ondersteunen.
-Dit kan efficiënt met ongeveer nog eens 25\% extra geheugen via het rank9 algoritme~\cite{CCB_course, rank9}.
-Hierdoor loopt het extra geheugengebruik op tot ongeveer 375 GB\@.
 Om die reden hebben we in het kader van deze masterproef deze optie niet verder verkend.
 
 \begin{table}[H]
