@@ -66,7 +66,8 @@
     In the past few years, Unipept has been optimized for tryptic peptide search, with an inefficient workaround for peptides with missed cleavages.
     However, newer fields such as immunopeptidomics work with non-tryptic peptides.
     Unipept 6.0 introduces a new index structure that allows ultra-fast peptide matching for arbitrary peptides.
-    This now makes Unipept applicable in domains where trypsin is not the protease of choice, and also removes the performance penalty when dealing with missed cleavages.
+    This makes Unipept applicable in domains where trypsin is not the protease of choice, and also removes the performance penalty when dealing with missed cleavages.
+    With these advancements, Unipept 6.0 is 10 to 100 times faster than Unipept 5.x when handling tryptic peptides with missed cleavages.
     In addition to these advancements, Unipept 6.0 maintains a superior performance compared to similar tools, ensuring efficient and accurate metaproteomics data analysis.
     \par\noindent\rule{\linewidth}{.5pt} % TODO: kwantificeer met unipept 5.x
 
@@ -135,7 +136,7 @@
         This is important, since the original text is needed in an additional second step if we don't want to equate I and L\@.
 
         In this second step, we filter away unwanted matches from the first step.
-        This is achieved by checking every I and L location in the original, unmodified peptide with the matching amino acid in the original, unmodified text.
+        This is achieved by checking every I and L location in the original, unmodified peptide with the corresponding amino acid in the original, unmodified text.
         A mismatch indicates that I and L were wrongfully equated.
         Only the I and L locations have to be checked since the suffix array search already ensures that all other characters match in the original text.
 
@@ -174,7 +175,7 @@
             \resizebox{\textwidth}{!}{
                 \includegraphics{uniprot_memory_treemap}
             }
-            \captionof{figure}{Visualisation of the size of each component of the new Unipept index for UniProtKB 2024\_01.}
+            \captionof{figure}{Visualisation of the size of each component of Unipept 6.x index for UniProtKB 2024\_01.}
             \label{fig:uniprot_memory_treemap}
         \end{Figure}
 
@@ -308,7 +309,7 @@
 
         Lastly, Unipept does not perform any form of inexact matching, except for equating I and L\@.
         Introducing inexact matching into Unipept could allow us to deal with small biological mutations or variations introduced during the transformation from mass spectrum to peptide.
-        Possible interesting routes to explore are regex matching using suffix arrays~\cite{regex_sa}, or inexact matching using bidirectional FM-indices.
+        Possible interesting routes to explore are regex matching using suffix arrays~\cite{regex_sa}, or inexact matching using bidirectional FM-indices~\cite{bi-directional_fm_index}.
         \printbibliography
     \end{multicols}
 
