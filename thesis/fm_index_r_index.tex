@@ -1,7 +1,6 @@
 \chapter{Andere indexstructuren}\label{ch:andere-indices}
 Naast suffixbomen en suffix arrays bestaan er ook nog enkele andere interessante indexstructuren.
 We behandelen in dit hoofdstuk de FM-index en de R-index.
-Deze maken achterliggend gebruik van suffix arrays, maar zorgen ervoor dat de resulterende index kleiner is.
 
 
 \section{FM-index}\label{sec:fm-index}
@@ -28,7 +27,7 @@ Omwille hiervan is het efficiënter de locatie van dit eindteken op te slaan in 
 Om aan te tonen dat deze bitvectoren niet verwaarloosbaar zijn, werken we dit uit voor UniProtKB 2023\_04.
 De totale tekst, na het concateneren van alle proteïnen met het scheidingsteken, voor deze databank is ongeveer $88 \cdot 10^9$ tekens lang.
 Dit vertaalt zicht naar een totale grootte van de bitvectoren van $\frac{27 \cdot 88 \cdot 10^9}{8} \cdot 1.25 \approx 375$ GB\@.
-Tot slot kan men via een variant van de FM-index, de bidirectionele FM-index, en door gebruik te maken van zogenaamde \textbf{zoekschema's}, ook \textbf{inexacte matching} ondersteunen waarbij maximaal $x$ mismatches toegelaten zijn.
+Tot slot kan men via een variant van de FM-index, de bidirectionele FM-index~\cite{bi-directional_fm_index}, en door gebruik te maken van zogenaamde \textbf{zoekschema's}, ook \textbf{inexacte matching} ondersteunen waarbij maximaal $x$ mismatches toegelaten zijn.
 
 \subsection{Verschillende implementaties}\label{subsec:verschillende-implementaties}
 Om een goed beeld te krijgen over het geheugengebruik tijdens het opbouwen, hebben we verschillende FM-index implementaties getest.
@@ -89,16 +88,16 @@ Merk op dat de grootte van de resulterende index voor suffix arrays dan nog stee
 Aangezien de \textbf{resulterende indexgrootte voor R-indices sublineair stijgt}, zullen we de sparseness factor $k$ van suffix arrays groter en groter moeten maken om een even kleine resulterende index te hebben.
 Dit maakt een R-index op dit vlak een interessante indexstructuur voor grote proteïnedatabanken.
 \\ \\
-Opnieuw is het geheugengebruik tijdens het opbouwen hier een sterk beperkende factor.
-Dit geheugengebruik is meer dan twee keer zo groot als bij het bouwen van een suffix array, waardoor we deze optie niet verder zullen verkennen.
-Bovendien kunnen we door het gebruik van een hogere sparseness factor de resulterende suffix array toch snel twee tot drie maal kleiner maken, zonder al te veel performantieverlies.
+Opnieuw is het geheugengebruik tijdens het opbouwen een sterk beperkende factor.
+Dit geheugengebruik is meer dan twee keer zo hoog als bij het bouwen van een suffix array, waardoor we deze optie niet verder verkennen.
+Bovendien kunnen we door het gebruik van een hogere sparseness factor de resulterende suffix array makkelijk drie maal kleiner maken, zonder al te veel performantieverlies.
 
 \begin{figure}[H]
     \centering
     \subfloat[Maximaal geheugengebruik tijdens het opbouwen van een suffix array en R-index.]{\includegraphics[width=0.8\linewidth]{sa_vs_r_index_build_memory}}\\[4ex] % [4ex] om wat extra vertical spacing in te voegen
 
     \subfloat[Resulterende indexgrootte voor een suffix array (sparseness factor $k = 1$) en R-index.]{\includegraphics[width=0.8\linewidth]{sa_vs_r_index_index_memory}}
-    \caption{Vergelijking van de suffix array en R-index op vlak van geheugengebruik en de resulterende indexgrootte voor verschillende deelverzamelingen van UniProtKB. Bij elke test gaat het om de eerst $x$ procent van de database. Bij de suffix array wordt sparseness factor $k = 1$ gebruikt. Het gebruik van een andere sparseness factor heeft enkel invloed op de grootte van de resulterende index.}\label{fig:sa_vs_r_index}
+    \caption{Vergelijking van de suffix array en R-index op vlak van geheugengebruik en de resulterende indexgrootte voor verschillende deelverzamelingen van UniProtKB. Bij elke test gaat het om de eerst $x$ procent van de databank. Bij de suffix array wordt sparseness factor $k = 1$ gebruikt. Het gebruik van een andere sparseness factor heeft enkel invloed op de grootte van de resulterende index.}\label{fig:sa_vs_r_index}
 \end{figure}
 
 
