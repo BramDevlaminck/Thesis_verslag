@@ -352,8 +352,7 @@ Er zijn dus twee erg belangrijke bevindingen over sparse suffix arrays, en de ma
 \begin{enumerate}
     \item Probeer de sparseness factor zo laag mogelijk te houden, zo blijft ook de zoektijd voor kortere peptiden beperkt.
     \item Het maximale geheugengebruik voor het opbouwen van de SSA blijft constant onafhankelijk van de sparseness factor.
-    De hoeveelheid geheugen om ze nadien te gebruiken kunnen we wel verkleinen.
-    Hierdoor kan de index op minder krachtige machines gebruikt worden na het opbouwen.
+    Het introduceren van een sparseness factor verkleint enkel de resulterende SSA zodat er minder geheugen nodig is tijdens het hosten van de index.
 \end{enumerate}
 
 Dit impliceert dat we de sparseness factor $k$ enkel moeten verhogen om het geheugengebruik te beperken bij een al opgebouwde indexstructuur.
@@ -380,7 +379,7 @@ Dit valt te zien in Codefragment~\ref{lst:seq_vs_par}.
 Ook in hier is het mogelijk om manueel een specifiek aantal threads te kiezen.
 Standaard gebruikt Rayon het aantal beschikbare logische cores op de machine, maar het instellen van een ander aantal kan aan de hand van één lijntje code.
 \begin{listing}[h!]
-    \begin{minted}{Rust}
+    \begin{minted}[frame=lines,framesep=2mm,linenos]{Rust}
 // Sequentieel
 let results = peptiden
     .iter()

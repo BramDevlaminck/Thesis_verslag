@@ -1,7 +1,7 @@
 \chapter{Een nieuwe UniProtKB-index voor Unipept}\label{ch:een-nieuwe-uniprotkb-index-voor-unipept}
 In de vorige hoofdstukken hebben we suffixbomen, suffix arrays, FM-indices en R-indices verkend als indexstructuren die toegepast kunnen worden om een proteïnedatabank te indexeren.
 Hieruit bleek dat een suffix array de laagste geheugenvereisten heeft tijdens het opbouwen.
-In dit hoofdstuk gaan we dieper in op het opbouwen van een index voor UniProtKB gebruikmakende van een suffix array, en het in productie brengen ervan in Unipept.
+In dit hoofdstuk gaan we dieper in op het opbouwen van een index voor UniProtKB gebruikmakende van een suffix array.
 Aangezien we de huidige Unipept index willen vervangen door deze nieuwe indexstructuur, behandelen we bovendien ook nog enkele extra gewenste features.
 
 \section{Opbouwen van de SA}\label{sec:opbouwen-van-de-sa}
@@ -25,7 +25,7 @@ Voor het opbouwen van de Unipept index voor UniProtKB zullen we dus gebruikmaken
     \subfloat[Maximale hoeveelheid geheugen gebruikt tijdens het opbouwen van een SA-index voor UniProtKB.]{\includegraphics[width=\linewidth]{build_uniprot_memory}}
     \caption{Statistieken voor het opbouwen van een SA voor UniProtKB.}\label{fig:build_uniprot}
 \end{figure}
-
+\newpage
 \section{Een sparseness factor kiezen}
 Een volgende stap na het opbouwen van de volledige SA bestaat uit het kiezen van de optimale sparseness factor.
 Zoals eerder aangegeven in de conclusie van sectie~\ref{subsec:zoeken-in-sparse-suffix-arrays} willen we deze sparseness factor zo laag mogelijk houden, met als restrictie dat de sparse suffix array (SSA) nog steeds in het werkgeheugen moet passen.
@@ -65,7 +65,7 @@ Om deze vorm van inexacte matching toe te voegen aan de index gebruikmakende van
     Hierbij kan gebruikgemaakt worden van het feit dat twee peptiden die identiek zijn, behalve dat elke locatie waar een I een L kan staan (of vice versa), een gelijkaardig zoekpad afleggen in de SA\@.
     Deze zoekpaden splitsen enkel wanneer het teken dat verwerkt wordt (uit de proteïnedatabank) tijdens de binary search een I, J, K of L is.
     Dit zorgt ervoor dat voor een willekeurig patroon een groot stuk van de zoekboom gemeenschappelijk zal zijn.
-    Ook al zal dit ervoor zorgen dat we tijdens het zoekproces meestal snel kunnen snoeien, we zullen steeds $2^{q}$ opties moeten verkennen.
+    Door dit gemeenschappelijke stuk kan veel dubbel werk vermeden worden, we zullen echter steeds $2^{q}$ opties moeten verkennen.
     Hierbij is $q$ de som van het aantal I's en L'en is in de peptide.
     \item \textbf{Index waarbij I = L:} Bouw de index voor een variant van de UniProtKB databank.
     Hierbij vervangen we elke I door een L, of vice versa, en bouwen we dus een index op waarbij I gelijkgesteld is aan L\@.
@@ -77,12 +77,12 @@ In de volgende secties worden de tweede en derde aanpak verder uitgewerkt.
 
 \subsection{Index waarbij I $\neq$ L}\label{subsec:index-waarbij-i-neq-l}
 Wanneer de indexstructuur zelf gebouwd is met I niet gelijkgesteld aan L, moeten we alle verschillende IL-combinaties tijdens het zoekproces verkennen.
-Hierbij is het echter belangrijk om te weten dat er ook bepaalde extreem slechte gevallen bestaan waarbij de zoekruimte erg groot wordt, en we niet efficiënt kunnen snoeien.
+Hierbij is het echter belangrijk om te weten dat er ook bepaalde extreem slechte gevallen bestaan waarbij de zoekruimte erg groot wordt.
 De sequenties waarop we zoeken zijn namelijk niet random verdeeld over alle karakters van het alfabet.
 Biologisch gezien komen bepaalde aminozuursequenties veel vaker voor.
 Eén van deze patronen zijn de zogenaamde \textit{leucine rich repeats}~\cite{leucine_rich_repeats}.
 Dit zijn sequenties waarin een reeks L'en na elkaar voorkomt.
-In UniProtKB bestaat er een \textbf{sequentie waar maar liefst 2397 L'en na elkaar voorkomen}.
+In UniProtKB (2024\_01) bestaat er een \textbf{sequentie waar maar liefst 2397 L'en na elkaar voorkomen}.
 Dit is de proteïne met \textit{accession number} \texttt{A0A1Q9EZQ0}.
 Wanneer we nu ook weten dat in UniProtKB ook reeksen aan I's voorkomen, dan zorgt dit voor bepaalde extreem slechte gevallen.
 Zo is er \textbf{ook een proteïne met 641 opeenvolgende I's} (accession number: \texttt{A0A5J4P3H7}).
@@ -136,16 +136,16 @@ Dit kan via volgend stappenplan:
     Wanneer in de peptide een L staat, en de tekst een I (of omgekeerd), wil dit zeggen dat deze match ongeldig is, want ze is enkel gevonden vanwege het gelijkstellen van I aan L tijdens het zoeken.
     Merk op dat we hiervoor de originele tekst nodig hebben, en niet de aangepaste tekst die gebruikt is bij het bouwen van de suffix array.
     Gelukkig moeten we niet allebei deze teksten in het geheugen houden.
-    Via enkele kleine aanpassingen tijdens het zoeken kan, de originele tekst perfect gebruikt worden om te zoeken in de suffix array van de gemodificeerde tekst.
+    Via enkele kleine aanpassingen tijdens het zoeken kan de originele tekst perfect gebruikt worden om te zoeken in de suffix array van de gemodificeerde tekst.
 \end{enumerate}
 
 Dit stappenplan is niet alleen \textbf{simpel}, maar het bevat ook \textbf{geen extreem slechte gevallen} zoals bij de index waarbij we I $\neq$ L stellen, en dan alle opties proberen verkennen.
 Bovendien is ook de impact van de filterstap beperkt, aangezien enkel locaties waar een I of L staat in de peptide gecontroleerd moeten worden.
 Andere tekens moeten we nooit controleren, aangezien het zoeken in de SA ons al garandeert dat deze overeenkomen.
-Er is dus geen nood aan een combinatie van systemen die de server moeten beschermen tegen de slechtste gevallen, die extreem lang konden duren, en bovendien ook veel geheugen vereisen.
+Er is dus geen nood aan een combinatie van systemen die de server moeten beschermen tegen de slechtste gevallen, zoals bij sectie~\ref{subsec:index-waarbij-i-neq-l}.
 \\ \\
 Naast deze voordelen blijkt ook dat deze manier van zoeken in het algemeen iets sneller is.
-Dit valt te zien in Figuur~\ref{fig:uniprot_search_il_equal}.
+Dit valt te zien wanneer we Figuur~\ref{fig:uniprot_search_il_equal} vergelijken met Figuur~\ref{fig:uniprot_search}.
 Een laatste voordeel is dat het gelijkstellen van I en L de standaard optie is in de huidige Unipept gebruikersinterface.
 Dit is net ook wat hier het minste werk vereist tijdens het zoeken.
 Vanwege al deze voordelen kiezen we ervoor om van deze zoekstrategie gebruik te maken.
@@ -157,7 +157,7 @@ Vanwege al deze voordelen kiezen we ervoor om van deze zoekstrategie gebruik te 
     \label{fig:uniprot_search_il_equal}
 \end{figure}
 
-Een merkwaardige vaststelling is dat voor onze kleinere SIHUMI testbestanden het zoeken met I $\neq$ L sneller is, ook vragen die minder werk.
+Een merkwaardige vaststelling is dat voor onze kleinere SIHUMI testbestanden het zoeken met I $\neq$ L sneller is, ondanks dat zoeken met I $\neq$ L net meer werk vraagt.
 Dit komt omdat er meer resultaten zijn zonder de filterstap.
 Deze extra resultaten moeten allemaal meegenomen worden in het berekenen van de LCA*, maar ook tijdens het serializeren van de resultaten naar een JSON-bestand.
 Bovendien zorgt een grotere hoeveelheid data ook voor een tragere doorstroming van de index naar de Unipept API\@.
@@ -174,13 +174,13 @@ Indien we dit zouden willen oplossen, is er nood aan een manier om de boomstruct
 Hiervoor zijn de extra tabellen van Enhanced Suffix Arrays nodig.
 \\ \\
 Anderzijds zijn er ook enkele voordelen verbonden met het berekenen tijdens het zoekproces zelf.
-Zo hebben we \textbf{minder geheugen} nodig, wat erg belangrijk is aangezien het geheugengebruik al erg hoog is tijdens het opbouwen van de suffix array.
+Zo hebben we \textbf{minder geheugen} nodig, wat erg belangrijk is aangezien het geheugengebruik al erg hoog is.
 Bovendien laat dit ook toe dat we vrij kunnen kiezen welke aggregatiemethode we gebruiken.
 De oude Unipept index maakte gebruik van een (minder interessante) variant van \textbf{LCA*}.
 Dit werd gedaan om het voorberekenen efficiënter te maken.
 Bij suffixbomen hebben we zelf gebruik moeten maken van de standaard LCA methode om dit op te lossen.
-Bij suffix arrays kunnen we vrij gebruik maken van LCA*, en blijft de performantie bovendien erg goed.
-Een laatste, belangrijk, voordeel is dat er \textbf{geen extra werk nodig is om de taxon IDs van alle matches op te halen}.
+Bij suffix arrays kunnen we echter vrij gebruik maken van LCA*, en blijft de performantie bovendien erg goed.
+Een laatste belangrijk voordeel is dat er \textbf{geen extra werk nodig is om de taxon IDs van alle matches op te halen}.
 In de huidige Unipept index is hier een significante hoeveelheid extra werk voor nodig, wat resulteert in een bottleneck bij de Peptonizer2000 tool~\cite{pep_gm}.
 
 
@@ -322,11 +322,11 @@ De volgende opsomming herhaalt kort welke rol elk onderdeel speelt in het geheel
     \item Sparse suffix array: De sparse suffix array die opgebouwd wordt op basis van UniProtKB 2024\_01 met $k = 3$ en I = L\@.
     Op basis hiervan zoeken we efficiënt alle suffixen waarmee een peptide matcht.
     \item Tekst: Dit is de UniProtKB databank met I $\neq$ L, waarbij alle proteïnen geconcateneerd worden tot één lange string.
-    Tussen elke proteïne hangt hetzelfde, unieke scheidingsteken (\texttt{\#}), en op het einde van de tekst een ander uniek teken (\texttt{\$}).
+    Tussen elke proteïne hangt hetzelfde, unieke scheidingsteken (\texttt{-}), en op het einde van de tekst een ander uniek teken (\texttt{\$}).
     \item Suffix → proteïne: De sparse mapping die beschreven is in sectie~\ref{subsec:mapping-van-suffix-naar-proteine}.
+    Deze mapping wordt gebruikt om de bijhorende proteïne te vinden van een gematchte suffix.
     \item NCBI taxonomy aggregator: Een object dat de gebruikte NCBI taxonomy bevat om de LCA* aggregaties uit te voeren.
     Aangezien deze opgebouwd wordt op basis van de NCBI taxonomy, is de grootte hiervan onafhankelijk van de gebruikte proteïnedatabank.
-    Deze mapping wordt gebruikt om de bijhorende proteïne te vinden van een gematchte suffix.
     \item UniProt accession numbers: Elke proteïne in UniProtKB heeft een uniek ID (accession number).
     Voor elke proteïne die matcht met de gezochte peptide wordt dit ID als onderdeel van de output teruggegeven.
     \item Taxonomische annotaties: Het taxon ID dat per proteïne bijgehouden wordt.
@@ -385,7 +385,7 @@ Codefragment~\ref{fig:webserver_json_input} en~\ref{fig:webserver_json_output} g
         1262816,
         1869212
       ],
-      "uniprot_accessions": [
+      "uniprot_accession_numbers": [
         "A0A365TSP2",
         "A0A7C5MYD2",
         "R6CCR3",
@@ -428,7 +428,7 @@ Codefragment~\ref{fig:webserver_json_input} en~\ref{fig:webserver_json_output} g
 \section{Productiepijplijn}
 Om een nieuwe versie van de index voor UniProtKB in productie te brengen, zijn verschillende stappen nodig.
 Een groot deel hiervan valt buiten het domein van deze masterproef.
-Zo moet de nieuwe databank eerst gedownload worden, moet alle data die Unipept hieruit nodig heeft geëxtraheerd worden, om daarna een reeks aan transformaties uit te voeren.
+Eerst moet de nieuwe databank gedownload worden, waarna alle data die Unipept nodig heeft hieruit geëxtraheerd moeten worden.
 De masterproef van medestudent Stijn De Clercq gaat hier dieper op in, en welke verbeteringen hierop aangebracht zijn het afgelopen jaar.
 Dankzij zijn werk is het veel gemakkelijker geworden om deze nieuwe index te integreren in de Unipept pijplijn.
 De output van deze pijplijn levert een reeks \texttt{tsv}\footnote{Tab-Separated Values} bestanden op, die gebruikt worden als input om de indexstructuur op te bouwen.

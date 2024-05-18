@@ -2,7 +2,7 @@
 In deze masterproef hebben we verschillende opties verkend om de huidige Unipept index voor UniProtKB te vervangen.
 Hierbij lag de hoofdfocus op het vinden van een nieuwe indexstructuur die aan volgende opties voldoet:
 \begin{enumerate}
-    \item De index moet het mogelijk maken om arbitraire peptiden te kunnen zoeken.
+    \item De index moet het mogelijk maken om arbitraire peptiden te zoeken.
     \item Het geheugenverbruik van de index moet beperkt zijn, zodat het mogelijk is niet enkel kleinere proteïnedatabanken te indexeren, maar ook de volledige UniProtKB databank.
     \item De indexstructuur moet semi-exacte matching ondersteunen, zodat I en L aan elkaar gelijkgesteld kunnen worden.
     \item De indexstructuur moet de taxonomische en functionele analyse van Unipept ondersteunen.
@@ -32,10 +32,10 @@ Zo laten bidirectionele FM-indices toe om algemenere inexacte matching uit te vo
 Ondanks dat we een index hebben kunnen bouwen die de huidige Unipept index kan vervangen, en willekeurige peptiden kan vinden in plaats van enkel tryptische peptiden, zijn er meerdere plaatsen waar nog extra onderzoek kan gebeuren.
 \\ \\
 De gemakkelijkste, en meest directe verbetering is het verder \textbf{verkleinen van de resulterende index}.
-UniProt 2023\_04 bevat ongeveer 86.8 miljard aminozuren, waardoor we dus ook evenveel verschillende getallen moeten kunnen voorstellen in de suffix array.
-Aangezien $86.8 \cdot 10^9 > 2^{32}$ maken we gebruik van 64-bit integers.
+UniProt 2023\_04 bevat ongeveer 86.8 miljard aminozuren en 250 miljoen sequenties, waardoor we iets meer dan 87 miljard verschillende suffixen moeten kunnen voorstellen in de suffix array.
+Aangezien $87 \cdot 10^9 > 2^{32}$ maken we gebruik van 64-bit integers.
 Hiermee kunnen we echter veel te veel verschillende getallen voorstellen.
-In de praktijk hebben we slechts nood aan $1 + \lfloor \log_2(86.8 \cdot 10^9) \rfloor = 37$ bits per waarde in de suffix array.
+In de praktijk hebben we slechts nood aan $1 + \lfloor \log_2(87 \cdot 10^9) \rfloor = 37$ bits per waarde in de suffix array.
 Aangezien de huidige sparse suffix array (met sparseness factor $k = 3$) ongeveer 235 GB groot is, zou de SSA na deze aanpassing slechts 136 GB groot zijn.
 Bij de tekst kunnen we dezelfde aanpassing maken.
 Daar hebben we 26 + 2 = 28 verschillende tekens, wat aan de hand van 5 bits voorgesteld kan worden.
@@ -46,7 +46,7 @@ Merk op dat dit de nodige hoeveelheid geheugen tijdens het opbouwen niet verklei
 Door deze manier van compressie te gebruiken zou het ook mogelijk worden om sparseness factor $k = 2$ te gebruiken op de Unipept servers.
 In het totaal zou de index dan $353 \cdot \frac{37}{64} + 55 + 23 \approx 282$ GB groot zijn, wat comfortabel in 0.5 TB RAM past.
 Ondanks de overhead die de compressie introduceert, kan de performantie op deze manier mogelijk toch nog verbeterd worden.
-Bovendien zullen hierdoor ook peptiden die slechts uit twee aminozuren bestaan, gematcht kunnen worden aan de hand van de SSA\@.
+Bovendien zullen hierdoor ook peptiden die slechts uit twee aminozuren bestaan gematcht kunnen worden aan de hand van de SSA\@.
 \\ \\
 Ook tijdens het opbouwen van de SA zijn er nog interessante pistes om te verkennen.
 Zo zou het extreem voordelig zijn om een manier te vinden om de suffix array onmiddellijk \textbf{sparse te maken tijdens het opbouwen}.
