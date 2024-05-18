@@ -18,13 +18,13 @@ Een suffixboom van een tekst $T$ wordt formeel gedefinieerd als volgt~\cite{CCB_
     \item Elke interne top (behalve de wortel) heeft op zijn minst 2 kinderen.
     \item Elke boog heeft een label die een niet-lege substring van de tekst $T$ voorstelt.
     \item Voor alle bogen die uit een bepaalde top vertrekken geldt dat het eerste karakter van hun label verschillend is.
-    \item Voor elk \textbf{blad $i \in [0, n[$} geldt dat de aaneenschakeling van alle labels op het pad van de wortel naar blad $i$ overeenkomt met \textbf{suffix $S_i$}.
+    \item Voor elk blad $i \in [0, n[$ geldt dat de aaneenschakeling van alle labels op het pad van de wortel naar blad $i$ overeenkomt met suffix $S_i$.
     Dit is de suffix die op index $i$ in tekst $T$ begint.
 \end{enumerate}
 
 Merk op dat niet voor elke tekst $T$ een suffixboom zal bestaan.
 Deze bestaat alleen wanneer geen enkele suffix een prefix is van een andere suffix.
-In de praktijk wordt daarom een uniek eindteken, meestal \texttt{\$}, toegevoegd aan de tekst.
+In de praktijk wordt daarom een \textbf{uniek eindteken}, meestal \texttt{\$}, toegevoegd aan de tekst.
 Hierdoor is elke suffix namelijk uniek, en kan deze dus ook nooit een prefix zijn van een andere suffix.
 Op deze manier zal er gegarandeerd een suffixboom voor de (licht aangepaste) tekst $T$ bestaan.
 \\ \\
@@ -189,7 +189,7 @@ Tijdens het implementeren was de referentiecode van prof.~Jan Fostier~\cite{Ukko
 \\ \\
 Het belangrijkste verschil tussen de Kotlin-implementatie en de referentie-implementatie is de manier waarop de kinderen voorgesteld worden.
 Bij de eerste is dit aan de hand van een HashMap terwijl de laatste gebruikmaakt van een pointer array.
-De reden voor de tweede aanpak is om alles zo simpel mogelijk te houden.
+De reden voor de eerste aanpak is om alles zo simpel mogelijk te houden.
 Hierdoor kon een karakter rechtstreeks als sleutel gebruikt worden, en was een omzetting naar een index niet nodig.
 Om dit prototype te maken, heb ik gekozen voor Kotlin boven Python aangezien Kotlin performanter is en ook een aangename ontwikkelingservaring biedt.
 Hierdoor is het mogelijk om de testdatasets op te bouwen binnen de 10 minuten.
@@ -213,7 +213,7 @@ De oorzaak hiervoor ligt bij het \textit{ownership} systeem van Rust.
 Dit systeem zorgt ervoor dat elk stukje data slechts één eigenaar kan hebben.
 In dit geval kan dus \textbf{slechts één top een andere top opslaan}, of er een \textit{mutable reference} naar hebben.
 Concreet wil dit dus zeggen dat slechts één top een \textit{pointer} kan hebben naar een andere top, met de toelating om die top aan te passen.
-Dit is net wat nodig is tijdens het opbouwen van de boom want er worden nog kinderen toegevoegd en toppen gesplitst.
+Dit is net wat nodig is tijdens het opbouwen van de boom, want er worden nog kinderen toegevoegd en toppen gesplitst.
 Dit is een probleem aangezien ouders pointers naar kinderen moeten hebben, de kinderen een verwijzing naar hun ouder, en er dan ook nog eens pointers zijn voor de suffix links.
 \\ \\
 Als oplossing hiervoor introduceert Rust het \texttt{Rc<T>} datatype.
@@ -295,7 +295,7 @@ Bijna exact \textbf{2\times\ zo hoog als de equivalente C++ implementatie}.
 Om zo'n drastisch verschil in geheugengebruik te kunnen verklaren, moest er wel iets fundamenteel verschillen aan de manier waarop toppen hun data bijhouden.
 Al snel bleek dat het gebruik van \textbf{\texttt{Option<usize>}}\footnote{\texttt{usize}: \textit{The pointer-sized unsigned integer type \cite{usize}}. De grootte van dit datatype is het aantal bytes nodig om een referentie naar elk mogelijke locatie in het geheugen bij te kunnen houden. Voor 32- en 64-bit machines zijn dit resp.~4 en 8 bytes.} de boosdoener was.
 Het gebruik van \texttt{Option<>} zorgt namelijk voor \textbf{8 bytes aan overhead}.
-Aangezien een \texttt{usize} 8 bytes groot is op een 64-bit machine verklaart dit inderdaad de verdubbeling van het geheugengebruik.
+Aangezien een \texttt{usize} 8 bytes groot is op een 64-bit machine, verklaart dit inderdaad de verdubbeling van het geheugengebruik.
 Dit valt makkelijk te controleren aan de hand van de \texttt{std::mem::size\_of} functie, deel van de Rust standaardbibliotheek.
 \begin{minted}{Rust}
 assert_eq!(mem::size_of::<Option<usize>>(), 16);
@@ -306,7 +306,7 @@ Als oplossing heb ik uiteindelijk mijn \textbf{eigen \textit{null} waarde gedefi
 Deze oplossing doet volledig het doel van de \texttt{Option<T>} enum teniet, maar is jammer genoeg nodig omdat het gewoonweg niet acceptabel is om het geheugengebruik hiervoor te verdubbelen.
 Bovendien blijft \textbf{memory safety gegarandeerd}, aangezien het foutief indexeren van de null value (\texttt{usize::MAX} in dit geval) een index-out-of-bounds error genereert.
 Dergelijke indexeringsfouten worden tijdens het uitvoeren gedetecteerd en geven dus geen verdere problemen (afgezien van een mogelijke crash van het programma).
-
+\newpage
 \begin{minted}{Rust}
 /// Custom trait implemented by types that have a value that represents NULL
 pub trait Nullable<T> {
@@ -556,7 +556,5 @@ Rekening houdende met het lineaire gedrag van het geheugengebruik wil dit zeggen
 Dit zou echter vereisen dat we een server nodig hebben met ongeveer 45 TB aan RAM\@.
 We hebben echter geen dergelijke machine ter beschikking.
 Daarom moeten we op zoek naar andere indexstructuren die minder geheugen vereisen, eventueel met een impact op de zoeksnelheid.
-We hebben immers gezien dat suffixbomen niet enkel flexibeler zijn in het zoeken naar peptiden dan de huidige Unipept-index.
-Ze laten namelijk niet enkel toe om tryptische peptiden te zoeken.
-Ze maken het zoekproces ook meerdere grootteordes sneller.
-Dat betekent dat we in de praktijk wat marge hebben om aan zoeksnelheid in te boeten, als we er zouden in slagen om UniProtKB volledig te indexeren.
+In de praktijk hebben we namelijk wat marge om aan zoeksnelheid in te boeten, aangezien suffixbomen meerdere grootteordes sneller zijn dan de huidige Unipept index.
+Een belangrijke voorwaarde hierbij is natuurlijk dat dit enkel acceptabel is als we hierdoor volledig UniProtKB kunnen indexeren.

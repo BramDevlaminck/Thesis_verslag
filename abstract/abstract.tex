@@ -160,7 +160,7 @@
 
         \subsection{Constructing the Index}
         Constructing a suffix array for UniProtKB 2024\_01 requires around 735 GB of RAM and 5 hours of computing time using the libdivsufsort library.
-        Because of the high memory needs, we use the HPC of Ghent University, where the high-memory cluster has 16 nodes with each 2\times 64-core AMD EPYC 7773X (Milan-X @ 2.2 GHz) and 940 GB of RAM\@.
+        Because of the high memory needs, we use the HPC of Ghent University, where the high-memory cluster has 16 nodes with each 2\times 64-core AMD EPYC 7773X (Milan-X @ 2.2 GHz) and 940 GiB of RAM\@.
         We use one core of a single node, since the construction phase is single threaded.
         The resulting suffix array is around 700 GB in size (+ an additional 88 GB for the text).
         Our goal is to host this new index on the Unipept servers, which have around 0.5 TB of memory available.

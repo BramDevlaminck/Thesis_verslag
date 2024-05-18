@@ -91,7 +91,7 @@ Hierbij worden naast de suffix array nog drie extra tabellen bijgehouden: de Lon
 Aangezien de suffix array bestaat uit de volgnummers van de lexicografisch gesorteerde suffixen, kunnen we deze suffixen aan de hand van traditionele sorteeralgoritmen zoals merge sort~\cite{mergeSort} in $O(n^2 \log n)$ tijd en $O(n^2)$ geheugen sorteren, wat onmiddellijk de bijhorende suffix array als resultaat oplevert.
 Hierbij is $n$ de lengte van de tekst.
 De totale tijdscomplexiteit hiervan is $O(n^2 \log n)$ en niet $O(n \log n)$ aangezien elke vergelijking van twee suffixen in het slechtste geval $n$ karaktervergelijkingen vereist.
-Ondertussen bestaan er echter verschillende algoritmen die een tijdscomplexiteit van $O(n)$ bereiken~\cite{sais, ko_alura, radixSA, dark_archon, libdivsufsort} voor het opbouwen van de suffix array van een tekst.
+Ondertussen bestaan er echter verschillende algoritmen die een tijdscomplexiteit van $O(n)$ bereiken voor het opbouwen van de suffix array van een tekst~\cite{sais, ko_alura, radixSA, dark_archon, libdivsufsort}.
 Bovendien vereisen deze veel minder geheugen dan een equivalente suffixboom.
 Sommige implementaties vereisen slechts $5n + O(1)$ geheugen~\cite{dark_archon, libdivsufsort, libsais}.
 \\ \\
@@ -145,7 +145,7 @@ Deze LCP array is slechts één van de drie extra tabellen die deel zijn van ESA
 De baseline waarmee we willen vergelijken is de hoeveelheid geheugen die we nodig hebben om enkel de SA op te bouwen.
 Voor de Swiss-Prot proteïnedatabank was dit 2.3 GB\@.
 Als we ook de LCP array berekenen, loopt het maximale geheugengebruik op naar 5.72 GB\@.
-\textbf{Het berekenen van deze extra array vraagt dus ongeveer dubbel zoveel geheugen, waardoor we deze optie niet verder verkennen}.
+\textbf{Het berekenen van deze extra array vraagt dus meer dan dubbel zoveel geheugen, waardoor we deze optie niet verder verkennen}.
 Bovendien berekenen we deze LCP array om het voorberekenen van de geaggregeerde taxon ID voor elke interne top van de overeenkomstige suffixboom mogelijk te maken.
 Daarna moet er op basis van deze SA en LCP array nog een compacte representatie gevonden worden van de boomstructuur.
 Dit is niet vanzelfsprekend.
@@ -159,7 +159,7 @@ Eerst moeten we nog een mapping maken van de gevonden suffixen naar de bijbehore
 Op basis van deze proteïne wordt daarna de LCA gezocht.
 
 \subsection{Bouwen van de suffix array}\label{subsec:bouwen-van-de-suffix-array}
-Zoals in de inleiding van sectie~\ref{sec:probleemstelling} beschreven wordt, willen we Rust gebruiken vanwege de combinatie tussen \textit{memory safety} en hoge performantie.
+Zoals in de inleiding (sectie~\ref{sec:probleemstelling}) beschreven wordt, willen we Rust gebruiken vanwege de combinatie tussen \textit{memory safety} en hoge performantie.
 We willen echter gebruikmaken van de al bestaande geoptimaliseerde algoritmen om een suffix array op te bouwen.
 Om beide doelen te bereiken, maken we gebruik van de interoperabiliteit tussen Rust en C/C++.
 Zo bestaan er al bindings\footnote{\url{https://crates.io/crates/libdivsufsort-rs}} van Rust naar de originele implementatie van libdivsufsort\cite{libdivsufsort} (in C).
@@ -196,7 +196,7 @@ In de praktijk zullen we dit maximaal aantal matches echter limiteren (zie secti
 Dit zal op zijn beurt ook de overhead van de sparse mapping beperkt houden.
 \begin{figure}[H]
     \centering
-    \subfloat[Tijd nodig om alle matches te zoeken.]{\includegraphics[width=\linewidth]{dense_vs_sparse_time}}\\[4ex] % [4ex] om wat extra vertical spacing in te voegen
+    \subfloat[Tijd nodig om alle matches te zoeken.]{\includegraphics[width=0.92\linewidth]{dense_vs_sparse_time}}\\[4ex] % [4ex] om wat extra vertical spacing in te voegen
     \centering
     \subfloat[Maximaal gebruikt geheugen tijdens het zoeken naar alle matches.]{\includegraphics[width=\linewidth]{dense_vs_sparse_memory}}
     \caption{Zoektijd en geheugengebruik bij het gebruik bij een \textit{dense} of \textit{sparse mapping} van de suffixen naar de proteïnen.}\label{fig:dense_vs_sparse}
@@ -333,7 +333,7 @@ Bij het Human-Prot zoekbestand zijn er ook kortere peptiden die we moeten oversl
 \\
 \begin{figure}[H]
     \centering
-    \subfloat[Zoektijd voor het Swiss-Prot peptidebestand met en zonder \textit{missed cleavages}. De zoekoperaties zijn uitgevoerd op een sparse suffix array gebouwd op basis van de Swiss-Prot proteïnedatabank, met $k = 1, 2, 3, 4, 5$.]{\includegraphics[width=0.9\linewidth]{swissprot_searchtime_sparseness}}\\[4ex] % [4ex] om wat extra vertical spacing in te voegen
+    \subfloat[Zoektijd voor het Swiss-Prot peptidebestand met en zonder \textit{missed cleavages}. De zoekoperaties zijn uitgevoerd op een sparse suffix array gebouwd op basis van de Swiss-Prot proteïnedatabank, met $k = 1, 2, 3, 4, 5$.]{\includegraphics[width=0.88\linewidth]{swissprot_searchtime_sparseness}}\\[4ex] % [4ex] om wat extra vertical spacing in te voegen
 
     \subfloat[Grootte van de volledige index en SSA voor de Swiss-Prot databank met sparseness factor $k = 1, 2, 3, 4, 5$.]{\includegraphics[width=0.8\linewidth]{index_size_SSA}}
     \caption{Zoektijd en indexgrootte van een SSA voor Swiss-Prot met $k = 1, 2, 3, 4, 5$.}\label{fig:search_sparseness}
@@ -358,7 +358,7 @@ Er zijn dus twee erg belangrijke bevindingen over sparse suffix arrays, en de ma
 
 Dit impliceert dat we de sparseness factor $k$ enkel moeten verhogen om het geheugengebruik te beperken bij een al opgebouwde indexstructuur.
 Dit is vooral van toepassing voor UniProtKB waar het nuttig is om kort een krachtige machine te gebruiken die de SA bouwt, waarna een minder krachtige machine de SSA host.
-In het perfecte geval wordt \textbf{de sparseness factor zo gekozen zodat de SSA samen met de tekst net in het RAM geheugen past} van deze minder krachtige machine.
+In het beste geval wordt \textbf{de sparseness factor zo gekozen zodat de SSA samen met de tekst net in het geheugen past} van deze minder krachtige machine.
 
 
 \section{Parallellisatie}\label{sec:parallellisatie}
@@ -372,27 +372,32 @@ Namelijk, wanneer alle componenten van een type aan de \texttt{Sync} en \texttt{
 Uiteindelijk hebben we twee geparallelliseerde implementaties gemaakt.
 In de eerste wordt alles volledig zelf beheerd.
 Hierbij verdelen we zelf welke data naar welke thread gaat, worden de threads manueel opgestart en sluiten we ze ook zelf af.
+Op deze manier hebben we ook volledig controle over het aantal threads dat gebruikt wordt.
 In de tweede implementatie wordt gebruikgemaakt van de Rayon crate~\cite{rayon}.
 Deze laat toe om op een simpele manier een sequentiële lus over een variabele te parallelliseren.
-In ons geval was het omzetten van een sequentiële implementatie (nadat alle types voldeden aan de \texttt{Sync} en \texttt{Send} trait) zo simpel als het vervangen van \texttt{.iter()} door \texttt{.par\_iter()}.
-Ook in deze implementatie is het mogelijk om manueel een specifiek aantal threads te kiezen.
+In ons geval was dit (nadat alle types voldeden aan de \texttt{Sync} en \texttt{Send} trait) zo simpel als het vervangen van \texttt{.iter()} door \texttt{.par\_iter()}.
+Dit valt te zien in Codefragment~\ref{lst:seq_vs_par}.
+Ook in hier is het mogelijk om manueel een specifiek aantal threads te kiezen.
 Standaard gebruikt Rayon het aantal beschikbare logische cores op de machine, maar het instellen van een ander aantal kan aan de hand van één lijntje code.
-
-\begin{minted}{Rust}
+\begin{listing}[h!]
+    \begin{minted}{Rust}
 // Sequentieel
 let results = peptiden
     .iter()
     .map(|peptide| search_peptide(peptide))
     .collect();
 
-
-
 // Parallel
 let results = peptiden
     .par_iter()
     .map(|peptide| search_peptide(peptide))
     .collect();
-\end{minted}
+    \end{minted}
+    \caption{Vergelijking van de sequentiële en geparallelliseerde implementatie a.d.h.v. Rayon.}
+    \label{lst:seq_vs_par}
+\end{listing}
+
+\newpage
 
 \subsection{Manueel threaden vs Rayon}\label{subsec:manueel-threaden-vs-rayon}
 Aangezien we twee verschillende implementaties hebben, is het interessant om na te gaan hoe deze ten opzichte van elkaar presteren.
@@ -411,7 +416,8 @@ Rayon maakt gebruik van een ingewikkelder systeem aan de hand van \textit{work s
     \subfloat[Absolute uitvoeringstijd voor 1--12 threads.]{\includegraphics[width=0.85\linewidth]{threading_default_vs_rayon}}
     \label{fig:threading_default_vs_rayon_1}
 \end{figure}
-\begin{figure}[H]\ContinuedFloat
+\begin{figure}[H]
+    \ContinuedFloat
     \centering
     \subfloat[Relatieve versnelling ten opzichte van uitvoering op 1 thread.]{\includegraphics[width=0.85\linewidth]{threading_default_vs_rayon_relative}}
     \caption{Tijdsmeting om het strikt tryptische Swiss-Prot peptidebestand te zoeken in een index met sparseness factor 3 voor 5\% van UniProtKB.}\label{fig:threading_default_vs_rayon}
@@ -474,7 +480,7 @@ Slechts voor 200 peptiden was er een resultaat op soortniveau.
 In Figuur~\ref{fig:cutoff_humanprot} is duidelijk te zien dat de \textbf{uitvoeringstijd drastisch daalt} wanneer de drempelwaarde op 10\thinspace000 matches geplaatst wordt.
 Als we dit specifiek bekijken voor de Human-Prot peptidebestanden en proteïnedatabank is de uitvoeringstijd maar liefst 300 keer sneller.
 Bovendien is ook hier het \textbf{informatieverlies minimaal}.
-Van de 250\thinspace000 peptiden zijn er 12 peptiden die een ander resultaat verkrijgen in de output.
+Van de 250\thinspace000 peptiden zijn er 12 peptiden die een ander resultaat verkrijgen.
 Deze 12 peptiden zijn echter slechts twee unieke peptiden (die gewoon meerdere keren voorkomen in het peptidebestand).
 Dit zijn de peptiden \texttt{EKP} en \texttt{SKE}.
 Indien we de LCA* effectief berekenen is het resultaat in beide gevallen 9606, terwijl we gebruikmakende van een drempelwaarde de root (1) terug geven.

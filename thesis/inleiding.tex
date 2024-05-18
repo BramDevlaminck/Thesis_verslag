@@ -116,11 +116,11 @@ Op basis hiervan worden de taxonomische en functionele annotaties voor elke tryp
 \\ \\
 Op dit moment is er wel een \textbf{\textit{workaround}} die toelaat om peptiden met \textbf{\textit{missed cleavages}} toch op te zoeken.
 Hiervoor worden alle peptiden die een missed cleavage hebben opgesplitst, en worden de tryptische fragmenten apart gezocht.
-Daarna wordt de doorsnede genomen van de gematchte proteïnen per fragment, waarna we dus een verzameling van proteïnen bekomen die op zijn minst alle tryptische fragmenten bevatten.
+Daarna wordt de doorsnede genomen van de gematchte proteïnen per fragment, waarna we een verzameling van proteïnen bekomen die op zijn minst alle tryptische fragmenten bevatten.
 Voor deze verzameling van proteïnen moet nog gecontroleerd worden of de fragmenten weldegelijk na elkaar voorkomen (en dus verbonden zijn).
-Dit doen we door \textit{brute-force} voor elke proteïne te controleren of de originele peptide hier in voorkomt.
-Tot slot wordt de LCA van de gematchte proteïnen berekend.
-Dit moet gebeuren tijdens het zoeken zelf, in tegenstelling tot het zoeken van strikt tryptische peptiden.
+Dit doen we door \textit{brute-force} voor elke proteïne te controleren of de originele peptide hierin voorkomt.
+Tot slot wordt de Lowest Common Ancestor (LCA) van de gematchte proteïnen berekend.
+Dit gebeurt tijdens het zoeken zelf, in tegenstelling tot bij het zoeken van strikt tryptische peptiden.
 Indien we geen rekening houden met \textit{missed cleavages} zijn alle LCAs namelijk al voorberekend.
 Het is duidelijk dat al deze extra stappen een sterke, \textbf{negatieve invloed hebben op de performantie}.
 Deze verminderde performantie bij \textit{missed cleavages}, in combinatie met het compleet ontbreken van een manier om willekeurig gesplitste peptiden te zoeken, verklaart de nood aan een nieuwe indexstructuur.
@@ -147,7 +147,7 @@ Dit komt overeen met een realistische configuratie voor een server die gericht i
 \\ \\
 Tot slot willen we ook \textbf{semi-exacte matching} toevoegen tijdens het zoeken.
 Hierbij willen we de mogelijkheid aanbieden om isoleucine (I) en leucine (L) gelijk te stellen aan elkaar.
-Wanneer deze gelijkgesteld zijn wil dit zeggen dat op elke plaats waar een I staat, ook een L toegelaten wordt, en omgekeerd.
+Wanneer deze gelijkgesteld zijn, wil dit zeggen dat op elke plaats waar een I staat, ook een L toegelaten wordt, en omgekeerd.
 Door dit te doen kunnen we de beperkingen van een massaspectrometer opvangen.
 \\ \\
 Om dit allemaal te bereiken is het doel van deze thesis om meerdere datastructuren uit te werken, te implementeren in Rust, en tot slot te testen.
@@ -160,7 +160,7 @@ Dit laat toe om waar mogelijk bestaande code te hergebruiken.
 Om de snelheid, het geheugengebruik en de correctheid van de onderzochte indexstructuren en zoekalgoritmen te bepalen zullen we \textbf{twee soorten benchmarkbestanden} gebruiken.
 De eerste soort zijn de \textbf{proteïnedatabanken} waarmee we de indexstuctuur opbouwen.
 De grootte van deze indexstructuur is het primaire criterium aangezien deze \textbf{volledig in het werkgeheugen} moet passen, wat een harde limiet is.
-Indien de index niet in het geheugen past, zal het programma niet uitgevoerd kunnen worden (of met een erg grote performance-penalty wanneer swapruimte\footnote{Dit is wanneer een computer schijfruimte gebruikt om het tekort aan RAM-geheugen op te vangen.} gebruikt wordt).
+Indien de index niet in het geheugen past, zal het programma niet uitgevoerd kunnen worden (of met een erg grote \textit{performance penalty} wanneer swapruimte\footnote{Dit is wanneer een computer schijfruimte gebruikt om het tekort aan RAM-geheugen op te vangen.} gebruikt wordt).
 De tweede soort bestanden bevatten de peptiden die we gaan proberen terugvinden in de indexstructuur.
 We zullen hiernaar voor de rest van deze masterproef verwijzen als \textbf{peptidebestanden}.
 Het hoofddoel van deze peptidebestanden is om de zoekperformantie te testen.
@@ -404,7 +404,7 @@ Tabel~\ref{tab:macbook_hardware} bevat de exacte specificaties van deze laptop.
 \\ \\
 Naast een VM en eigen laptop hebben we ook toegang tot enkele andere machines indien hier nood toe zou zijn.
 Een eerste mogelijke optie is via een andere, krachtigere server van Unipept.
-Het mogelijk om applicaties die op dit moment op verschillend servers draaien, tijdelijk te herverdelen zodat er een machine met 768 GiB ram ter beschikking komt.
+Het is mogelijk om applicaties die op dit moment op verschillend servers draaien, tijdelijk te herverdelen zodat er een machine met 768 GiB ram ter beschikking komt.
 Een andere optie is de HPC van UGent\footnote{\url{https://docs.hpc.ugent.be/}}.
 Hierop zijn nodes\footnote{Elke node bestaat is een fysieke server. Deze nodes vormen samen een cluster op de HPC.} beschikbaar tot 940 GiB RAM\@.
 Tot slot heeft de CompOmics\footnote{Computational Omics} onderzoeksgroep aan UGent ook enkele machines staan die tot 2 TiB aan geheugen hebben.
@@ -461,7 +461,7 @@ Daarna moeten we bovendien nog voor elke korte string de zoekoperatie uitvoeren,
 Indien we de lange tekst indexeren, kan het opbouwen in $O(m)$ tijd en het zoeken in $O(n)$ tijd en geheugen (opnieuw met $n$ de lengte van de zoekstring, en $m$ de lengte van de tekst).
 Hierbij is het mogelijk om één keer de indexstructuur te bouwen voor de lange tekst, waarna elke korte string \textbf{in lineaire tijd ten opzichte van zijn eigen lengte gezocht} kan worden.
 Het nadeel is echter dat het opbouwen van de indexstructuur voor een grote tekst traag kan worden, en bovendien veel geheugen kan innemen.
-\\ \\
+\newpage
 We hebben een grote databank met erg veel proteïnen (een lange tekst) waarin we erg veel peptiden (korte strings) zoeken, wat overeenkomt met de tweede aanpak.
 Daarom verkennen we in deze masterproef die aanpak.
 In de eerste instantie willen we \textbf{exacte matches} kunnen zoeken, maar later willen we ook \textbf{inexacte} \textit{matching} uitvoeren.
