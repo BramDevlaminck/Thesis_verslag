@@ -9,7 +9,7 @@ Hierbij lag de hoofdfocus op het vinden van een nieuwe indexstructuur die aan vo
 \end{enumerate}
 
 \section{Conclusie}
-Een eerste indexstructuur die we bekekenen hebben waren \textbf{suffixbomen}.
+Een eerste indexstructuur die we bekeken hebben waren \textbf{suffixbomen}.
 Hierbij hebben we een eigen Rust implementatie gemaakt van het algoritme van Ukkonen.
 Suffixbomen bieden een extreem grote vrijheid, en het zoeken gaat bovendien extreem snel.
 Ze zijn echter \textbf{onbruikbaar} om grote proteïnedatabanken te indexeren vanwege hun \textbf{geheugengebruik}.
@@ -29,7 +29,7 @@ Daarom hebben we deze opties niet verder uitgewerkt, ook al hebben beide indices
 Zo laten bidirectionele FM-indices toe om algemenere inexacte matching uit te voeren, en is de resulterende index bij R-indices kleiner door het gebruik van run-length encoding.
 
 \section{Toekomstig werk}
-Ondanks dat we een index hebben kunnen bouwen die de huidige Unipept index kan vervangen, en willekeurige peptiden kan vinden in plaats van enkel tryptische peptiden, zijn er meerdere plaatsen waar nog extra onderzoek kan gebeuren.
+Ondanks dat we een index gebouwd hebben die de huidige Unipept index kan vervangen, en willekeurige peptiden kan vinden in plaats van enkel tryptische peptiden, zijn er nog op meerdere vlakken verbeteringen mogelijk.
 \\ \\
 De gemakkelijkste, en meest directe verbetering is het verder \textbf{verkleinen van de resulterende index}.
 UniProt 2023\_04 bevat ongeveer 86.8 miljard aminozuren en 250 miljoen sequenties, waardoor we iets meer dan 87 miljard verschillende suffixen moeten kunnen voorstellen in de suffix array.
@@ -66,7 +66,7 @@ We hebben namelijk enkel de optie om I en L aan elkaar gelijk te stellen.
 Tools zoals de eerder vermelde Expasy ScanProsite tool ondersteunen verschillende manieren om inexacte matching uit te voeren.
 Zo zouden we ondersteuning voor karakterklassen, een reeks van herhalingen (al dan niet met een minimum en maximum bereik) en wildcards kunnen toevoegen.
 Gelijkaardig aan hoe \textit{livegrep}~\cite{livegrep} gebruikmaakt van Google's RE2~\cite{re2} regex engine en meerdere suffix arrays~\cite{regex_sa}.
-Een andere manier van inexacte matching kan zijn via het toelaten van maximaal $x$ mismatches.
+Een andere manier van inexacte matching kan via het toelaten van maximaal $x$ mismatches.
 Op deze manier kan men ook omgaan met kleine mutaties die ontstaan in proteïnen, of kleine variaties die ontstaan bij het omzetten van spectra naar aminozuursequenties.
 Over deze laatste vorm van inexacte matching is door het team van Unipept een vervolgmasterproef uitgeschreven om dit volgend jaar te verkennen.
 Hierbij zal verder ingegaan worden op de FM-index en R-index.
