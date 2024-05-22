@@ -56,7 +56,7 @@
 
     \begingroup
     \centering
-    \LARGE Unipept 6.0: Fast semi-exact peptide matching with a memory conservative index for UniProtKB\\[1em]
+    \LARGE Unipept 6.0: Fast Semi-exact Peptide Matching With a Memory Conservative Index for UniProtKB\\[1em]
     \large Bram Devlaminck\\[2em]
     \endgroup
 
@@ -73,7 +73,7 @@
 
     \begin{multicols}{2}
         \section{Introduction}\label{sec:introduction}
-        Metaproteomics research has been invaluable for getting a better understanding of the function of each organism in a microbiome ecosystem~\cite{metaproteomics}.
+        Metaproteomics research has been invaluable in gaining a better understanding of the function of each organism in a microbiome ecosystem~\cite{metaproteomics}.
         This started with small-scale experiments from as little as three proteins~\cite{small_experiment_metaproteomics}, but has evolved over the years to experiments with more than 100\thinspace000 peptides~\cite{large_experiment1_metaproteomics, large_experiment2_metaproteomics}.
         Traditionally, trypsin is the most used protease in the (meta)proteomics field.
         Unipept~\cite{unipept_desktop, unipept_api, unipept_4, unipept_orig, unipept_tutorial, unipept_web, unipept_cli, unipept_desktop_2}, one of the first major tools to support metaproteomics data analysis, was specifically developed with this in mind.
@@ -84,7 +84,7 @@
         From time to time, trypsin will miss a cleavage site, creating a so-called missed cleavage.
         Since Unipept assumes there are no missed cleavages, peptides with such missed cleavages will not be present in the current Unipept index.
         To solve this problem, a solution was retro-fitted to handle these missed cleavages.
-        When this option is selected, Unipept scans the input peptides for missed cleavage positions, splits the peptides and perform separate lookups for every tryptic fragment.
+        When this option is enabled, Unipept scans the input peptides for missed cleavage positions, splits the peptides and perform separate lookups for every tryptic fragment.
         The resulting sets of protein matches are intersected, which delivers a set of possible protein matches.
         Every protein in this set is scanned left-to-right to ensure that the original peptide is present, and not only its separate tryptic fragments.
         Finally, the LCA of the found proteins is calculated.
@@ -96,7 +96,7 @@
         This restriction was initially not a significant issue since Unipept was originally created for metaproteomics, where trypsin is widely used.
         However, other fields such as immunopeptidomics~\cite{immunopeptidomics} require analysis tools to be able to cope with non-tryptic peptides.
         Upstream analysis software such as MS$^2$Rescore~\cite{ms2rescore} and MS$^2$PIP~\cite{ms2pip} have recently been adding support for immunopeptidomics research.
-        By adding support for arbitrary peptide matching, Unipept will automatically also support newer research fields such as immunopeptidomics.
+        By adding support for arbitrary peptide matching, Unipept will also automatically support these newer research fields.
         As an additional benefit, support for arbitrary peptide matching also removes the performance penalty associated with handling missed cleavages.
         This requires a new index structure with the following properties:
         \begin{enumerate}
@@ -116,7 +116,7 @@
         Depending on the used text, one implementation is faster than the other.
 
         \subsection{Sparse Suffix Arrays}
-        While a complete suffix array delivers the best performance, the index itself is still large.
+        While a complete suffix array delivers the best performance, the index itself is large.
         The size of the suffix array can be reduced by introducing a sampling step to create a so-called sparse suffix array (SSA).
         This variant of a suffix array only stores every $k$-th suffix of the input text.
         This results in an SSA which is only $\frac{1}{k}$ of the original suffix array size.
@@ -266,7 +266,7 @@
                     \hline
                 \end{tabular}
             }
-            \captionof{table}{Comparison of Unipept 6.x (UP6), UniProt Peptide Search (UPS) tool, Expasy ScanProSite (ESP) tool and Unipept 5.x (UP5) index. \texttt{[IL]} in the approximate matching row means that only I and L can be equated, while \texttt{$\sim$ tryptic} in the searchable peptide row means that only tryptic peptides or tryptic peptides with missed cleavages can be found.}
+            \captionof{table}{Comparison of Unipept 6.x (UP6), UniProt peptide search (UPS) tool, Expasy ScanProsite (ESP) tool and Unipept 5.x (UP5). \texttt{[IL]} in the approximate matching row means that only I and L can be equated, while \texttt{$\sim$ tryptic} in the searchable peptide row means that only tryptic peptides or tryptic peptides with missed cleavages can be found.}
             \label{tab:tool_comparison}
         \end{Table}
 
@@ -287,13 +287,13 @@
         The main disadvantage of Unipept 6.x compared to Unipept 5.x is that searching tryptic peptides is slightly slower than before, especially when searching with I $\neq$ L\@.
         This slowdown is introduced by taxonomic analyses performed at runtime, whereas these could all be precalculated with the old index that was restricted to tryptic peptides.
         However, this slowdown is limited and acceptable.
-        Especially when keeping in mind that real life samples always have some missed cleavages, which would not have been found before, without a performance hit.
+        Especially when keeping in mind that samples from experiments always have some missed cleavages, which would not have been found before, without a performance hit.
 
         \section{Future Work}
         The Unipept 6.x index meets the pre-established requirements, but still leaves room for improvement in several areas.
 
         A significant part of the current computation time is invested in performing the taxonomic and functional analyses at runtime.
-        Modifying the new index to support pre-calculation of these analyses, while still maintaining a peak memory usage which is manageable would drastically improve the performance.
+        Modifying the new index to support precalculation of these analyses, while still maintaining a peak memory usage which is manageable, would drastically improve the performance.
         Enhanced suffix arrays (ESA) could facilitate this, but require more memory.
 
         Another area of improvement is the index size itself.
@@ -309,7 +309,7 @@
 
         Lastly, Unipept does not perform any form of inexact matching, except for equating I and L\@.
         Introducing inexact matching into Unipept could allow us to deal with small biological mutations or variations introduced during the transformation from mass spectrum to peptide.
-        Possible interesting routes to explore are regex matching using suffix arrays~\cite{regex_sa}, or inexact matching using bidirectional FM-indices~\cite{bi-directional_fm_index}.
+        Possible interesting routes to explore are regex matching using suffix arrays~\cite{regex_sa} or inexact matching using bidirectional FM-indices~\cite{bi-directional_fm_index}.
         \printbibliography
     \end{multicols}
 
