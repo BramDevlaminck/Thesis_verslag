@@ -71,7 +71,7 @@ R-indices~\cite{r_index2, r_index1} zijn een verdere evolutie van de FM-index wa
 De index heeft grootte $O(r)$ met $r$ het aantal BWT runs van de tekst van lengte $n$.
 Vanwege het gebruik van RLE op de BWT, zal de \textbf{resulterende index kleiner} zijn naarmate er \textbf{meer herhaling} voorkomt in de geïndexeerde tekst.
 Om na te gaan wat het effect hiervan is op onze proteïnedatabanken, hebben we de R-index getest op de eerste 0.5\%, 1\%,\ldots\space van de volledige UniProtKB databank.
-Figuur~\ref{fig:sa_vs_r_index} visualiseert het geheugengebruik en de resulterende indexgrootte in vergelijking met suffix arrays.
+Figuur~\ref{fig:sa_vs_r_index} visualiseert het geheugengebruik en de resulterende indexgrootte in vergelijking met een suffix array.
 Merk op dat het geheugengebruik tijdens het opbouwen en de grootte van de resulterende R-index meer dan verdubbelt bij het overgaan van 2\% (1\thinspace651\thinspace521\thinspace046 tekens) naar 4\% (3\thinspace319\thinspace904\thinspace170 tekens) van UniProtKB\@.
 De oorzaak hiervan is het overschakelen van 32-bit naar 64-bit integers binnen de R-index.
 Bij de indices tot en met 2\% van UniProtKB maakt de R-index implementatie gebruik van 32-bit integers omdat er minder tekens in de geïndexeerde tekst staan dan de maximale 32-bit integer waarde.

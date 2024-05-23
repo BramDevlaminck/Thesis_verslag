@@ -33,15 +33,15 @@ Zoals eerder aangegeven in de conclusie van sectie~\ref{subsec:zoeken-in-sparse-
 Uit Figuur~\ref{fig:search_sparseness} (a) bleek namelijk dat het kiezen van een hogere sparseness factor een dramatische impact op de zoektijd van korte peptiden heeft.
 Dit effect zal nog versterkt worden bij het gebruik van een grotere databank, omdat er dan meer matches gevonden worden.
 \\ \\
-De machines die Unipept hosten hebben elk $\pm$ 0.5 TB RAM ter beschikking.
-Dit wil zeggen dat we de resulterende index hierin moeten krijgen, en ook nog genoeg ruimte moeten overlaten zodat de machine zeker niet crasht tijdens het hosten van de index en het verwerken van meerdere requests tegelijk.
+De servers die Unipept hosten hebben elk $\pm$ 0.5 TB RAM ter beschikking.
+Dit wil zeggen dat we de resulterende index hierin moeten krijgen, en ook nog genoeg ruimte moeten overlaten zodat de server zeker niet crasht tijdens het hosten van de index en het verwerken van meerdere requests tegelijk.
 Figuur~\ref{fig:uniprot_index_size_sparsenessfactors} toont een overzicht van de indexgrootte voor verschillende sparseness factors.
 Aangezien we ongeveer 0.5 TB RAM ter beschikking hebben, zal \textbf{sparseness factor k = 3} de kleinste factor zijn die comfortabel in het geheugen past.
 We hebben hiervoor namelijk al 322 GB RAM nodig.
 Hierbij moet natuurlijk nog wat overhead gerekend worden voor de mapping van suffix naar proteïne, en alle annotaties die bij een proteïne horen bij te houden.
 Bovendien bevatten deze servers ook nog andere databanken om verdere aggregaties te berekenen.
 Indien we sparseness factor 2 zouden gebruiken, komt de totale indexgrootte uit op $\pm$ 440 GB\@.
-Dit op zich zou nog net in de machine passen, maar laat niet genoeg ruimte voor de andere processen.
+Dit op zich past nog in het geheugen, maar laat niet genoeg ruimte voor de andere processen.
 
 \begin{figure}[h!]
     \centering
@@ -57,7 +57,7 @@ Vooral het vinden van matches waarbij we de aminozuren I (isoleucine) en L (leuc
 Door deze restrictie is het voor onderzoekers erg nuttig om alle matches te vinden waar een I ook een L kan zijn, of omgekeerd.
 Om deze vorm van inexacte matching toe te voegen aan de index gebruikmakende van een suffix array zijn er meerdere opties:
 \begin{enumerate}
-    \item \textbf{Twee indices:} Bouw een extra index waarbij in de tekst elke L ook door een I vervangen wordt, of vice versa.
+    \item \textbf{Twee indices:} Bouw een extra index waarbij in de tekst elke L door een I vervangen wordt, of vice versa.
     Bij het verwerken van een zoekopdracht wordt deze afgehandeld door de juiste index afhankelijk van de gekozen configuratie.
     Indien I en L gelijkgesteld worden, hoeft er slechts één bijkomende operatie uitgevoerd te worden.
     Dit is dezelfde vervangoperatie die uitgevoerd is op de originele tekst bij het opstellen van de index.
@@ -187,7 +187,7 @@ In de huidige Unipept index is hier een significante hoeveelheid extra werk voor
 
 \section{Functionele analyse}\label{sec:functionele-analyse}
 Een laatste feature die de nieuwe index moet ondersteunen, is de functionele analyse uit Unipept.
-Deze analyse wordt uitgevoerd door de verschillende GO, EC en INTERPRO termen die horen bij de gevonden matches te tellen.
+Deze analyse wordt uitgevoerd door het aantal voorkomens van de verschillende GO, EC en INTERPRO termen die horen bij de gevonden matches te tellen.
 Elk van deze termen is een korte string van 5 à 10 karakters lang, en kan vrij eenvoudig mee ingelezen worden en per proteïne bijgehouden worden.
 Al deze annotaties samen, maken het databankbestand dat ingelezen wordt om de index mee op te bouwen ongeveer 24 GB groter.
 Wanneer we deze informatie allemaal ingeladen hadden, bleek het programma echter ongeveer 105 GB extra RAM te gebruiken.
@@ -205,7 +205,7 @@ In deze sectie vergelijken we de performantie en eigenschappen van Unipept met d
 We zullen de versie van Unipept die de nieuwe index gebruikt Unipept 6.x noemen, aangezien de nieuwe index gebruikt zal worden vanaf Unipept 6.0, terwijl de oude versie Unipept 5.x genoemd wordt.
 Vanwege de beperkte performantie van een aantal van deze tools zullen we ons beperken tot het opzoeken van één willekeurige (tryptische) peptide \texttt{ISPAVLFVIVILAVLFFISGLLHLLVR}.
 Als referentie gebruiken we de zoektijd met Unipept 6.x waarbij, zoals eerder vermeld, sparseness factor $k = 3$ gebruikt wordt.
-Hierbij duurt het zoeken van de peptide \textbf{$\pm$ 3 milliseconden} en levert deze 50 matches op.
+Hierbij duurt het zoeken van de peptide ongeveer \textbf{3 milliseconden} en levert deze 50 matches op.
 Wanneer we I en L gelijkstellen duurt dit opnieuw ongeveer 3 milliseconden, maar levert dit wel 52 matches op.
 Hierbij wordt natuurlijk geen extra tijd geïntroduceerd door een API call over het internet aangezien deze index (nog) niet publiek beschikbaar is.
 
@@ -250,7 +250,7 @@ Volgende sectie bevat de gestelde vragen, met de gegeven antwoorden.
 \end{description}
 
 Uit deze antwoorden kunnen we concluderen dat hun index lagere geheugenvereisten heeft.
-Vermoedelijk komt dit omdat Apache Lucene geen harde limiet heeft om de index te kunnen gebruiken.
+Vermoedelijk komt dit doordat Apache Lucene geen harde geheugenlimiet heeft om de index te kunnen gebruiken.
 Het zal echter zoveel geheugen proberen gebruiken als het toegewezen krijgt, om zo onder andere caching toe te passen.
 Dit verklaart waarschijnlijk ook deels de variabele performantie.
 Afhankelijk van eerdere zoekopdrachten zijn verschillende stukken van de index waarschijnlijk sneller doorzoekbaar.
@@ -419,10 +419,10 @@ Codefragment~\ref{fig:webserver_json_input} en~\ref{fig:webserver_json_output} g
     Hierbij bevat de sleutel \texttt{result} één element voor elke peptide die minstens één match opleverde.
     Peptiden zonder match worden dus simpelweg weggelaten in de output.
     Elk element bevat de berekende LCA* voor alle matches, het taxon ID dat overeenkomt met elke match en het UniProt accession number voor elke match.
-    Verder bevat de sleutel \texttt{fa} de functionele analyse zoals deze op dit moment door de Unipept API al teruggegeven wordt.
-    Tot slot is er ook nog een extra sleutel \texttt{cutoff\_used} die aanduidt of de bovengrens voor maximaal aantal matches gebruikt is.
+    Verder bevat de sleutel \texttt{fa} de functionele analyse zoals deze op dit moment door de Unipept API teruggegeven wordt.
+    Tot slot is er ook nog een extra sleutel \texttt{cutoff\_used} die aanduidt of de bovengrens voor maximaal aantal matches bereikt werd.
     In dit geval stond deze bovengrens B op 10\thinspace000 matches.
-    Indien deze wel gebruikt is zal de LCA automatisch op 1 gezet worden en zullen er exact B matches teruggegeven worden (en dus ook matches weggelaten worden).}
+    Indien deze wel bereikt wordt, zal de LCA automatisch op 1 gezet worden en zullen er exact B matches teruggegeven worden (en dus ook matches weggelaten worden).}
     \label{fig:webserver_json_output}
 \end{listing}
 
@@ -433,7 +433,7 @@ Eerst moet de nieuwe databank gedownload worden, waarna alle data die Unipept no
 De masterproef van medestudent Stijn De Clercq gaat hier dieper op in, en welke verbeteringen hierop aangebracht zijn het afgelopen jaar.
 Dankzij zijn werk is het veel gemakkelijker geworden om deze nieuwe index te integreren in de Unipept pijplijn.
 De output van deze pijplijn levert een reeks \texttt{tsv}\footnote{Tab-Separated Values} bestanden op, die gebruikt worden als input om de indexstructuur op te bouwen.
-Aangezien we de index enkel kunnen bouwen op de HPC vanwege de nodige hoeveelheid RAM, moet dit bestand ook verplaatst worden naar de HPC\@.
+Aangezien we de index enkel kunnen bouwen op de HPC vanwege het hoge geheugengebruik, moeten de nodige \texttt{tsv} bestanden verplaatst worden naar de HPC\@.
 Dit gaat vrij snel aangezien alle communicatie binnen het UGent-netwerk gebeurt aan een snelheid van 1 Gbps.
 Daarna wordt er een job op de HPC in de wachtrij gezet om de effectieve nieuwe SSA op te bouwen.
 Hierbij moet eerst wat tijd gerekend worden waarbij de job in de wachtrij staat.
