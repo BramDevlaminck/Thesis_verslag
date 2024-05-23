@@ -8,14 +8,14 @@ Om deze processen te analyseren zijn er meerdere benaderingen mogelijk.
 \section{Genomica, transcriptomica \& proteomica}\label{sec:genomica-transcriptomica-&-proteomica}
 De eerste mogelijke discipline is \textbf{genomica}, het onderzoek naar het genoom.
 Het genoom bestaat uit al het DNA dat aanwezig is in een organisme.
-Het DNA bevat het ``recept'' voor alle proteïnen die mogelijks door het organisme geconstrueerd kunnen worden.
+Het DNA bevat het ``recept'' voor alle proteïnen die mogelijk door het organisme geconstrueerd kunnen worden.
 Dit is het begin van het centraal dogma van de biologie.
 Dit centraal dogma beschrijft de omzetting van DNA naar proteïnen.
 Wanneer we gebruikmaken van een analogie, dan is het DNA een receptenboek en is een proteïne een afgewerkt gerecht (waarvoor de instructies in het receptenboek staan).
 Het DNA stelt dus de instructies voor van alle mogelijke proteïnen die een bepaald organisme kan maken.
 Het geeft dus geen informatie over de proteïnen die op dat moment in de tijd actief zijn.
 Het is een voorstelling van wat het organisme kan, niet wat het op \textit{dit} moment aan het doen is.
-Belangrijk is dat ongeveer 98\% van het menselijke genoom niet-coderend is.
+Belangrijk is dat ongeveer 98\% van het menselijk genoom niet-coderend is.
 Dit wil zeggen dat het grootste deel van het DNA niet omgezet kan worden naar een betekenisvolle proteïne.
 In de plaats kunnen deze niet-coderende delen omgezet worden naar \textit{regulatory sequences}, niet-coderende genen, of andere componenten waarvan we nog niet altijd weten of ze al dan niet een functie hebben.
 \\ \\
@@ -32,13 +32,13 @@ Dit is de studie van alle proteïnen die binnen een enkel organisme tot expressi
 Hierbij probeert men te begrijpen hoe proteïnen in elkaar zitten, hoe deze binnen een bepaalde omgeving met elkaar interageren en wat hun belangrijkste functie is.
 Het voordeel van het bestuderen van de proteïnen is dat je weet welke proteïnen exact op een specifiek moment aanwezig zijn.
 Op die manier kan men afleiden wat er exact gebeurt in een organisme.
-Zoals eerder beschreven zijn de proteïnen het afgewerkte gerecht binnen onze analogie.
+Zoals eerder beschreven zijn de proteïnen het afgewerkte gerecht in de restaurant analogie.
 Een visualisatie van het centraal dogma van de biologie, inclusief de link met de gebruikte analogie, kan teruggevonden worden in Figuur~\ref{fig:recipe}~\cite{image_central_dogma}.
 \\ \\
 De focus van deze masterproef ligt vooral binnen het veld van de \textbf{metaproteomica}.
 Het prefix \textit{meta} geeft aan dat de te analyseren stalen niet van één organisme afkomstig zijn, maar van \textbf{meerdere organismen} (typisch binnen hetzelfde ecosysteem).
 Dit maakt de analyse moeilijker aangezien proteïnen van verschillende organismen gelijkaardige aminozuursequenties kunnen hebben (al dan niet door toeval).
-Binnen het metaproteomica veld gaan onderzoekers op zoek naar welke organismes er in een ecosysteem aanwezig zijn en wat deze daar dan doen.
+Binnen het metaproteomica veld gaan onderzoekers op zoek naar welke organismen er in een ecosysteem aanwezig zijn en wat deze daar dan doen.
 Dit doet men door een verzameling van proteïnefragmenten te analyseren.
 Deze proteïnefragmenten noemen we peptiden wanneer ze bestaan uit twee of meer aminozuren en hun lengte beperkt blijft.
 In de praktijk gaat dit over sequenties van ongeveer 2 tot 50 aminozuren lang.
@@ -69,7 +69,7 @@ Figuur~\ref{fig:trypsine} bevat een voorbeeld van de werking.
 \begin{figure}[H]
     \centering
     \includesvg[width=0.9\textwidth]{trypsine_verwerking}
-    \caption{Voorbeeld van de werking van trypsine op 2 proteïnen~\cite{phdPieterUnipept}. De aminozuren in het rood zijn lysine (K) of arginine (R), waarna trypsine knipt (behalve als het eerstvolgende aminzoruur proline (P) is). De tweede proteïne bevat een voorbeeld waar niet geknipt wordt na lysine, doordat het volgende aminozuur proline is.}
+    \caption{Voorbeeld van de werking van trypsine op twee proteïnen~\cite{phdPieterUnipept}. De aminozuren in het rood zijn lysine (K) of arginine (R), waarna trypsine knipt (behalve als het eerstvolgende aminzoruur proline (P) is). De tweede proteïne bevat een voorbeeld waar niet geknipt wordt na lysine, doordat het volgende aminozuur proline is.}
     \label{fig:trypsine}
 \end{figure}
 
@@ -130,11 +130,11 @@ Dit vormde een duidelijke en goede basis voor deze inleiding.
 
 
 \section{Probleemstelling}\label{sec:probleemstelling}
-In deze masterproef zoeken we een oplossing voor het snel terugvinden van \textbf{willekeurige peptiden}\footnote{Hiermee bedoelen we peptiden die tryptisch zouden moeten zijn, maar één of meerdere gemiste splitsingen hebben. Daarnaast omvat dit ook peptiden die niet-tryptisch zijn, en dus op een andere manier gesplitst worden.} in een proteïnedatabank.
+In deze masterproef zoeken we een oplossing voor het snel terugvinden van \textbf{willekeurige peptiden}\footnote{Hiermee bedoelen we peptiden die tryptisch zouden moeten zijn, maar mogelijk één of meerdere gemiste splitsingen hebben. Daarnaast omvat dit ook peptiden die niet-tryptisch zijn, en dus op een andere manier gesplitst worden.} in een proteïnedatabank.
 Bij het vinden van een match moet het daarna mogelijk zijn de informatie op te halen die hoort bij alle proteïnen waarin de peptide voorkomt.
 Binnen het onderzoeksgebied van de informatica kunnen we dit probleem als volgt herformuleren:
 ``In een grote verzameling van middellange strings (alle proteïnen in onze databank), moeten we voor een verzameling van korte strings (peptiden) terugvinden in welke van deze middellange strings ze voorkomen.''
-We willen echter niet alleen maar vinden van welke proteïnen een peptide deel uitmaakt.
+We willen echter niet alleen vinden van welke proteïnen een peptide deel uitmaakt.
 Ook de bijbehorende taxonomische en functionele annotaties van de gematchte proteïne moeten zo snel mogelijk te vinden zijn.
 Deze gevonden annotaties moeten efficiënt verwerkt kunnen worden om zo vlot het eindresultaat te bekomen.
 Om dit te realiseren, worden waar mogelijk annotaties geaggregeerd tijdens het opbouwen van de indexstructuur.
@@ -204,7 +204,7 @@ Dit verklaart onmiddellijk de keuze om gebruik te maken van kleinere datasets ti
     \label{tab:uniprotKB_eigenschappen}
 \end{table}
 
-In Figuur~\ref{fig:uniprot_aminozuur} en~\ref{fig:uniprot_length} is een gedetailleerder overzicht van de aminozuurdistributie en verdeling van de proteïnelengtes terug te vinden.
+In Figuur~\ref{fig:uniprot_aminozuur} en~\ref{fig:uniprot_length} is een gedetailleerder overzicht van de aminozuurdistributie en verdeling van de proteïnelengten terug te vinden.
 
 \begin{figure}[h]
     \centering
@@ -265,7 +265,7 @@ Figuur~\ref{fig:swissprot_aminozuur} en Figuur~\ref{fig:swissprot_length} geven 
 \end{figure}
 
 Doordat het gebruikte invoerbestand reeds verwerkt werd door een deel van de Unipept pipeline, is er een klein verschil tussen het totaal aantal sequenties in Tabel~\ref{tab:swissprot_eigenschappen} en wat eerder aangegeven werd.
-Hierbij worden onder andere sequenties met een onbekend taxon id verwijderd (538 in totaal), wat het kleine verschil verklaart.
+Hierbij worden onder andere sequenties met een onbekend taxon ID verwijderd (538 in totaal), wat het kleine verschil verklaart.
 
 \paragraph{Human-Prot} De Human-Prot databank is samengesteld aan de hand van drie referentiedatabanken afkomstig uit UniProtKB\@.
 Dit zijn de Human Genome~\cite{proteomes_homo_sapiens}, Influenza B~\cite{proteomes_infuenza_b} en Human Papillomavirus~\cite{proteomes_human_papillomavirus} databank.
@@ -313,7 +313,7 @@ We kunnen concluderen dat zo goed als \textbf{alle letters gebruikt} worden (ook
 Dit komt doordat sommige letters eigenlijk een soort wildcard voorstellen.
 Zo staat ``X'' voor elk mogelijk aminozuur, ``Z'' voor ``Q'' of ``E'',\ldots~\cite{amino_acid_codes}.
 \\ \\
-Verder valt ook te zien dat de verdeling van de proteïnelengtes in de UniProtKB, Swiss-Prot en Human-Prot datasets vergelijkbaar zijn.
+Verder valt ook te zien dat de verdeling van de proteïnelengten in de UniProtKB, Swiss-Prot en Human-Prot datasets vergelijkbaar zijn.
 Met andere woorden: \textbf{Swiss-Prot en Human-Prot zijn een representatieve kleinere voorstelling van UniProtKB\@}.
 Dit laat ons toe om gebruik te maken van de Swiss-Prot en Human-Prot proteïnedatabanken en later de resultaten te veralgemenen en op te schalen naar UniProtKB\@.
 
@@ -461,7 +461,7 @@ Indien we de lange tekst indexeren, kan het opbouwen in $O(m)$ tijd en het zoeke
 Hierbij is het mogelijk om één keer de indexstructuur te bouwen voor de lange tekst, waarna elke korte string \textbf{in lineaire tijd ten opzichte van zijn eigen lengte gezocht} kan worden.
 Het nadeel is echter dat het opbouwen van de indexstructuur voor een grote tekst traag kan worden, en bovendien veel geheugen kan innemen.
 \newpage
-We hebben een grote databank met erg veel proteïnen (een lange tekst) waarin we erg veel peptiden (korte strings) zoeken, wat overeenkomt met de tweede aanpak.
+Bij ons probleem hebben een grote databank met erg veel proteïnen (een lange tekst) waarin we erg veel peptiden (korte strings) zoeken, wat overeenkomt met de tweede aanpak.
 Daarom verkennen we in deze masterproef die aanpak.
 In de eerste instantie willen we \textbf{exacte matches} kunnen zoeken, maar later willen we ook \textbf{inexacte} \textit{matching} uitvoeren.
 \\ \\

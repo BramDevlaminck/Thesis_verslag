@@ -3,7 +3,7 @@ In deze masterproef hebben we verschillende opties verkend om de huidige Unipept
 Hierbij lag de hoofdfocus op het vinden van een nieuwe indexstructuur die aan volgende opties voldoet:
 \begin{enumerate}
     \item De index moet het mogelijk maken om arbitraire peptiden te zoeken.
-    \item Het geheugenverbruik van de index moet beperkt zijn, zodat het mogelijk is niet enkel kleinere proteïnedatabanken te indexeren, maar ook de volledige UniProtKB databank.
+    \item Het geheugengebruik van de index moet beperkt zijn, zodat het mogelijk is niet enkel kleinere proteïnedatabanken te indexeren, maar ook de volledige UniProtKB databank.
     \item De indexstructuur moet semi-exacte matching ondersteunen, zodat I en L aan elkaar gelijkgesteld kunnen worden.
     \item De indexstructuur moet de taxonomische en functionele analyse van Unipept ondersteunen.
 \end{enumerate}
@@ -58,7 +58,7 @@ Zo kan tijdens het opbouwen één proteïne per keer toegevoegd worden aan de su
 Een derde punt van verbetering zit in het \textbf{berekenen van de LCA*}.
 Indien deze voorberekend wordt tijdens het opbouwen van de index, zal dit niet enkel de performantie ten goede komen, het zal ook de nood voor de drempelwaarde B (die standaard op 10\thinspace000 staat) sterk verminderen.
 De meest duidelijke piste hiervoor is aan de hand van Enhanced Suffix Arrays (ESAs).
-In deze masterproef hebben we deze piste niet verder verkend vanwege de eerste indicatie dat het berekenen van de extra tabellen het geheugenverbruik zou verdubbelen, en dat het \textit{on the fly} berekenen van de analyses een acceptabele overhead met zich meebrengt.
+In deze masterproef hebben we deze piste niet verder verkend vanwege de eerste indicatie dat het berekenen van de extra tabellen het geheugengebruik zou verdubbelen, en dat het \textit{on the fly} berekenen van de analyses een acceptabele overhead met zich meebrengt.
 \\ \\
 Een vierde mogelijke route is het \textbf{uitbreiden van de inexacte matching}.
 Op dit moment is dit slechts in een extreem beperkte vorm aanwezig.

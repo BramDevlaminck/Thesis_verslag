@@ -403,7 +403,7 @@ Aangezien we twee verschillende implementaties hebben, is het interessant om na 
 Figuur~\ref{fig:threading_default_vs_rayon} toont de evolutie van de zoektijden voor een verschillend aantal threads.
 We zien duidelijk dat de versie die gebruikmaakt van \textbf{Rayon net iets sneller} is en dat beide implementaties ongeveer \textbf{lineair schalen}.
 De schaling is niet perfect één-op-één ten opzichte van het aantal threads omdat het inlezen en uitschrijven van de output sequentieel blijft.
-Het verschil in uitvoeringstijd valt mogelijks te verklaren aan de manier waarop de data verdeeld wordt over de threads, in combinatie met een efficiëntere manier om de resultaten uit de threads te verwerken.
+Het verschil in uitvoeringstijd valt mogelijk te verklaren aan de manier waarop de data verdeeld wordt over de threads, in combinatie met een efficiëntere manier om de resultaten uit de threads te verwerken.
 In de eigen implementatie kreeg elke thread simpelweg $\frac{1}{x}$ van alle peptiden toegekend, met $x$ het aantal threads.
 De resultaten moeten daarna aan de hand van enkele stappen uit de thread-scope gehaald worden zodat deze terug beschikbaar zijn voor de rest van het programma.
 Rayon maakt gebruik van een ingewikkelder systeem aan de hand van \textit{work stealing}~\cite{rayon_stealing} om de data over de threads te verdelen.
@@ -440,7 +440,7 @@ Een veel belangrijkere vaststelling is het \textbf{maximale geheugengebruik tijd
 Ook dit is \textbf{drastisch gedaald}.
 Dit is exact de reden dat we deze indexstuctuur gekozen hebben.
 Wanneer we het resultaat voor Swiss-Prot extrapoleren naar UniProtKB, gebruikmakende van de assumptie dat UniProtKB ongeveer 500 keer groter is, dan is de verwachting dat er ongeveer 1.2 TB RAM nodig zal zijn.
-Hierbij heeft de sparseness factor $k$ geen invloed op het maximale geheugenverbruik tijdens het opbouwen van de suffix array.
+Hierbij heeft de sparseness factor $k$ geen invloed op het maximale geheugengebruik tijdens het opbouwen van de suffix array.
 We moeten namelijk eerst de volledige suffix array bouwen om daarna te samplen hieruit.
 Deze 1.2 TB blijft een grote hoeveelheid aan geheugen, maar is wel al beschikbaar op de huidige generatie aan servers.
 Zo bieden zowel Amazon via AWS, google via GCP en Microsoft via Azure instanties aan met enkele TB aan RAM\@.

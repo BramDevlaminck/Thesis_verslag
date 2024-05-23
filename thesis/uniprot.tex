@@ -9,7 +9,7 @@ Het resultaat kan in onze GitHub repository\footnote{\url{https://github.com/Bra
 Zoals vermeld in sectie~\ref{subsec:opbouwen} levert een ruwe extrapolatie op dat we 1.2 TB RAM nodig hebben om een suffix array op te bouwen voor UniProtKB\@.
 Hierbij wordt er echter van uitgegaan dat UniProtKB 500 keer meer proteïnen dan Swiss-Prot bevat.
 Dit is een overschatting van de realiteit waar UniProtKB op dit moment \textit{slechts} $\pm$ 440 keer groter is.
-Dit zorgt ervoor dat het opbouwen mogelijks al \textbf{haalbaar is op de HPC van UGent} waar nodes beschikbaar zijn tot 940 GiB RAM\@.
+Dit zorgt ervoor dat het opbouwen mogelijk al \textbf{haalbaar is op de HPC van UGent} waar nodes beschikbaar zijn tot 940 GiB RAM\@.
 Na dit te proberen bleek \textit{slechts} 740 GB RAM nodig.
 Dit is minder dan verwacht omdat onder andere de NCBI taxonomy in het geheugen gehouden wordt.
 Deze blijft even groot, onafhankelijk van de grootte van de proteïnendatabank.
@@ -264,7 +264,7 @@ De Expasy ScanProsite tool~\cite{scanprosite} laat toe om aan de hand van motiev
 De beschrijving van motieven laat toe om onder andere wildcards, karakterklassen\footnote{Hiermee bedoelen we het toelaten van een reeks aan tekens op een bepaalde plaats. Dit is gelijkaardig aan de \texttt{[ABC]} syntax uit reguliere expressies, waar we een A, B of C toelaten.}, inverse klassen en herhalingen te specificeren.
 De flexibiliteit die hierdoor aangeboden wordt dus een sterk voordeel.
 Een nadeel van deze tool is dat niet de volledige UniProtKB databank doorzocht wordt.
-Er wordt enkel rekening gehouden met proteïnen die deel uit maken van een \textit{reference proteome}\footnote{Deze zogenaamde \textit{reference proteomes} zijn een collectie van proteïnen die door een bepaald organisme gemaakt kunnen worden, en die bovendien taxonomisch belangrijk bevonden worden. Deze laatste voorwaarde wil dus zeggen dat dit niet zomaar van elk organisme is, enkel van een selecte groep organismes die op basis van verschillende factoren belangrijk bevonden wordt. Een voorbeeld hiervan is de \textit{human reference proteome}. Dit zijn alle proteïnen die door een mens aangemaakt kunnen worden.}.
+Er wordt enkel rekening gehouden met proteïnen die deel uit maken van een \textit{reference proteome}\footnote{Deze zogenaamde \textit{reference proteomes} zijn een collectie van proteïnen die door een bepaald organisme gemaakt kunnen worden, en die bovendien taxonomisch belangrijk bevonden worden. Deze laatste voorwaarde wil dus zeggen dat dit niet zomaar van elk organisme is, enkel van een selecte groep organismen die op basis van verschillende factoren belangrijk bevonden wordt. Een voorbeeld hiervan is de \textit{human reference proteome}. Dit zijn alle proteïnen die door een mens aangemaakt kunnen worden.}.
 Dit komt erop neer dat ze bij UniProt 2024\_01 \textbf{slechts rekening houden met 85\thinspace152\thinspace388 van de 249\thinspace751\thinspace891 proteïnen} (34\%).
 Wanneer we de zoekperformantie testen, duurt het zoeken van de peptide \texttt{ISPAVLFVIVILAVLFFISGLLHLLVR} zo'n \textbf{5.5 minuten} zonder gelijkstellen van I en L en 10 minuten met het gelijkstellen van I en L\@.
 Hierbij zijn er slechts 30 resp.~32 matches gevonden, wegens de deelverzameling van proteïnen die gebruikt wordt.

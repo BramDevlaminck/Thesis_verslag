@@ -25,12 +25,11 @@ Een suffixboom van een tekst $T$ wordt formeel gedefinieerd als volgt~\cite{CCB_
 Merk op dat niet voor elke tekst $T$ een suffixboom zal bestaan.
 Deze bestaat alleen wanneer geen enkele suffix een prefix is van een andere suffix.
 In de praktijk wordt daarom een \textbf{uniek eindteken}, meestal \texttt{\$}, toegevoegd aan de tekst.
-Hierdoor is elke suffix namelijk uniek, en kan deze dus ook nooit een prefix zijn van een andere suffix.
 Op deze manier zal er gegarandeerd een suffixboom voor de (licht aangepaste) tekst $T$ bestaan.
 \\ \\
 Het navigeren in een suffixboom kunnen we efficiënter maken door ook de \textbf{suffix links} bij te houden.
 Dit is een pointer van een interne top $v$ naar een andere interne top $s(v)$.
-Deze suffix link bestaat als het pad uit de wortel naar top $v$ voorgesteld kan worden door de label $c\alpha$, waar $c$ een karakter is en $\alpha$ een (mogelijks lege) string.
+Deze suffix link bestaat als het pad uit de wortel naar top $v$ voorgesteld kan worden door de label $c\alpha$, waar $c$ een karakter is en $\alpha$ een (mogelijk lege) string.
 De top $s(v)$ zal dan de top zijn, waarvoor geldt dat het pad van de wortel tot aan de top de substring $\alpha$ voorstelt.
 Indien $\alpha$ leeg is, zal $s(v)$ de wortel van de suffixboom zijn.
 \\ \\
@@ -96,7 +95,6 @@ Het aantal toppen en bogen is dus $\Theta(n)$.
 Jammer genoeg vraagt het opslaan van alle prefixen in de bladeren $\Theta(n^2)$ geheugen~\cite{AD3_ukkonen}.
 We kunnen dit oplossen aan de hand van pointers naar het begin en einde van een substring in de originele string.
 Hierdoor moeten we \textbf{geen kopie} meer opslaan\textbf{ van de originele string in elk blad}.
-Sterker nog, we moeten dit zelfs niet in elk blad bijhouden.
 We kunnen bij elke boog tussen de toppen labels bijhouden.
 Het label van het blad kunnen we daarna reconstrueren door de labels van de bogen op weg naar dit blad achter elkaar te plaatsen.
 Op deze manier wordt de nodige opslag per top een constante en krijgen we \textbf{lineair geheugengebruik} ($O(n)$).
@@ -240,7 +238,7 @@ De manier waarop Rust memory safety garandeert, introduceert duidelijk extra com
 Een optie zou kunnen zijn om expliciet het \texttt{unsafe} keyword te gebruiken, wat meer vrijheid geeft.
 Het nadeel hiervan is natuurlijk dat we dan de garanties van memory safety kwijt zijn, wat net één van de hoofdredenen is om Rust te gebruiken.
 Dit was dus geen optie.
-Gelukkig is er een alternatieve manier waar ik op gestoten ben: een \textbf{\textit{arena-based} implementatie}~\cite{rust_arena_trees}.
+Gelukkig zijn we op een alternatief gestoten: een \textbf{\textit{arena-based} implementatie}~\cite{rust_arena_trees}.
 Het idee hierbij is dat er één arena gemaakt wordt waarbij ownership erg simpel is.
 In mijn implementatie is dit bijvoorbeeld een \texttt{Vector}.
 Alle toppen worden hierbij in deze ene vector opgeslagen.
@@ -415,7 +413,7 @@ en maar liefst 30 minuten en 37 seconden voor het peptidebestand met \textit{mis
 Dit is resp.~$\frac{132\thinspace000}{152.98} = 857$ en $\frac{1\thinspace837\thinspace000}{140.64} = 13\thinspace000$ keer trager.
 Het gebruik van de suffixboom heeft echter ook nadelen ten opzichte van de huidige implementatie.
 Deze laatste gebruikt slechts 6.7 GiB geheugen, en dit kan zelfs nog naar beneden.
-Het geheugenverbruik tijdens het opbouwen van de huidige Unipept index wordt namelijk gedomineerd door een merge sort stap.
+Het geheugengebruik tijdens het opbouwen van de huidige Unipept index wordt namelijk gedomineerd door een merge sort stap.
 Het is mogelijk deze stap minder geheugen te geven, maar dan zal het sorteren wel langer duren.
 De belangrijkste conclusie is echter dat de implementatie aan de hand van suffixbomen ongeveer 13 keer meer geheugen in neemt dan de huidige index.
 
@@ -425,7 +423,7 @@ De reden hiervoor is dat alle bladeren in deze subboom de gematchte proteïnen e
 \\ \\
 Figuur~\ref{fig:performance_all-occurrences_tree} bevat een overzicht van de nodige zoektijd voor beide implementaties op alle peptidebestanden.
 We zien duidelijk dat er hier een \textbf{significant verschil is tussen de C++ en Rust implementatie}.
-Vermoedelijk komt dit door de \textbf{andere \textit{memory layout}} die ontstaat doordat de Rust implementatie 1 grote vector gebruikt, terwijl de C++ implementatie losse toppen gebruikt die verspreid liggen in het geheugen.
+Vermoedelijk komt dit door de \textbf{andere \textit{memory layout}} die ontstaat doordat de Rust implementatie één grote vector gebruikt, terwijl de C++ implementatie losse toppen gebruikt die verspreid liggen in het geheugen.
 Deze verbeterde lokaliteit zal het aantal cache-hits verhogen, wat op zijn beurt de performantie ten goede komt.
 
 \begin{figure}[ht]
@@ -533,7 +531,7 @@ Om een idee van grootorde te geven: de suffixboom voor de Swiss-Prot dataset bev
 \\ \\
 Daarom hebben we \textbf{voorlopig toch voor de standaard LCA aggregatie manier} gekozen.
 Deze laat wel toe de toppen op deze efficiëntere manier te aggregeren.
-UMGAP biedt 2 implementaties aan om de LCA te berekenen voor een gegeven verzameling van taxa.
+UMGAP biedt twee implementaties aan om de LCA te berekenen voor een gegeven verzameling van taxa.
 Gebruikmakende van RMQs\footnote{Range Minimum Queries} of een boomstructuur.
 Mijn implementatie maakt gebruik van de RMQ implementatie aangezien deze significant sneller is (8 min 58 sec vs 20 min en 25 sec voor de Swiss-Prot databank) in mijn toepassing.
 Tot slot heb ik voor Swiss-Prot ook eens vergeleken hoe groot de behaalde tijdswinst is als we de LCAs aggregeren aan de hand van de directe kinderen, vergeleken met aggregatie op basis van de bladeren.
@@ -546,7 +544,7 @@ Zelfs als we alle bladeren onder een interne knoop voor een match willen afgaan,
 Bovendien is ook het opbouwen van de indexstructuur iets wat relatief snel gaat.
 \\ \\
 Door de eigen \textbf{implementatie in Rust}, kunnen we ook wat tijd besparen ten opzichte van een equivalente C++ implementatie.
-Een deel van de \textbf{tijdswinst} zit in het\textbf{ opbouwen van de boom}, maar vooral tijdens het zoeken, wanneer \textbf{informatie uit de bladeren} gehaald moet worden.
+Een deel van de \textbf{tijdwinst} zit in het\textbf{ opbouwen van de boom}, maar vooral tijdens het zoeken, wanneer \textbf{informatie uit de bladeren} gehaald moet worden.
 Vermoedelijk ligt de andere geheugenstructuur hiervoor aan de basis.
 \\ \\
 Ondanks de veelbelovende resultaten op vlak van snelheid is er een keerzijde aan de medaille.
